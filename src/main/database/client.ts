@@ -27,8 +27,12 @@ let sqlite: ReturnType<typeof Database> | null = null
 
 /**
  * Returns the absolute path to the runtime SQLite database.
+ * Uses an in-memory database during Vitest runs.
  */
 export function getDatabasePath(): string {
+  if (process.env.NODE_ENV === 'test') {
+    return ':memory:'
+  }
   return join(app.getPath('userData'), APP_CONFIG.DB_FILENAME)
 }
 
