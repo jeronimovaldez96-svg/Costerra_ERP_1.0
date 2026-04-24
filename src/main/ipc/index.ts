@@ -7,9 +7,9 @@
 import { registerProductHandlers } from './product.handlers'
 import { registerSupplierHandlers } from './supplier.handlers'
 import { registerClientHandlers } from './client.handlers'
-
 import { registerPurchaseOrderHandlers } from './purchase-order.handlers'
 import { registerInventoryHandlers } from './inventory.handlers'
+import { registerTaxHandlers } from './tax.handlers'
 
 /**
  * Registers all IPC handlers for every module.
@@ -21,6 +21,7 @@ export function registerAllIpcHandlers(): void {
   registerClientHandlers()
   registerPurchaseOrderHandlers()
   registerInventoryHandlers()
+  registerTaxHandlers()
   
   // Future handlers (to be added in subsequent phases):
   // registerSalesLeadHandlers()

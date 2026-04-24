@@ -76,6 +76,22 @@ export const poTransitionSchema = z.object({
   status: z.enum(['IN_TRANSIT', 'DELIVERED'])
 })
 
+// ─── Taxes ───────────────────────────────────────────────
+export const taxProfileComponentSchema = z.object({
+  name: z.string().min(1, 'Tax component name is required'),
+  rate: z.number().min(0, 'Tax rate must be positive')
+})
+
+export const taxProfileCreateSchema = z.object({
+  name: z.string().min(1, 'Tax Profile name is required'),
+  description: z.string().optional().default(''),
+  components: z.array(taxProfileComponentSchema).min(1, 'Tax profile must map to at least one physical tax component.')
+})
+
+export const taxProfileUpdateSchema = taxProfileCreateSchema.extend({
+  isActive: z.boolean().optional()
+}).partial()
+
 // Request wrapper schema for update operations (ID + payload)
 export const updatePayloadSchema = <T extends z.ZodTypeAny>(schema: T) =>
   z.object({

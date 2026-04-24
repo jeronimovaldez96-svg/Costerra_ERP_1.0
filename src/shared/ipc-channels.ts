@@ -71,7 +71,6 @@ export const IPC_CHANNELS = {
   TAX_PROFILE_GET: 'tax-profile:get',
   TAX_PROFILE_CREATE: 'tax-profile:create',
   TAX_PROFILE_UPDATE: 'tax-profile:update',
-  TAX_PROFILE_DELETE: 'tax-profile:delete',
 
   // ─── Analytics ─────────────────────────────────────
   ANALYTICS_DASHBOARD: 'analytics:dashboard',
