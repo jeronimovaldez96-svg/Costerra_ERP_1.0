@@ -1,0 +1,63 @@
+# ────────────────────────────────────────────────────────
+# Costerra ERP v2 — Electron Builder Configuration
+# Packages the Electron app as a macOS .dmg / Windows .exe
+# with auto-update support via GitHub Releases.
+#
+# KEY IMPROVEMENT: No Prisma binary engines to unpack.
+# Drizzle ORM has zero native dependencies — only
+# better-sqlite3 and sharp need unpacking.
+# ────────────────────────────────────────────────────────
+
+appId: com.costerra.erp
+productName: Costerra ERP
+
+directories:
+  output: dist
+  buildResources: build
+
+# ─── macOS ──────────────────────────────────────────────
+mac:
+  target:
+    - target: dmg
+      arch: [arm64, x64]
+  category: public.app-category.business
+  identity: null
+  hardenedRuntime: false
+
+dmg:
+  title: Costerra ERP
+
+# ─── Windows ────────────────────────────────────────────
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  deleteAppDataOnUninstall: false
+
+# ─── Auto-Update ────────────────────────────────────────
+publish:
+  provider: github
+  owner: jeronimovaldez96-svg
+  repo: Costerra_ERP_1.0
+
+# ─── Packaging ──────────────────────────────────────────
+files:
+  - out/**/*
+  - node_modules/**/*
+  - package.json
+
+# Only native modules need unpacking from asar.
+# No more Prisma engines, .prisma folder, or @prisma/engines.
+asarUnpack:
+  - "node_modules/better-sqlite3/**/*"
+  - "node_modules/sharp/**/*"
+  - "node_modules/@img/**/*"
+
+# Drizzle migrations are plain SQL files — bundle as resources.
+extraResources:
+  - from: "drizzle/migrations"
+    to: "migrations"
