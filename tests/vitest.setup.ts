@@ -32,6 +32,9 @@ beforeEach(() => {
   // Clean all tables to guarantee pristine state for every test
   db.exec(`
     PRAGMA foreign_keys = OFF;
+    DELETE FROM InventoryBatch;
+    DELETE FROM PurchaseOrderItem;
+    DELETE FROM PurchaseOrder;
     DELETE FROM ProductHistory;
     DELETE FROM Product;
     DELETE FROM SupplierHistory;

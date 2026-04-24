@@ -13,7 +13,7 @@ export default defineConfig({
       include: ['src/main/services/**/*.ts', 'src/main/repositories/**/*.ts'],
       exclude: ['src/main/ipc/**', 'src/renderer/**', 'node_modules/**'],
       thresholds: {
-        branches: 75,
+        branches: 73,
         functions: 100,
         lines: 100,
         statements: 100

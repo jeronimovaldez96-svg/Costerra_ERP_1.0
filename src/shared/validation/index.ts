@@ -53,6 +53,29 @@ export const clientCreateSchema = z.object({
 
 export const clientUpdateSchema = clientCreateSchema.partial()
 
+// ─── Purchase Orders ─────────────────────────────────────
+export const poLineItemSchema = z.object({
+  productId: z.number().int().min(1),
+  quantity: z.number().int().min(1, 'Quantity must be at least 1'),
+  unitCost: z.number().min(0, 'Unit cost must be positive')
+})
+
+export const poCreateSchema = z.object({
+  supplierId: z.number().int().min(1),
+  description: z.string().optional().default(''),
+  lineItems: z.array(poLineItemSchema).min(1, 'Purchase Order must have at least one line item.')
+})
+
+export const poUpdateSchema = z.object({
+  supplierId: z.number().int().min(1).optional(),
+  description: z.string().optional(),
+  lineItems: z.array(poLineItemSchema).min(1, 'Purchase Order must have at least one line item.').optional()
+})
+
+export const poTransitionSchema = z.object({
+  status: z.enum(['IN_TRANSIT', 'DELIVERED'])
+})
+
 // Request wrapper schema for update operations (ID + payload)
 export const updatePayloadSchema = <T extends z.ZodTypeAny>(schema: T) =>
   z.object({

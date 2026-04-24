@@ -23,14 +23,11 @@ export const IPC_CHANNELS = {
   PO_LIST: 'po:list',
   PO_GET: 'po:get',
   PO_CREATE: 'po:create',
-  PO_UPDATE_STATUS: 'po:update-status',
-  PO_ADD_ITEM: 'po:add-item',
-  PO_UPDATE_ITEM: 'po:update-item',
-  PO_REMOVE_ITEM: 'po:remove-item',
+  PO_UPDATE: 'po:update',
+  PO_TRANSITION_STATUS: 'po:transition-status',
 
   // ─── Inventory ─────────────────────────────────────
-  INVENTORY_LIST: 'inventory:list',
-  INVENTORY_BY_PRODUCT: 'inventory:by-product',
+  INVENTORY_BATCHES: 'inventory:batches',
   INVENTORY_SUMMARY: 'inventory:summary',
 
   // ─── Client ────────────────────────────────────────
