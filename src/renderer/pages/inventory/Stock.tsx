@@ -7,17 +7,20 @@ import type { ColumnDef } from '@tanstack/react-table'
 interface InventorySummary {
   productId: number
   skuNumber: string
-  name: string
-  totalReceived: number
+  productName: string
+  productGroup: string
+  productFamily: string
+  color: string
+  totalUnits: number
   availableUnits: number
   reservedUnits: number
-  blendedUnitCost: number
-  totalValue: number
+  avgUnitCost: number
+  totalStockValue: number
 }
 
 const columns: ColumnDef<InventorySummary>[] = [
   { accessorKey: 'skuNumber', header: 'SKU' },
-  { accessorKey: 'name', header: 'Product Name' },
+  { accessorKey: 'productName', header: 'Product Name' },
   { 
     accessorKey: 'availableUnits', 
     header: 'Available',
@@ -33,14 +36,14 @@ const columns: ColumnDef<InventorySummary>[] = [
     )
   },
   { 
-    accessorKey: 'blendedUnitCost', 
+    accessorKey: 'avgUnitCost', 
     header: 'Avg Cost',
-    cell: ({ row }) => `$${row.original.blendedUnitCost.toFixed(2)}`
+    cell: ({ row }) => `$${(row.original.avgUnitCost ?? 0).toFixed(2)}`
   },
   { 
-    accessorKey: 'totalValue', 
+    accessorKey: 'totalStockValue', 
     header: 'Total Value',
-    cell: ({ row }) => <span className="font-semibold text-white">${row.original.totalValue.toFixed(2)}</span>
+    cell: ({ row }) => <span className="font-semibold text-white">${(row.original.totalStockValue ?? 0).toFixed(2)}</span>
   }
 ]
 
