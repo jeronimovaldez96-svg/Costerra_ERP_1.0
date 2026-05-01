@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { PageContainer } from '../../components/layout/PageContainer'
 import { DataTable } from '../../components/ui/DataTable'
 import { Button } from '../../components/ui/Button'
+import { CreateProductModal } from '../../components/modals/CreateProductModal'
 import { Plus } from 'lucide-react'
 import { toast } from '../../store/useToastStore'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -47,12 +48,9 @@ export function Products() {
   const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  useEffect(() => {
-    fetchProducts(page)
-  }, [page])
-
-  const fetchProducts = async (pageIndex: number) => {
+  const fetchProducts = useCallback(async (pageIndex: number) => {
     setIsLoading(true)
     try {
       const res = await window.api.invoke<{ items: Product[], total: number }>('product:list', { page: pageIndex, pageSize: 15 })
@@ -63,13 +61,21 @@ export function Products() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchProducts(page)
+  }, [page, fetchProducts])
+
+  const handleProductCreated = useCallback(() => {
+    fetchProducts(page)
+  }, [page, fetchProducts])
 
   return (
     <PageContainer title="Products">
       <div className="mb-6 flex justify-between items-center no-drag">
         <p className="text-slate-400">Manage your product catalog, pricing, and status.</p>
-        <Button onClick={() => toast.info('WIP', 'Product creation modal coming soon.')}>
+        <Button onClick={() => setIsModalOpen(true)}>
           <Plus size={16} className="mr-2" />
           Add Product
         </Button>
@@ -91,6 +97,12 @@ export function Products() {
           />
         )}
       </div>
+
+      <CreateProductModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onCreated={handleProductCreated}
+      />
     </PageContainer>
   )
 }

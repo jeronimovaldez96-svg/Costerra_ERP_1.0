@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { PageContainer } from '../../components/layout/PageContainer'
 import { DataTable } from '../../components/ui/DataTable'
 import { Button } from '../../components/ui/Button'
+import { CreatePurchaseOrderModal } from '../../components/modals/CreatePurchaseOrderModal'
 import { Plus } from 'lucide-react'
 import { toast } from '../../store/useToastStore'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -49,12 +50,9 @@ export function PurchaseOrders() {
   const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  useEffect(() => {
-    fetchPOs(page)
-  }, [page])
-
-  const fetchPOs = async (pageIndex: number) => {
+  const fetchPOs = useCallback(async (pageIndex: number) => {
     setIsLoading(true)
     try {
       const res = await window.api.invoke<{ items: PurchaseOrder[], total: number }>('po:list', { page: pageIndex, pageSize: 15 })
@@ -65,13 +63,21 @@ export function PurchaseOrders() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchPOs(page)
+  }, [page, fetchPOs])
+
+  const handlePOCreated = useCallback(() => {
+    fetchPOs(page)
+  }, [page, fetchPOs])
 
   return (
     <PageContainer title="Purchase Orders">
       <div className="mb-6 flex justify-between items-center no-drag">
         <p className="text-slate-400">Track inbound inventory shipments.</p>
-        <Button onClick={() => toast.info('WIP', 'PO creation coming soon.')}>
+        <Button onClick={() => setIsModalOpen(true)}>
           <Plus size={16} className="mr-2" />
           Create PO
         </Button>
@@ -93,6 +99,12 @@ export function PurchaseOrders() {
           />
         )}
       </div>
+
+      <CreatePurchaseOrderModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onCreated={handlePOCreated}
+      />
     </PageContainer>
   )
 }
