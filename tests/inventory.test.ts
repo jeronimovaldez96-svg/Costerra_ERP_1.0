@@ -77,4 +77,22 @@ describe('Inventory Reservation System', () => {
     await expect(adjustInventoryReservation(productId, -100))
       .rejects.toThrow(/Integrity Exception/)
   })
+
+  test('Physical stock underflow throws error during FIFO consumption', async () => {
+    // We start with 0 stock for this new product
+    const product4 = await createProduct({
+      name: 'Underflow Widget', productGroup: 'PG', productFamily: 'PF',
+      color: 'Blue', defaultUnitCost: 10, defaultUnitPrice: 25
+    })
+
+    const { getDb } = await import('../src/main/database/client')
+    const { consumeStockFifo } = await import('../src/main/repositories/inventory.repository')
+    const db = getDb()
+
+    expect(() => {
+      db.transaction((tx) => {
+         consumeStockFifo(tx, product4.id, 50)
+      })
+    }).toThrow(/Insufficient physical stock/)
+  })
 })

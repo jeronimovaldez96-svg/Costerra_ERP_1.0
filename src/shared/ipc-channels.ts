@@ -59,6 +59,12 @@ export const IPC_CHANNELS = {
   SALE_EXECUTE: 'sale:execute',
   SALE_LIST: 'sale:list',
   SALE_GET: 'sale:get',
+  SALE_PRINT_PDF: 'sale:print-pdf',
+
+  // ─── PDF Generation ────────────────────────────────
+  PDF_GENERATE_QUOTE: 'pdf:generate-quote',
+  PDF_GENERATE_SALE: 'pdf:generate-sale',
+  PDF_PROMPT_SAVE: 'pdf:prompt-save',
 
   // ─── Return ────────────────────────────────────────
   RETURN_CREATE: 'return:create',
@@ -82,9 +88,9 @@ export const IPC_CHANNELS = {
   BACKUP_LIST: 'backup:list',
 
   // ─── System ────────────────────────────────────────
-  EXPORT_XLSX: 'system:export-xlsx',
+  EXPORT_XLSX: 'export:xlsx',
   GET_APP_PATH: 'system:get-app-path',
-  DATABASE_RESET: 'system:database-reset',
+  DATABASE_RESET: 'database:reset',
 
   // ─── App Updates ──────────────────────────────────
   UPDATE_CHECK: 'update:check',

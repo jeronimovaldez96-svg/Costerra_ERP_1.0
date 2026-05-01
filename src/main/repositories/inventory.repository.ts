@@ -4,11 +4,9 @@
 // ────────────────────────────────────────────────────────
 
 import { eq, sql } from 'drizzle-orm'
-import { getDb } from '../database/client'
+import { getDb, type DbTransaction } from '../database/client'
 import { inventoryBatches, products } from '../../shared/schema'
 import type { InventoryBatch, InventorySummary } from '../../shared/types'
-
-type DbTransaction = Parameters<Parameters<ReturnType<typeof getDb>['transaction']>[0]>[0]
 
 /**
  * Sweeps a completed PO line items and receives them strictly into the double-entry FIFO ledger.
@@ -136,3 +134,46 @@ export function modifyReservations(tx: DbTransaction, productId: number, quantit
   }
 }
 
+/**
+ * Hard FIFO consumption — irreversibly decrements remainingQty from oldest batches.
+ * Returns the blended weighted-average unit cost across all consumed sub-batches.
+ * Used exclusively during atomic Sale execution.
+ */
+export function consumeStockFifo(tx: DbTransaction, productId: number, quantity: number): number {
+  if (quantity <= 0) throw new Error('Consume quantity must be positive')
+
+  let pending = quantity
+  let totalCost = 0
+
+  const query = sql`
+    SELECT id, remainingQty, unitCost
+    FROM InventoryBatch
+    WHERE productId = ${productId} AND remainingQty > 0
+    ORDER BY receivedAt ASC;
+  `
+  const batches = tx.all(query) as { id: number; remainingQty: number; unitCost: number }[]
+
+  for (const batch of batches) {
+    if (pending <= 0) break
+
+    const toConsume = Math.min(pending, batch.remainingQty)
+    totalCost += toConsume * batch.unitCost
+
+    // Decrement remaining AND reduce reserved proportionally
+    tx.run(sql`
+      UPDATE InventoryBatch
+      SET remainingQty = remainingQty - ${toConsume},
+          reservedQty = MAX(0, reservedQty - ${toConsume})
+      WHERE id = ${batch.id}
+    `)
+
+    pending -= toConsume
+  }
+
+  if (pending > 0) {
+    throw new Error(`Insufficient physical stock for Product ${productId}. Short by ${pending} units.`)
+  }
+
+  // Blended weighted-average cost across consumed batches
+  return totalCost / quantity
+}

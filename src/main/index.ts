@@ -10,6 +10,7 @@ import { existsSync, mkdirSync } from 'fs'
 import { initDatabase, closeDatabase } from './database/client'
 import { APP_CONFIG } from '../shared/constants'
 import { logger } from './utils/logger'
+import { registerAllIpcHandlers } from './ipc'
 
 /** Ensure required data directories exist inside userData */
 function ensureDataDirectories(): void {
@@ -54,6 +55,11 @@ function createMainWindow(): BrowserWindow {
     return { action: 'deny' }
   })
 
+  // Forward renderer console logs to the main process terminal
+  mainWindow.webContents.on('console-message', (event, level, message, line, sourceId) => {
+    console.log(`[Renderer] ${message} (${sourceId}:${line})`)
+  })
+
   // Load the renderer — dev server in development, built file in production
   if (process.env['ELECTRON_RENDERER_URL'] !== undefined) {
     void mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
@@ -77,7 +83,7 @@ void app.whenReady().then(() => {
   logger.info('Database initialized')
 
   // 3. Register all IPC handlers
-  // TODO: registerAllIpcHandlers() — will be added in Phase 2
+  registerAllIpcHandlers()
   logger.info('IPC handlers registered')
 
   // 4. Create the main window

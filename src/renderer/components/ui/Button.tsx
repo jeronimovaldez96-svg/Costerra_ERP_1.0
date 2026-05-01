@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { motion, HTMLMotionProps } from 'framer-motion'
+import { motion, type HTMLMotionProps } from 'framer-motion'
 import { forwardRef } from 'react'
 
 export interface ButtonProps extends HTMLMotionProps<'button'> {

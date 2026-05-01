@@ -48,7 +48,8 @@ CREATE INDEX `CreditNote_returnId_idx` ON `CreditNote` (`returnId`);--> statemen
 CREATE TABLE `InventoryBatch` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`productId` integer NOT NULL,
-	`purchaseOrderItemId` integer NOT NULL,
+	`purchaseOrderItemId` integer,
+	`returnLineItemId` integer,
 	`initialQty` integer NOT NULL,
 	`remainingQty` integer NOT NULL,
 	`reservedQty` integer DEFAULT 0 NOT NULL,
@@ -165,6 +166,7 @@ CREATE TABLE `ReturnLineItem` (
 	`quantity` integer NOT NULL,
 	`unitRefund` real NOT NULL,
 	`lineRefund` real NOT NULL,
+	`restockDisposition` text DEFAULT 'RESTOCK' NOT NULL,
 	FOREIGN KEY (`returnId`) REFERENCES `Return`(`id`) ON UPDATE no action ON DELETE cascade,
 	FOREIGN KEY (`saleLineItemId`) REFERENCES `SaleLineItem`(`id`) ON UPDATE no action ON DELETE no action
 );

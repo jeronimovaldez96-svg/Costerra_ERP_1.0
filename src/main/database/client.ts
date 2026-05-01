@@ -22,6 +22,9 @@ import type { BetterSQLite3Database } from 'drizzle-orm/better-sqlite3'
 /** Full typed database instance with schema awareness */
 export type AppDatabase = BetterSQLite3Database<typeof schema>
 
+/** Transaction context type — used by repositories that operate within db.transaction() */
+export type DbTransaction = Parameters<Parameters<AppDatabase['transaction']>[0]>[0]
+
 let db: AppDatabase | null = null
 let sqlite: ReturnType<typeof Database> | null = null
 
