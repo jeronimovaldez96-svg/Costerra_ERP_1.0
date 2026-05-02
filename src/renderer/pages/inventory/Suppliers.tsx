@@ -3,6 +3,7 @@ import { PageContainer } from '../../components/layout/PageContainer'
 import { DataTable } from '../../components/ui/DataTable'
 import { Button } from '../../components/ui/Button'
 import { CreateSupplierModal } from '../../components/modals/CreateSupplierModal'
+import { ViewSupplierModal } from '../../components/modals/ViewSupplierModal'
 import { Plus } from 'lucide-react'
 import { toast } from '../../store/useToastStore'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -27,7 +28,8 @@ export function Suppliers() {
   const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [viewSupplierId, setViewSupplierId] = useState<number | null>(null)
 
   const fetchSuppliers = useCallback(async (pageIndex: number) => {
     setIsLoading(true)
@@ -53,8 +55,8 @@ export function Suppliers() {
   return (
     <PageContainer title="Suppliers">
       <div className="mb-6 flex justify-between items-center no-drag">
-        <p className="text-slate-400">Manage your vendor network.</p>
-        <Button onClick={() => setIsModalOpen(true)}>
+        <p className="text-slate-400">Manage your vendor relationships and contact information.</p>
+        <Button onClick={() => setIsCreateModalOpen(true)}>
           <Plus size={16} className="mr-2" />
           Add Supplier
         </Button>
@@ -72,15 +74,22 @@ export function Suppliers() {
             pageIndex={page}
             pageCount={totalPages}
             onPageChange={setPage}
-            onRowClick={(row) => toast.info('Supplier Details', `View details for ${row.name}`)}
+            onRowClick={(row) => setViewSupplierId(row.id)}
           />
         )}
       </div>
 
       <CreateSupplierModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
         onCreated={handleSupplierCreated}
+      />
+
+      <ViewSupplierModal
+        isOpen={viewSupplierId !== null}
+        onClose={() => setViewSupplierId(null)}
+        onUpdated={handleSupplierCreated}
+        supplierId={viewSupplierId}
       />
     </PageContainer>
   )

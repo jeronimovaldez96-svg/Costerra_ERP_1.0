@@ -33,8 +33,20 @@ export function listPurchaseOrders(
 
   const totalRes = db.select({ count: sql<number>`count(*)` }).from(purchaseOrders).where(whereClause).get()
   const items = db
-    .select()
+    .select({
+      id: purchaseOrders.id,
+      poNumber: purchaseOrders.poNumber,
+      supplierId: purchaseOrders.supplierId,
+      description: purchaseOrders.description,
+      status: purchaseOrders.status,
+      createdAt: purchaseOrders.createdAt,
+      updatedAt: purchaseOrders.updatedAt,
+      supplier: {
+        name: suppliers.name
+      }
+    })
     .from(purchaseOrders)
+    .leftJoin(suppliers, eq(purchaseOrders.supplierId, suppliers.id))
     .where(whereClause)
     .orderBy(desc(purchaseOrders.createdAt))
     .limit(pageSize)
@@ -126,16 +138,22 @@ export function updatePurchaseOrder(
   })
 }
 
-export function updatePOStatus(tx: DbTransaction, id: number, nextStatus: 'IN_TRANSIT' | 'DELIVERED'): PurchaseOrder {
+export function updatePOStatus(tx: DbTransaction, id: number, nextStatus: 'ORDERED' | 'IN_TRANSIT' | 'DELIVERED' | 'IN_INVENTORY'): PurchaseOrder {
   const old = tx.select().from(purchaseOrders).where(eq(purchaseOrders.id, id)).get()
   if (!old) throw new Error(`Purchase Order ${id} not found`)
 
   // Strict valid transitions
-  if (nextStatus === 'IN_TRANSIT' && old.status !== 'DRAFT') {
+  if (nextStatus === 'ORDERED' && old.status !== 'DRAFT') {
+    throw new Error(`Cannot transition PO ${id} to 'ORDERED' from '${old.status}'`)
+  }
+  if (nextStatus === 'IN_TRANSIT' && old.status !== 'ORDERED') {
     throw new Error(`Cannot transition PO ${id} to 'IN_TRANSIT' from '${old.status}'`)
   }
   if (nextStatus === 'DELIVERED' && old.status !== 'IN_TRANSIT') {
     throw new Error(`Cannot transition PO ${id} to 'DELIVERED' from '${old.status}'`)
+  }
+  if (nextStatus === 'IN_INVENTORY' && old.status !== 'DELIVERED') {
+    throw new Error(`Cannot transition PO ${id} to 'IN_INVENTORY' from '${old.status}'`)
   }
 
   const updated = tx.update(purchaseOrders)

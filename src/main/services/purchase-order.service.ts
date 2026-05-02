@@ -51,7 +51,7 @@ export async function updatePurchaseOrder(
 import { purchaseOrderItems } from '../../shared/schema'
 import { eq } from 'drizzle-orm'
 
-export async function transitionPurchaseOrder(id: number, nextStatus: 'IN_TRANSIT' | 'DELIVERED'): Promise<PurchaseOrder> {
+export async function transitionPurchaseOrder(id: number, nextStatus: 'ORDERED' | 'IN_TRANSIT' | 'DELIVERED' | 'IN_INVENTORY'): Promise<PurchaseOrder> {
   const db = getDb()
 
   return db.transaction((tx) => {
@@ -59,14 +59,14 @@ export async function transitionPurchaseOrder(id: number, nextStatus: 'IN_TRANSI
     const po = poRepo.updatePOStatus(tx, id, nextStatus)
 
     // 2. State-Specific Validations & Side-Effects
-    if (nextStatus === 'IN_TRANSIT') {
+    if (nextStatus === 'ORDERED') {
       const itemsQuery = tx.select().from(purchaseOrderItems).where(eq(purchaseOrderItems.purchaseOrderId, id)).all()
       if (itemsQuery.length === 0) {
-        throw new Error('A Purchase Order must contain at least one line item to enter IN_TRANSIT')
+        throw new Error('A Purchase Order must contain at least one line item to enter ORDERED')
       }
     }
 
-    if (nextStatus === 'DELIVERED') {
+    if (nextStatus === 'IN_INVENTORY') {
       // Push received line items cleanly into the double entry list
       const itemsQuery = tx.select().from(purchaseOrderItems).where(eq(purchaseOrderItems.purchaseOrderId, id)).all()
       

@@ -73,7 +73,7 @@ export const poUpdateSchema = z.object({
 })
 
 export const poTransitionSchema = z.object({
-  status: z.enum(['IN_TRANSIT', 'DELIVERED'])
+  status: z.enum(['ORDERED', 'IN_TRANSIT', 'DELIVERED', 'IN_INVENTORY'])
 })
 
 // ─── Taxes ───────────────────────────────────────────────

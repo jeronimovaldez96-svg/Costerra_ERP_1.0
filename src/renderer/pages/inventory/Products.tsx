@@ -3,6 +3,7 @@ import { PageContainer } from '../../components/layout/PageContainer'
 import { DataTable } from '../../components/ui/DataTable'
 import { Button } from '../../components/ui/Button'
 import { CreateProductModal } from '../../components/modals/CreateProductModal'
+import { ViewProductModal } from '../../components/modals/ViewProductModal'
 import { Plus } from 'lucide-react'
 import { toast } from '../../store/useToastStore'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -48,7 +49,8 @@ export function Products() {
   const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [viewProductId, setViewProductId] = useState<number | null>(null)
 
   const fetchProducts = useCallback(async (pageIndex: number) => {
     setIsLoading(true)
@@ -75,7 +77,7 @@ export function Products() {
     <PageContainer title="Products">
       <div className="mb-6 flex justify-between items-center no-drag">
         <p className="text-slate-400">Manage your product catalog, pricing, and status.</p>
-        <Button onClick={() => setIsModalOpen(true)}>
+        <Button onClick={() => setIsCreateModalOpen(true)}>
           <Plus size={16} className="mr-2" />
           Add Product
         </Button>
@@ -93,15 +95,22 @@ export function Products() {
             pageIndex={page}
             pageCount={totalPages}
             onPageChange={setPage}
-            onRowClick={(row) => toast.info('Product Details', `View details for ${row.name}`)}
+            onRowClick={(row) => setViewProductId(row.id)}
           />
         )}
       </div>
 
       <CreateProductModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
         onCreated={handleProductCreated}
+      />
+
+      <ViewProductModal
+        isOpen={viewProductId !== null}
+        onClose={() => setViewProductId(null)}
+        onUpdated={handleProductCreated}
+        productId={viewProductId}
       />
     </PageContainer>
   )

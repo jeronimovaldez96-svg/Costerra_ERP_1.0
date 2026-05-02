@@ -3,6 +3,7 @@ import { PageContainer } from '../../components/layout/PageContainer'
 import { DataTable } from '../../components/ui/DataTable'
 import { Button } from '../../components/ui/Button'
 import { CreatePurchaseOrderModal } from '../../components/modals/CreatePurchaseOrderModal'
+import { ViewPurchaseOrderModal } from '../../components/modals/ViewPurchaseOrderModal'
 import { Plus } from 'lucide-react'
 import { toast } from '../../store/useToastStore'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -12,14 +13,16 @@ interface PurchaseOrder {
   poNumber: string
   supplier: { name: string }
   description: string
-  status: 'DRAFT' | 'IN_TRANSIT' | 'DELIVERED'
+  status: 'DRAFT' | 'ORDERED' | 'IN_TRANSIT' | 'DELIVERED' | 'IN_INVENTORY'
   createdAt: string
 }
 
 const statusColors = {
   DRAFT: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+  ORDERED: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
   IN_TRANSIT: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  DELIVERED: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+  DELIVERED: 'bg-teal-500/10 text-teal-400 border-teal-500/20',
+  IN_INVENTORY: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
 }
 
 const columns: ColumnDef<PurchaseOrder>[] = [
@@ -50,7 +53,8 @@ export function PurchaseOrders() {
   const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [viewPoId, setViewPoId] = useState<number | null>(null)
 
   const fetchPOs = useCallback(async (pageIndex: number) => {
     setIsLoading(true)
@@ -77,7 +81,7 @@ export function PurchaseOrders() {
     <PageContainer title="Purchase Orders">
       <div className="mb-6 flex justify-between items-center no-drag">
         <p className="text-slate-400">Track inbound inventory shipments.</p>
-        <Button onClick={() => setIsModalOpen(true)}>
+        <Button onClick={() => setIsCreateModalOpen(true)}>
           <Plus size={16} className="mr-2" />
           Create PO
         </Button>
@@ -95,15 +99,22 @@ export function PurchaseOrders() {
             pageIndex={page}
             pageCount={totalPages}
             onPageChange={setPage}
-            onRowClick={(row) => toast.info('PO Details', `View details for ${row.poNumber}`)}
+            onRowClick={(row) => setViewPoId(row.id)}
           />
         )}
       </div>
 
       <CreatePurchaseOrderModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
         onCreated={handlePOCreated}
+      />
+
+      <ViewPurchaseOrderModal
+        isOpen={viewPoId !== null}
+        onClose={() => setViewPoId(null)}
+        onUpdated={handlePOCreated}
+        poId={viewPoId}
       />
     </PageContainer>
   )
