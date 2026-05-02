@@ -5,6 +5,8 @@
 
 import { getDb, type DbTransaction } from '../database/client'
 import { quotes, quoteLineItems, quoteVersions } from '../../shared/schema/quote'
+import { salesLeads } from '../../shared/schema/sales-lead'
+import { clients } from '../../shared/schema/client'
 import { products } from '../../shared/schema/product'
 import { taxProfiles, taxProfileComponents } from '../../shared/schema/tax'
 import { eq, desc, like, sql } from 'drizzle-orm'
@@ -89,13 +91,34 @@ export async function listQuotes(params: { page?: number; pageSize?: number; sea
   const { page = 1, pageSize = 50, search = '' } = params
   const offset = (page - 1) * pageSize
 
-  let query = db.select().from(quotes).orderBy(desc(quotes.id))
+  const baseSelect = db.select({
+    id: quotes.id,
+    quoteNumber: quotes.quoteNumber,
+    salesLeadId: quotes.salesLeadId,
+    taxProfileId: quotes.taxProfileId,
+    notes: quotes.notes,
+    status: quotes.status,
+    createdAt: quotes.createdAt,
+    updatedAt: quotes.updatedAt,
+    salesLead: {
+      leadNumber: salesLeads.leadNumber,
+      client: {
+        name: clients.name,
+        surname: clients.surname
+      }
+    }
+  })
+  .from(quotes)
+  .leftJoin(salesLeads, eq(quotes.salesLeadId, salesLeads.id))
+  .leftJoin(clients, eq(salesLeads.clientId, clients.id))
+
+  let query = baseSelect.orderBy(desc(quotes.id))
   let countQuery = db.select({ count: sql<number>`count(*)` }).from(quotes)
 
   if (search.trim().length > 0) {
     const term = `%${search}%`
-    query = db.select().from(quotes).where(like(quotes.quoteNumber, term)).orderBy(desc(quotes.id)) as any
-    countQuery = db.select({ count: sql<number>`count(*)` }).from(quotes).where(like(quotes.quoteNumber, term)) as any
+    query = baseSelect.where(like(quotes.quoteNumber, term)).orderBy(desc(quotes.id))
+    countQuery = db.select({ count: sql<number>`count(*)` }).from(quotes).where(like(quotes.quoteNumber, term))
   }
 
   const items = query.limit(pageSize).offset(offset).all()

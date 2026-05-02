@@ -4,6 +4,7 @@
 
 import { getDb } from '../database/client'
 import { salesLeads } from '../../shared/schema/sales-lead'
+import { clients } from '../../shared/schema/client'
 import { quotes } from '../../shared/schema/quote'
 import { eq, desc, like, sql } from 'drizzle-orm'
 import { generateId } from '../utils/id-generator'
@@ -38,13 +39,29 @@ export async function listSalesLeads(params: { page?: number; pageSize?: number;
   const { page = 1, pageSize = 50, search = '' } = params
   const offset = (page - 1) * pageSize
 
-  let query = db.select().from(salesLeads).orderBy(desc(salesLeads.id))
+  const baseSelect = db.select({
+    id: salesLeads.id,
+    leadNumber: salesLeads.leadNumber,
+    clientId: salesLeads.clientId,
+    name: salesLeads.name,
+    status: salesLeads.status,
+    createdAt: salesLeads.createdAt,
+    updatedAt: salesLeads.updatedAt,
+    client: {
+      name: clients.name,
+      surname: clients.surname
+    }
+  })
+  .from(salesLeads)
+  .leftJoin(clients, eq(salesLeads.clientId, clients.id))
+
+  let query = baseSelect.orderBy(desc(salesLeads.id))
   let countQuery = db.select({ count: sql<number>`count(*)` }).from(salesLeads)
 
   if (search.trim().length > 0) {
     const term = `%${search}%`
-    query = db.select().from(salesLeads).where(like(salesLeads.name, term)).orderBy(desc(salesLeads.id)) as any
-    countQuery = db.select({ count: sql<number>`count(*)` }).from(salesLeads).where(like(salesLeads.name, term)) as any
+    query = baseSelect.where(like(salesLeads.name, term)).orderBy(desc(salesLeads.id))
+    countQuery = db.select({ count: sql<number>`count(*)` }).from(salesLeads).where(like(salesLeads.name, term))
   }
 
   const items = query.limit(pageSize).offset(offset).all()
