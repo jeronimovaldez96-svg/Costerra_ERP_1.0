@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { PageContainer } from '../../components/layout/PageContainer'
 import { DataTable } from '../../components/ui/DataTable'
 import { Button } from '../../components/ui/Button'
+import { CreateQuoteModal } from '../../components/modals/CreateQuoteModal'
 import { Plus } from 'lucide-react'
 import { toast } from '../../store/useToastStore'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -54,6 +55,7 @@ export function Quotes() {
   const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
   useEffect(() => {
     fetchQuotes(page)
@@ -72,11 +74,15 @@ export function Quotes() {
     }
   }
 
+  const handleQuoteCreated = () => {
+    fetchQuotes(page)
+  }
+
   return (
     <PageContainer title="Quotes">
       <div className="mb-6 flex justify-between items-center no-drag">
         <p className="text-slate-400">Manage pricing proposals and send quotes to clients.</p>
-        <Button onClick={() => toast.info('WIP', 'Quote creation coming soon.')}>
+        <Button onClick={() => setIsCreateModalOpen(true)}>
           <Plus size={16} className="mr-2" />
           Create Quote
         </Button>
@@ -98,6 +104,12 @@ export function Quotes() {
           />
         )}
       </div>
+
+      <CreateQuoteModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onCreated={handleQuoteCreated}
+      />
     </PageContainer>
   )
 }

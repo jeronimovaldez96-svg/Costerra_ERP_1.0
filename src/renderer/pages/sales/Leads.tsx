@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { PageContainer } from '../../components/layout/PageContainer'
 import { DataTable } from '../../components/ui/DataTable'
 import { Button } from '../../components/ui/Button'
+import { CreateLeadModal } from '../../components/modals/CreateLeadModal'
 import { Plus } from 'lucide-react'
 import { toast } from '../../store/useToastStore'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -54,6 +55,7 @@ export function Leads() {
   const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
   useEffect(() => {
     fetchLeads(page)
@@ -72,11 +74,15 @@ export function Leads() {
     }
   }
 
+  const handleLeadCreated = () => {
+    fetchLeads(page)
+  }
+
   return (
     <PageContainer title="Sales Leads">
       <div className="mb-6 flex justify-between items-center no-drag">
         <p className="text-slate-400">Track active opportunities and lead conversions.</p>
-        <Button onClick={() => toast.info('WIP', 'Lead creation coming soon.')}>
+        <Button onClick={() => setIsCreateModalOpen(true)}>
           <Plus size={16} className="mr-2" />
           Create Lead
         </Button>
@@ -98,6 +104,12 @@ export function Leads() {
           />
         )}
       </div>
+
+      <CreateLeadModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onCreated={handleLeadCreated}
+      />
     </PageContainer>
   )
 }
