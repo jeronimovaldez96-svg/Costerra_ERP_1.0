@@ -8,7 +8,7 @@ interface EnrichedSaleLineItem {
   product: Product
 }
 
-type EnrichedTaxProfile = TaxProfile & { components: any[] }
+type EnrichedTaxProfile = TaxProfile & { components: { rate: number }[] }
 
 export interface SaleTemplateData {
   sale: Sale
@@ -34,7 +34,7 @@ export function generateSaleHtml({ sale, lineItems, quote, taxProfile, client, l
 
   const formatCurrency = (val: number) => `$${val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
   const formatDate = (dateStr: string | Date | null) => {
-    if (!dateStr) return '-'
+    if (dateStr === null || dateStr === '') return '-'
     return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
   }
 
@@ -253,9 +253,9 @@ export function generateSaleHtml({ sale, lineItems, quote, taxProfile, client, l
         <!-- Header -->
         <div class="header">
           <div class="brand">
-            <h1>${companyInfo?.name || 'Costerra Local Systems'}</h1>
-            <p>${companyInfo?.address || '123 Enterprise Drive, Business City'}</p>
-            <p>${companyInfo?.email || 'contact@costerra.local'} | ${companyInfo?.phone || '+1 (555) 123-4567'}</p>
+            <h1>${companyInfo?.name ?? 'Costerra Local Systems'}</h1>
+            <p>${companyInfo?.address ?? '123 Enterprise Drive, Business City'}</p>
+            <p>${companyInfo?.email ?? 'contact@costerra.local'} | ${companyInfo?.phone ?? '+1 (555) 123-4567'}</p>
           </div>
           <div class="doc-title">
             <span class="badge">EXECUTED SALE / INVOICE</span>
@@ -300,7 +300,7 @@ export function generateSaleHtml({ sale, lineItems, quote, taxProfile, client, l
                   <div class="product-name">${item.product.name}</div>
                   <div class="product-meta">${item.product.productGroup} / ${item.product.color || 'Standard'}</div>
                 </td>
-                <td class="right">${item.quantity}</td>
+                <td class="right">${item.quantity.toString()}</td>
                 <td class="right">${formatCurrency(item.unitPrice)}</td>
                 <td class="right">${formatCurrency(item.lineRevenue)}</td>
               </tr>

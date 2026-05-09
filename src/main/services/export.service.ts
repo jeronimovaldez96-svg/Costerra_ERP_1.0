@@ -61,7 +61,7 @@ export async function exportToXlsx(entity: ExportEntity): Promise<string | null>
   XLSX.utils.book_append_sheet(workbook, worksheet, entity)
 
   // Generate buffer
-  const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' })
+  const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' }) as Buffer
 
   // Prompt user for save location
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
@@ -76,7 +76,7 @@ export async function exportToXlsx(entity: ExportEntity): Promise<string | null>
   if (canceled || !filePath) return null
 
   writeFileSync(filePath, buffer)
-  logger.info(`XLSX export completed: ${filePath} (${rows.length} rows)`)
+  logger.info(`XLSX export completed: ${filePath} (${rows.length.toString()} rows)`)
 
   return filePath
 }

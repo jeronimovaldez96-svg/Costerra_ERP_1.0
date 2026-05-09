@@ -19,7 +19,7 @@ export function registerSupplierHandlers(): void {
   registerRoute(
     IPC_CHANNELS.SUPPLIER_LIST,
     { schema: paginationSchema },
-    async (params) => {
+    (params) => {
       return supplierService.listSuppliers(params)
     }
   )
@@ -27,7 +27,7 @@ export function registerSupplierHandlers(): void {
   registerRoute(
     IPC_CHANNELS.SUPPLIER_GET,
     { schema: z.number().int().min(1) },
-    async (id) => {
+    (id) => {
       return supplierService.getSupplier(id)
     }
   )
@@ -35,7 +35,7 @@ export function registerSupplierHandlers(): void {
   registerRoute(
     IPC_CHANNELS.SUPPLIER_CREATE,
     { schema: supplierCreateSchema },
-    async (payload) => {
+    (payload) => {
       return supplierService.createSupplier(payload)
     }
   )
@@ -43,7 +43,7 @@ export function registerSupplierHandlers(): void {
   registerRoute(
     IPC_CHANNELS.SUPPLIER_UPDATE,
     { schema: updateSupplierPayloadSchema },
-    async (payload) => {
+    (payload) => {
       return supplierService.updateSupplier(payload.id, payload.data)
     }
   )

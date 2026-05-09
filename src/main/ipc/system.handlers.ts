@@ -27,8 +27,8 @@ export function registerSystemHandlers(): void {
   registerRoute(
     IPC_CHANNELS.BACKUP_RESTORE,
     { schema: z.object({ backupFilePath: z.string().min(1) }) },
-    async ({ backupFilePath }) => {
-      await backupService.restoreBackup(backupFilePath)
+    ({ backupFilePath }) => {
+      backupService.restoreBackup(backupFilePath)
       return { success: true }
     }
   )
@@ -36,7 +36,7 @@ export function registerSystemHandlers(): void {
   registerRoute(
     IPC_CHANNELS.BACKUP_LIST,
     { schema: z.object({}).optional() },
-    async () => backupService.listBackups()
+    () => backupService.listBackups()
   )
 
   // ─── Database Reset ──────────────────────────────────
@@ -62,12 +62,12 @@ export function registerSystemHandlers(): void {
     { schema: z.object({ title: z.string().optional(), filters: z.array(z.object({ name: z.string(), extensions: z.array(z.string()) })).optional() }).optional() },
     async (options) => {
       const window = BrowserWindow.getFocusedWindow()
-      if (!window) return null
+      if (window === null) return null
 
       const result = await dialog.showOpenDialog(window, {
-        title: options?.title || 'Select File',
+        title: (options?.title !== undefined && options.title !== '') ? options.title : 'Select File',
         properties: ['openFile'],
-        filters: options?.filters || [{ name: 'Database Files', extensions: ['db'] }]
+        filters: options?.filters ?? [{ name: 'Database Files', extensions: ['db'] }]
       })
 
       return result.canceled ? null : result.filePaths[0]
@@ -79,10 +79,10 @@ export function registerSystemHandlers(): void {
     { schema: z.object({ title: z.string().optional() }).optional() },
     async (options) => {
       const window = BrowserWindow.getFocusedWindow()
-      if (!window) return null
+      if (window === null) return null
 
       const result = await dialog.showOpenDialog(window, {
-        title: options?.title || 'Select Directory',
+        title: (options?.title !== undefined && options.title !== '') ? options.title : 'Select Directory',
         properties: ['openDirectory', 'createDirectory']
       })
 
@@ -95,12 +95,12 @@ export function registerSystemHandlers(): void {
     { schema: z.object({ title: z.string().optional(), defaultPath: z.string().optional(), filters: z.array(z.object({ name: z.string(), extensions: z.array(z.string()) })).optional() }).optional() },
     async (options) => {
       const window = BrowserWindow.getFocusedWindow()
-      if (!window) return null
+      if (window === null) return null
 
       const result = await dialog.showSaveDialog(window, {
-        title: options?.title || 'Save File',
-        filters: options?.filters || [{ name: 'Database Files', extensions: ['db'] }],
-        ...(options?.defaultPath ? { defaultPath: options.defaultPath } : {})
+        title: (options?.title !== undefined && options.title !== '') ? options.title : 'Save File',
+        filters: options?.filters ?? [{ name: 'Database Files', extensions: ['db'] }],
+        ...(options?.defaultPath !== undefined && options.defaultPath !== '' ? { defaultPath: options.defaultPath } : {})
       })
 
       return result.canceled ? null : result.filePath
@@ -111,12 +111,12 @@ export function registerSystemHandlers(): void {
   registerRoute(
     IPC_CHANNELS.SETTINGS_GET,
     { schema: z.object({ key: z.string(), defaultValue: z.string() }) },
-    async ({ key, defaultValue }) => settingsService.getSetting(key, defaultValue)
+    ({ key, defaultValue }) => settingsService.getSetting(key, defaultValue)
   )
 
   registerRoute(
     IPC_CHANNELS.SETTINGS_UPDATE,
     { schema: z.object({ key: z.string(), value: z.string() }) },
-    async ({ key, value }) => settingsService.setSetting(key, value)
+    ({ key, value }) => { settingsService.setSetting(key, value) }
   )
 }

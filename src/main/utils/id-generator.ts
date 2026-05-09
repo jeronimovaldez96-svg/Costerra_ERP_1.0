@@ -35,12 +35,12 @@ const tableMap = {
  * Generates the next sequential ID for a given entity type.
  * e.g., generateId('SKU') => 'SKU-00001'
  */
-export async function generateId(entity: EntityType): Promise<string> {
+export function generateId(entity: EntityType): string {
   const db = getDb()
   const table = tableMap[entity]
 
-  const result = await db.select({ value: count() }).from(table)
-  const currentCount = result[0]?.value ?? 0
+  const result = db.select({ value: count() }).from(table).get()
+  const currentCount = result?.value ?? 0
 
   const nextNumber = currentCount + 1
   const padded = String(nextNumber).padStart(5, '0')

@@ -11,7 +11,7 @@ import { eq } from 'drizzle-orm'
  * Retrieves a setting value by key.
  * Returns the provided defaultValue if the key does not exist.
  */
-export async function getSetting(key: string, defaultValue: string): Promise<string> {
+export function getSetting(key: string, defaultValue: string): string {
   const db = getDb()
   const result = db.select().from(systemSettings).where(eq(systemSettings.key, key)).get()
   return result ? result.value : defaultValue
@@ -20,7 +20,7 @@ export async function getSetting(key: string, defaultValue: string): Promise<str
 /**
  * Updates or creates a setting.
  */
-export async function setSetting(key: string, value: string): Promise<void> {
+export function setSetting(key: string, value: string): void {
   const db = getDb()
   const existing = db.select().from(systemSettings).where(eq(systemSettings.key, key)).get()
 
@@ -39,8 +39,8 @@ export async function setSetting(key: string, value: string): Promise<void> {
 /**
  * Specialized helper for numeric settings.
  */
-export async function getNumericSetting(key: string, defaultValue: number): Promise<number> {
-  const value = await getSetting(key, defaultValue.toString())
+export function getNumericSetting(key: string, defaultValue: number): number {
+  const value = getSetting(key, defaultValue.toString())
   const parsed = parseInt(value, 10)
   return isNaN(parsed) ? defaultValue : parsed
 }

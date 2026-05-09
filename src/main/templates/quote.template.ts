@@ -1,7 +1,7 @@
 import type { Quote, QuoteLineItem, Product, TaxProfile, Client, SalesLead } from '../../shared/types'
 
 type EnrichedLineItem = QuoteLineItem & { product: Product }
-type EnrichedTaxProfile = TaxProfile & { components: any[] }
+type EnrichedTaxProfile = TaxProfile & { components: { rate: number }[] }
 
 export interface QuoteTemplateData {
   quote: Quote
@@ -22,7 +22,7 @@ export function generateQuoteHtml({ quote, lineItems, taxProfile, client, lead, 
   const subtotal = lineItems.reduce((acc, item) => acc + item.lineTotal, 0)
   
   let taxAmount = 0
-  if (taxProfile && taxProfile.components) {
+  if (taxProfile?.components !== undefined) {
     const totalRate = taxProfile.components.reduce((sum, c) => sum + c.rate, 0) / 100
     taxAmount = subtotal * totalRate
   }
@@ -31,7 +31,7 @@ export function generateQuoteHtml({ quote, lineItems, taxProfile, client, lead, 
 
   const formatCurrency = (val: number) => `$${val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
   const formatDate = (dateStr: string | Date | null) => {
-    if (!dateStr) return '-'
+    if (dateStr === null || dateStr === '') return '-'
     return new Date(dateStr).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
   }
 
@@ -258,9 +258,9 @@ export function generateQuoteHtml({ quote, lineItems, taxProfile, client, lead, 
         <!-- Header -->
         <div class="header">
           <div class="brand">
-            <h1>${companyInfo?.name || 'Costerra Local Systems'}</h1>
-            <p>${companyInfo?.address || '123 Enterprise Drive, Business City'}</p>
-            <p>${companyInfo?.email || 'contact@costerra.local'} | ${companyInfo?.phone || '+1 (555) 123-4567'}</p>
+            <h1>${companyInfo?.name ?? 'Costerra Local Systems'}</h1>
+            <p>${companyInfo?.address ?? '123 Enterprise Drive, Business City'}</p>
+            <p>${companyInfo?.email ?? 'contact@costerra.local'} | ${companyInfo?.phone ?? '+1 (555) 123-4567'}</p>
           </div>
           <div class="doc-title">
             <h2>QUOTE</h2>
@@ -304,7 +304,7 @@ export function generateQuoteHtml({ quote, lineItems, taxProfile, client, lead, 
                   <div class="product-name">${item.product.name}</div>
                   <div class="product-meta">${item.product.productGroup} / ${item.product.color || 'Standard'}</div>
                 </td>
-                <td class="right">${item.quantity}</td>
+                <td class="right">${item.quantity.toString()}</td>
                 <td class="right">${formatCurrency(item.unitPrice)}</td>
                 <td class="right">${formatCurrency(item.lineTotal)}</td>
               </tr>

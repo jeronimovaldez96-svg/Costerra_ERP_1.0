@@ -13,13 +13,13 @@ import { generateId } from '../utils/id-generator'
 /**
  * Creates a DRAFT return document linked to an executing Sale.
  */
-export async function createReturn(
+export function createReturn(
   saleId: number,
   reason: string,
   items: { saleLineItemId: number, quantityReturned: number, restockDisposition?: 'RESTOCK' | 'DEFECTIVE' | undefined }[]
 ) {
   const db = getDb()
-  const returnNumber = await generateId('RETURN')
+  const returnNumber = generateId('RETURN')
 
   return db.transaction((tx) => {
     // 1. Verify the associated Sale exists
@@ -38,11 +38,11 @@ export async function createReturn(
 
     for (const item of items) {
       const saleLine = tx.select().from(saleLineItems).where(eq(saleLineItems.id, item.saleLineItemId)).get()
-      if (!saleLine) throw new Error(`Sale Line Item ${item.saleLineItemId} not found.`)
+      if (saleLine === undefined) throw new Error(`Sale Line Item ${item.saleLineItemId.toString()} not found.`)
       
       // Ensure we aren't returning more than was literally sold
       if (item.quantityReturned > saleLine.quantity) {
-        throw new Error(`Cannot return cleanly: Quantity returned (${item.quantityReturned}) exceeds bounds of finalized sale magnitude (${saleLine.quantity}).`)
+        throw new Error(`Cannot return cleanly: Quantity returned (${item.quantityReturned.toString()}) exceeds bounds of finalized sale magnitude (${saleLine.quantity.toString()}).`)
       }
 
       const unitRefund = saleLine.unitPrice
@@ -66,8 +66,6 @@ export async function createReturn(
       status: 'DRAFT'
     }).returning().get()
 
-    if (!ret) throw new Error('Failed to create Return instance.')
-
     // 4. Create Return Line Items
     for (const item of processedItems) {
       tx.insert(returnLineItems).values({
@@ -90,9 +88,9 @@ export async function createReturn(
  * 2. Deducts the `blendedUnitCost` logically keeping accurate cost metrics inherently.
  * 3. Immediately triggers Credit Note rendering synchronously.
  */
-export async function processReturn(returnId: number) {
+export function processReturn(returnId: number) {
   const db = getDb()
-  const creditNoteNumber = await generateId('CREDIT_NOTE')
+  const creditNoteNumber = generateId('CREDIT_NOTE')
 
   return db.transaction((tx) => {
     const ret = tx.select().from(returns).where(eq(returns.id, returnId)).get()
@@ -103,7 +101,8 @@ export async function processReturn(returnId: number) {
     
     for (const item of lineItems) {
       // Fetch the exact historic structural Sale Line to get `blendedUnitCost`
-      const saleLine = tx.select().from(saleLineItems).where(eq(saleLineItems.id, item.saleLineItemId)).get()!
+      const saleLine = tx.select().from(saleLineItems).where(eq(saleLineItems.id, item.saleLineItemId)).get()
+      if (saleLine === undefined) throw new Error(`Sale Line Item ${item.saleLineItemId.toString()} missing`)
       
       // Only physically restock items marked as RESTOCK — DEFECTIVE items are written off the ledger
       if (item.restockDisposition === 'RESTOCK') {
@@ -133,7 +132,9 @@ export async function processReturn(returnId: number) {
       .set({ status: 'PROCESSED', processedAt })
       .where(eq(returns.id, returnId)).run()
 
-    return tx.select().from(returns).where(eq(returns.id, returnId)).get()!
+    const updated = tx.select().from(returns).where(eq(returns.id, returnId)).get()
+    if (updated === undefined) throw new Error(`Failed to process return ${returnId.toString()}`)
+    return updated
   })
 }
 
@@ -143,6 +144,6 @@ export function getReturnById(id: number) {
   if (!ret) throw new Error('Return not found.')
 
   const items = db.select().from(returnLineItems).where(eq(returnLineItems.returnId, id)).all()
-  const cn = db.select().from(creditNotes).where(eq(creditNotes.returnId, id)).get() || null
+  const cn = db.select().from(creditNotes).where(eq(creditNotes.returnId, id)).get() ?? null
   return { ...ret, lineItems: items, creditNote: cn }
 }

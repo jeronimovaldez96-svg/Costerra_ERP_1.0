@@ -10,23 +10,23 @@ import { salesLeads } from '../../shared/schema/sales-lead'
 import { eq } from 'drizzle-orm'
 import type { ListParams } from '../../shared/types'
 
-export async function createSalesLead(clientId: number, name: string) {
+export function createSalesLead(clientId: number, name: string) {
   return leadRepo.createSalesLead(clientId, name)
 }
 
-export async function getSalesLead(id: number) {
+export function getSalesLead(id: number) {
   return leadRepo.getSalesLead(id)
 }
 
-export async function getSalesLeadDetail(id: number) {
+export function getSalesLeadDetail(id: number) {
   return leadRepo.getSalesLeadDetail(id)
 }
 
-export async function listSalesLeads(params: ListParams) {
+export function listSalesLeads(params: ListParams) {
    return leadRepo.listSalesLeads(params)
  }
 
-export async function updateSalesLeadStatus(id: number, status: 'IN_PROGRESS' | 'CLOSED_SALE' | 'CLOSED_NO_SALE') {
+export function updateSalesLeadStatus(id: number, status: 'IN_PROGRESS' | 'CLOSED_SALE' | 'CLOSED_NO_SALE') {
   const db = getDb()
 
   return db.transaction((tx) => {
@@ -42,6 +42,8 @@ export async function updateSalesLeadStatus(id: number, status: 'IN_PROGRESS' | 
       }
     }
     
-    return tx.select().from(salesLeads).where(eq(salesLeads.id, id)).get()!
+    const updated = tx.select().from(salesLeads).where(eq(salesLeads.id, id)).get()
+    if (updated === undefined) throw new Error(`Failed to update sales lead`)
+    return updated
   })
 }

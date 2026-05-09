@@ -19,7 +19,7 @@ export function registerTaxHandlers(): void {
   registerRoute(
     IPC_CHANNELS.TAX_PROFILE_LIST,
     { schema: paginationSchema },
-    async (params) => {
+    (params) => {
       return taxService.listTaxProfiles(params)
     }
   )
@@ -27,7 +27,7 @@ export function registerTaxHandlers(): void {
   registerRoute(
     IPC_CHANNELS.TAX_PROFILE_GET,
     { schema: z.number().int().min(1) },
-    async (id) => {
+    (id) => {
       return taxService.getTaxProfile(id)
     }
   )
@@ -35,7 +35,7 @@ export function registerTaxHandlers(): void {
   registerRoute(
     IPC_CHANNELS.TAX_PROFILE_CREATE,
     { schema: taxProfileCreateSchema },
-    async (payload) => {
+    (payload) => {
       const { components, ...metadata } = payload
       return taxService.createTaxProfile(metadata, components)
     }
@@ -44,7 +44,7 @@ export function registerTaxHandlers(): void {
   registerRoute(
     IPC_CHANNELS.TAX_PROFILE_UPDATE,
     { schema: updateTaxPayloadSchema },
-    async (payload) => {
+    (payload) => {
       const { components, ...metadata } = payload.data
       return taxService.updateTaxProfile(payload.id, metadata, components)
     }

@@ -46,7 +46,7 @@ export function getInventorySummary(
   }
 
   let orderClause = 'ORDER BY p.name ASC'
-  if (sortBy) {
+  if (sortBy !== undefined && sortBy !== '') {
     const dir = sortDir === 'desc' ? 'DESC' : 'ASC'
     if (sortBy === 'productName') orderClause = `ORDER BY p.name ${dir}`
     else if (sortBy === 'skuNumber') orderClause = `ORDER BY p.skuNumber ${dir}`
@@ -110,7 +110,7 @@ export function modifyReservations(tx: DbTransaction, productId: number, quantit
       WHERE productId = ${productId} AND remainingQty > reservedQty
       ORDER BY receivedAt ASC;
     `
-    const batches = tx.all(query) as InventoryBatchRow[]
+    const batches = tx.all(query) as unknown as { id: number, remainingQty: number, reservedQty: number }[]
 
     for (const batch of batches) {
       if (pending <= 0) break
@@ -142,7 +142,7 @@ export function modifyReservations(tx: DbTransaction, productId: number, quantit
       WHERE productId = ${productId} AND reservedQty > 0
       ORDER BY receivedAt DESC;
     `
-    const reservedBatches = tx.all(query) as InventoryBatchRow[]
+    const reservedBatches = tx.all(query) as unknown as { id: number, reservedQty: number }[]
 
     for (const batch of reservedBatches) {
       if (pendingFree <= 0) break
@@ -179,7 +179,7 @@ export function consumeStockFifo(tx: DbTransaction, productId: number, quantity:
     WHERE productId = ${productId} AND remainingQty > 0
     ORDER BY receivedAt ASC;
   `
-  const batches = tx.all(query) as InventoryBatchRow[]
+  const batches = tx.all(query) as unknown as { id: number, remainingQty: number, unitCost: number }[]
 
   for (const batch of batches) {
     if (pending <= 0) break

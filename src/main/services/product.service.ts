@@ -15,7 +15,7 @@ import type {
   LoosePartial
 } from '../../shared/types'
 
-export async function listProducts(params: ListParams): Promise<PaginatedResult<Product>> {
+export function listProducts(params: ListParams): PaginatedResult<Product> {
   const page = params.page ?? 1
   const pageSize = params.pageSize ?? 50
   const search = params.search ?? ''
@@ -23,26 +23,26 @@ export async function listProducts(params: ListParams): Promise<PaginatedResult<
   return repo.listProducts(page, pageSize, search, params.sortBy, params.sortDir)
 }
 
-export async function getProduct(id: number): Promise<ProductWithHistory> {
-  const product = await repo.getProduct(id)
+export function getProduct(id: number): ProductWithHistory {
+  const product = repo.getProduct(id)
   if (product === null) {
-    throw new Error(`Product with ID ${id} not found`)
+    throw new Error(`Product with ID ${id.toString()} not found`)
   }
   return product
 }
 
-export async function createProduct(
+export function createProduct(
   data: Omit<ProductInsert, 'skuNumber'>,
   sourceImagePath?: string
-): Promise<Product> {
+): Product {
   let imagePath = data.imagePath
 
   // Persist image to app assets if a new source path is provided
-  if (sourceImagePath) {
+  if (sourceImagePath !== undefined && sourceImagePath !== '') {
     imagePath = saveProductImage(sourceImagePath)
   }
 
-  const skuNumber = await generateId('SKU')
+  const skuNumber = generateId('SKU')
 
   return repo.createProduct({
     ...data,
@@ -51,20 +51,20 @@ export async function createProduct(
   })
 }
 
-export async function updateProduct(
+export function updateProduct(
   id: number,
   data: LoosePartial<ProductInsert>,
   sourceImagePath?: string
-): Promise<Product> {
-  const existing = await getProduct(id)
+): Product {
+  const existing = getProduct(id)
   let newImagePath = data.imagePath
 
   // Handle image updates
-  if (sourceImagePath) {
+  if (sourceImagePath !== undefined && sourceImagePath !== '') {
     // Save new image
     newImagePath = saveProductImage(sourceImagePath)
     // Delete old image to free disk space
-    if (existing.imagePath) {
+    if (existing.imagePath !== null && existing.imagePath !== '') {
       deleteImage(existing.imagePath)
     }
   }
@@ -75,6 +75,6 @@ export async function updateProduct(
   })
 }
 
-export async function toggleProductActive(id: number): Promise<Product> {
+export function toggleProductActive(id: number): Product {
   return repo.toggleProductActive(id)
 }

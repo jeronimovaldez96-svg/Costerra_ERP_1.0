@@ -11,6 +11,6 @@ export function registerDashboardHandlers(): void {
   registerRoute(
     IPC_CHANNELS.DASHBOARD_METRICS,
     { schema: z.any() }, // no params
-    async () => dashboardService.getDashboardMetrics()
+    () => dashboardService.getDashboardMetrics()
   )
 }

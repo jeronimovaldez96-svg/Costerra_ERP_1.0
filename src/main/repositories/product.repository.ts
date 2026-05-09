@@ -3,19 +3,19 @@
 // Drizzle queries for the Product entity.
 // ────────────────────────────────────────────────────────
 
-import { eq, desc, asc, like, or, sql } from 'drizzle-orm'
+import { eq, desc, asc, like, or, sql, type AnyColumn } from 'drizzle-orm'
 import { getDb } from '../database/client'
 import { products, productHistory } from '../../shared/schema'
 import type { Product, ProductInsert, ProductWithHistory, PaginatedResult, LoosePartial } from '../../shared/types'
 import { logEntityChanges } from './audit.repository'
 
-export async function listProducts(
+export function listProducts(
   page: number,
   pageSize: number,
   search: string,
   sortBy?: string,
   sortDir?: 'asc' | 'desc'
-): Promise<PaginatedResult<Product>> {
+): PaginatedResult<Product> {
   const db = getDb()
   const offset = (page - 1) * pageSize
 
@@ -33,29 +33,29 @@ export async function listProducts(
 
   // Build order by clause
   let orderClause = desc(products.createdAt)
-  if (sortBy) {
+  if (sortBy !== undefined && sortBy !== '') {
     const column = (products as any)[sortBy]
-    if (column) {
-      orderClause = sortDir === 'asc' ? asc(column) : desc(column)
+    if (column !== undefined && column !== null) {
+      orderClause = sortDir === 'asc' ? asc(column as AnyColumn) : desc(column as AnyColumn)
     }
   }
 
-  // Execute count and data queries in parallel
-  const [totalRes, items] = await Promise.all([
-    db
-      .select({ count: sql<number>`count(*)` })
-      .from(products)
-      .where(whereClause),
-    db
-      .select()
-      .from(products)
-      .where(whereClause)
-      .orderBy(orderClause)
-      .limit(pageSize)
-      .offset(offset)
-  ])
+  // Execute count and data queries
+  const totalRes = db
+    .select({ count: sql<number>`count(*)` })
+    .from(products)
+    .where(whereClause)
+    .get()
+  const items = db
+    .select()
+    .from(products)
+    .where(whereClause)
+    .orderBy(orderClause)
+    .limit(pageSize)
+    .offset(offset)
+    .all()
 
-  const total = totalRes[0]?.count ?? 0
+  const total = totalRes?.count ?? 0
 
   return {
     items,
@@ -66,17 +66,18 @@ export async function listProducts(
   }
 }
 
-export async function getProduct(id: number): Promise<ProductWithHistory | null> {
+export function getProduct(id: number): ProductWithHistory | null {
   const db = getDb()
-  const [product] = await db.select().from(products).where(eq(products.id, id))
+  const product = db.select().from(products).where(eq(products.id, id)).get()
 
   if (product === undefined) return null
 
-  const history = await db
+  const history = db
     .select()
     .from(productHistory)
     .where(eq(productHistory.productId, id))
     .orderBy(desc(productHistory.changedAt))
+    .all()
 
   return {
     ...product,
@@ -84,19 +85,18 @@ export async function getProduct(id: number): Promise<ProductWithHistory | null>
   }
 }
 
-export async function createProduct(data: ProductInsert): Promise<Product> {
+export function createProduct(data: ProductInsert): Product {
   const db = getDb()
-  const [created] = await db.insert(products).values(data).returning()
-  if (created === undefined) throw new Error('Failed to create product')
+  const created = db.insert(products).values(data).returning().get()
   return created
 }
 
-export async function updateProduct(id: number, data: LoosePartial<ProductInsert>): Promise<Product> {
+export function updateProduct(id: number, data: LoosePartial<ProductInsert>): Product {
   const db = getDb()
 
   return db.transaction((tx) => {
     const old = tx.select().from(products).where(eq(products.id, id)).get()
-    if (old === undefined) throw new Error(`Product with ID ${id} not found`)
+    if (old === undefined) throw new Error(`Product with ID ${id.toString()} not found`)
 
     logEntityChanges(tx, 'product', id, old, { ...old, ...data })
 
@@ -107,17 +107,16 @@ export async function updateProduct(id: number, data: LoosePartial<ProductInsert
       .returning()
       .get()
 
-    if (updated === undefined) throw new Error(`Failed to update product ${id}`)
     return updated
   })
 }
 
-export async function toggleProductActive(id: number): Promise<Product> {
+export function toggleProductActive(id: number): Product {
   const db = getDb()
 
   return db.transaction((tx) => {
     const old = tx.select().from(products).where(eq(products.id, id)).get()
-    if (old === undefined) throw new Error(`Product with ID ${id} not found`)
+    if (old === undefined) throw new Error(`Product with ID ${id.toString()} not found`)
 
     const nextState = !old.isActive
     logEntityChanges(tx, 'product', id, old, { ...old, isActive: nextState })
@@ -129,7 +128,6 @@ export async function toggleProductActive(id: number): Promise<Product> {
       .returning()
       .get()
 
-    if (updated === undefined) throw new Error(`Failed to toggle product ${id}`)
     return updated
   })
 }

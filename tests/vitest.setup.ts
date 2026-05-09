@@ -16,7 +16,7 @@ vi.mock('electron', () => ({
 }))
 
 // Override NODE_ENV to force :memory: database
-process.env.NODE_ENV = 'test'
+process.env['NODE_ENV'] = 'test'
 
 beforeAll(() => {
   // Initializes better-sqlite3 with ':memory:' and runs migrations

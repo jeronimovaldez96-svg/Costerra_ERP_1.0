@@ -3,19 +3,19 @@
 // Drizzle queries for the Supplier entity.
 // ────────────────────────────────────────────────────────
 
-import { eq, desc, asc, like, or, sql } from 'drizzle-orm'
+import { eq, desc, asc, like, or, sql, type AnyColumn } from 'drizzle-orm'
 import { getDb } from '../database/client'
 import { suppliers, supplierHistory } from '../../shared/schema'
 import type { Supplier, SupplierInsert, SupplierWithHistory, PaginatedResult, LoosePartial } from '../../shared/types'
 import { logEntityChanges } from './audit.repository'
 
-export async function listSuppliers(
+export function listSuppliers(
   page: number,
   pageSize: number,
   search: string,
   sortBy?: string,
   sortDir?: 'asc' | 'desc'
-): Promise<PaginatedResult<Supplier>> {
+): PaginatedResult<Supplier> {
   const db = getDb()
   const offset = (page - 1) * pageSize
 
@@ -26,25 +26,24 @@ export async function listSuppliers(
   }
 
   let orderClause = desc(suppliers.createdAt)
-  if (sortBy) {
+  if (sortBy !== undefined && sortBy !== '') {
     const column = (suppliers as any)[sortBy]
-    if (column) {
-      orderClause = sortDir === 'asc' ? asc(column) : desc(column)
+    if (column !== undefined && column !== null) {
+      orderClause = sortDir === 'asc' ? asc(column as AnyColumn) : desc(column as AnyColumn)
     }
   }
 
-  const [totalRes, items] = await Promise.all([
-    db.select({ count: sql<number>`count(*)` }).from(suppliers).where(whereClause),
-    db
-      .select()
-      .from(suppliers)
-      .where(whereClause)
-      .orderBy(orderClause)
-      .limit(pageSize)
-      .offset(offset)
-  ])
+  const totalRes = db.select({ count: sql<number>`count(*)` }).from(suppliers).where(whereClause).get()
+  const items = db
+    .select()
+    .from(suppliers)
+    .where(whereClause)
+    .orderBy(orderClause)
+    .limit(pageSize)
+    .offset(offset)
+    .all()
 
-  const total = totalRes[0]?.count ?? 0
+  const total = totalRes?.count ?? 0
 
   return {
     items,
@@ -55,17 +54,18 @@ export async function listSuppliers(
   }
 }
 
-export async function getSupplier(id: number): Promise<SupplierWithHistory | null> {
+export function getSupplier(id: number): SupplierWithHistory | null {
   const db = getDb()
-  const [supplier] = await db.select().from(suppliers).where(eq(suppliers.id, id))
+  const supplier = db.select().from(suppliers).where(eq(suppliers.id, id)).get()
 
   if (supplier === undefined) return null
 
-  const history = await db
+  const history = db
     .select()
     .from(supplierHistory)
     .where(eq(supplierHistory.supplierId, id))
     .orderBy(desc(supplierHistory.changedAt))
+    .all()
 
   return {
     ...supplier,
@@ -73,19 +73,18 @@ export async function getSupplier(id: number): Promise<SupplierWithHistory | nul
   }
 }
 
-export async function createSupplier(data: SupplierInsert): Promise<Supplier> {
+export function createSupplier(data: SupplierInsert): Supplier {
   const db = getDb()
-  const [created] = await db.insert(suppliers).values(data).returning()
-  if (created === undefined) throw new Error('Failed to create supplier')
+  const created = db.insert(suppliers).values(data).returning().get()
   return created
 }
 
-export async function updateSupplier(id: number, data: LoosePartial<SupplierInsert>): Promise<Supplier> {
+export function updateSupplier(id: number, data: LoosePartial<SupplierInsert>): Supplier {
   const db = getDb()
 
   return db.transaction((tx) => {
     const old = tx.select().from(suppliers).where(eq(suppliers.id, id)).get()
-    if (old === undefined) throw new Error(`Supplier with ID ${id} not found`)
+    if (old === undefined) throw new Error(`Supplier with ID ${id.toString()} not found`)
 
     logEntityChanges(tx, 'supplier', id, old, { ...old, ...data })
 
@@ -96,7 +95,6 @@ export async function updateSupplier(id: number, data: LoosePartial<SupplierInse
       .returning()
       .get()
 
-    if (updated === undefined) throw new Error(`Failed to update supplier ${id}`)
     return updated
   })
 }

@@ -7,22 +7,22 @@ import { getDb } from '../database/client'
 import * as quoteRepo from '../repositories/quote.repository'
 import type { ListParams } from '../../shared/types'
 
-export async function createQuote(
+export function createQuote(
   data: { salesLeadId: number; taxProfileId?: number | null | undefined; notes?: string | undefined },
   lineItems: { productId: number; quantity: number }[]
 ) {
   return quoteRepo.createQuote(data, lineItems)
 }
 
-export async function getQuote(id: number) {
+export function getQuote(id: number) {
   return quoteRepo.getQuote(id)
 }
 
-export async function listQuotes(params: ListParams) {
+export function listQuotes(params: ListParams) {
   return quoteRepo.listQuotes(params)
 }
 
-export async function updateQuote(
+export function updateQuote(
   id: number,
   data: { taxProfileId?: number | null | undefined; notes?: string | undefined },
   lineItems?: { productId: number; quantity: number }[]
@@ -30,23 +30,45 @@ export async function updateQuote(
   return quoteRepo.updateQuote(id, data, lineItems)
 }
 
-export async function getQuoteVersions(quoteId: number) {
+export function getQuoteVersions(quoteId: number) {
   return quoteRepo.getQuoteVersions(quoteId)
 }
 
+import { quoteLineItems } from '../../shared/schema'
+import { eq } from 'drizzle-orm'
+import * as invRepo from '../repositories/inventory.repository'
+
 /**
  * Transitions a Quote status with side effects:
- * - DRAFT → SENT: Creates version snapshot (no inventory reservation —
- *   quotes can be sent regardless of stock levels)
- * - SENT → REJECTED: Simple status update (no reservations to release)
+ * - DRAFT → SENT: Creates version snapshot and reserves inventory
+ * - SENT → REJECTED: Releases inventory reservations
  */
-export async function transitionQuote(id: number, nextStatus: 'SENT' | 'REJECTED') {
+export function transitionQuote(id: number, nextStatus: 'SENT' | 'REJECTED' | 'SOLD' | 'NOT_SOLD') {
   const db = getDb()
 
   return db.transaction((tx) => {
+    const oldQuote = quoteRepo.getQuote(id)
+    if (!oldQuote) throw new Error(`Quote ${id.toString()} not found`)
+
     if (nextStatus === 'SENT') {
-      // Create version snapshot BEFORE transitioning
+      // 1. Create version snapshot
       quoteRepo.createQuoteVersion(tx, id)
+
+      // 2. Reserve Inventory
+      const items = tx.select().from(quoteLineItems).where(eq(quoteLineItems.quoteId, id)).all()
+      for (const item of items) {
+        invRepo.modifyReservations(tx, item.productId, item.quantity)
+      }
+    }
+
+    if (nextStatus === 'REJECTED' || nextStatus === 'NOT_SOLD') {
+      // Release Inventory
+      if (oldQuote.status === 'SENT') {
+        const items = tx.select().from(quoteLineItems).where(eq(quoteLineItems.quoteId, id)).all()
+        for (const item of items) {
+          invRepo.modifyReservations(tx, item.productId, -item.quantity)
+        }
+      }
     }
 
     // Perform the actual status transition

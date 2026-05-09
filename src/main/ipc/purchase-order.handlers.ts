@@ -21,7 +21,7 @@ export function registerPurchaseOrderHandlers(): void {
   registerRoute(
     IPC_CHANNELS.PO_LIST,
     { schema: paginationSchema },
-    async (params) => {
+    (params) => {
       return poService.listPurchaseOrders(params)
     }
   )
@@ -29,7 +29,7 @@ export function registerPurchaseOrderHandlers(): void {
   registerRoute(
     IPC_CHANNELS.PO_GET,
     { schema: z.number().int().min(1) },
-    async (id) => {
+    (id) => {
       return poService.getPurchaseOrder(id)
     }
   )
@@ -37,7 +37,7 @@ export function registerPurchaseOrderHandlers(): void {
   registerRoute(
     IPC_CHANNELS.PO_CREATE,
     { schema: poCreateSchema },
-    async (payload) => {
+    (payload) => {
       const { lineItems, ...poData } = payload
       return poService.createPurchaseOrder(poData, lineItems)
     }
@@ -46,7 +46,7 @@ export function registerPurchaseOrderHandlers(): void {
   registerRoute(
     IPC_CHANNELS.PO_UPDATE,
     { schema: updatePoPayloadSchema },
-    async (payload) => {
+    (payload) => {
       const { lineItems, ...poData } = payload.data
       return poService.updatePurchaseOrder(payload.id, poData, lineItems)
     }
@@ -55,7 +55,7 @@ export function registerPurchaseOrderHandlers(): void {
   registerRoute(
     IPC_CHANNELS.PO_TRANSITION_STATUS,
     { schema: transitionPoPayloadSchema },
-    async (payload) => {
+    (payload) => {
       return poService.transitionPurchaseOrder(payload.id, payload.data.status)
     }
   )

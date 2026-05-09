@@ -15,19 +15,19 @@ export function registerQuoteHandlers(): void {
   registerRoute(
     IPC_CHANNELS.QUOTE_LIST,
     { schema: paginationSchema },
-    async (params) => quoteService.listQuotes(params)
+    (params) => quoteService.listQuotes(params)
   )
 
   registerRoute(
     IPC_CHANNELS.QUOTE_GET,
     { schema: z.number().int().min(1) },
-    async (id) => quoteService.getQuote(id)
+    (id) => quoteService.getQuote(id)
   )
 
   registerRoute(
     IPC_CHANNELS.QUOTE_CREATE,
     { schema: quoteCreateSchema },
-    async (payload) => {
+    (payload) => {
       const { lineItems, ...metadata } = payload
       return quoteService.createQuote(metadata, lineItems)
     }
@@ -36,7 +36,7 @@ export function registerQuoteHandlers(): void {
   registerRoute(
     IPC_CHANNELS.QUOTE_UPDATE,
     { schema: updateQuotePayloadSchema },
-    async (payload) => {
+    (payload) => {
       const { lineItems, ...metadata } = payload.data
       return quoteService.updateQuote(payload.id, metadata, lineItems)
     }
@@ -45,12 +45,12 @@ export function registerQuoteHandlers(): void {
   registerRoute(
     IPC_CHANNELS.QUOTE_VERSIONS,
     { schema: z.number().int().min(1) },
-    async (quoteId) => quoteService.getQuoteVersions(quoteId)
+    (quoteId) => quoteService.getQuoteVersions(quoteId)
   )
 
   registerRoute(
     IPC_CHANNELS.QUOTE_SET_TAX_PROFILE, // Re-used as transition channel
     { schema: transitionQuotePayloadSchema },
-    async (payload) => quoteService.transitionQuote(payload.id, payload.data.status)
+    (payload) => quoteService.transitionQuote(payload.id, payload.data.status)
   )
 }

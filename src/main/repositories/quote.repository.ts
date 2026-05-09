@@ -9,34 +9,32 @@ import { salesLeads } from '../../shared/schema/sales-lead'
 import { clients } from '../../shared/schema/client'
 import { products } from '../../shared/schema/product'
 import { taxProfiles, taxProfileComponents } from '../../shared/schema/tax'
-import { eq, desc, asc, like, sql } from 'drizzle-orm'
+import { eq, desc, asc, sql, type AnyColumn, like } from 'drizzle-orm'
 import { generateId } from '../utils/id-generator'
 import type { ListParams } from '../../shared/types'
 
 // ─── Create ──────────────────────────────────────────────
 
-export async function createQuote(
+export function createQuote(
   data: { salesLeadId: number; taxProfileId?: number | null | undefined; notes?: string | undefined },
   lineItems: { productId: number; quantity: number }[]
 ) {
   const db = getDb()
-  const quoteNumber = await generateId('QUOTE')
+  const quoteNumber = generateId('QUOTE')
 
   return db.transaction((tx) => {
     const quote = tx.insert(quotes).values({
       quoteNumber,
       salesLeadId: data.salesLeadId,
       taxProfileId: data.taxProfileId ?? null,
-      notes: data.notes || '',
+      notes: data.notes ?? '',
       status: 'DRAFT'
     }).returning().get()
-
-    if (!quote) throw new Error('Failed to create Quote')
 
     // Insert line items with product price lookups
     for (const item of lineItems) {
       const product = tx.select().from(products).where(eq(products.id, item.productId)).get()
-      if (!product) throw new Error(`Product ${item.productId} not found`)
+      if (product === undefined) throw new Error(`Product ${item.productId.toString()} not found`)
 
       const lineTotal = item.quantity * product.defaultUnitPrice
 
@@ -58,16 +56,17 @@ export async function createQuote(
 
 function getQuoteById(txOrDb: DbTransaction | ReturnType<typeof getDb>, id: number) {
   const quote = txOrDb.select().from(quotes).where(eq(quotes.id, id)).get()
-  if (!quote) throw new Error(`Quote ${id} not found`)
+  if (quote === undefined) throw new Error(`Quote ${id.toString()} not found`)
 
   const items = txOrDb.select().from(quoteLineItems).where(eq(quoteLineItems.quoteId, id)).all()
   const enrichedItems = items.map((item) => {
     const product = txOrDb.select().from(products).where(eq(products.id, item.productId)).get()
-    return { ...item, product: product! }
+    if (product === undefined) throw new Error(`Product ${item.productId.toString()} missing for Quote item ${item.id.toString()}`)
+    return { ...item, product }
   })
 
   let taxProfile = null
-  if (quote.taxProfileId) {
+  if (quote.taxProfileId !== null) {
     const profile = txOrDb.select().from(taxProfiles).where(eq(taxProfiles.id, quote.taxProfileId)).get()
     if (profile) {
       const components = txOrDb.select().from(taxProfileComponents).where(eq(taxProfileComponents.taxProfileId, profile.id)).all()
@@ -82,12 +81,12 @@ function getQuoteById(txOrDb: DbTransaction | ReturnType<typeof getDb>, id: numb
   }
 }
 
-export async function getQuote(id: number) {
+export function getQuote(id: number) {
   const db = getDb()
   return getQuoteById(db, id)
 }
 
-interface FlatQuoteRow {
+export interface FlatQuoteRow {
   id: number
   quoteNumber: string
   salesLeadId: number
@@ -101,7 +100,7 @@ interface FlatQuoteRow {
   clientSurname: string | null
 }
 
-export async function listQuotes(params: ListParams) {
+export function listQuotes(params: ListParams) {
   const db = getDb()
   const { page = 1, pageSize = 50, search = '', sortBy, sortDir } = params
   const offset = (page - 1) * pageSize
@@ -124,20 +123,20 @@ export async function listQuotes(params: ListParams) {
   .leftJoin(clients, eq(salesLeads.clientId, clients.id))
 
   let orderClause = desc(quotes.id)
-  if (sortBy) {
+  if (sortBy !== undefined && sortBy !== '') {
     if (sortBy === 'clientName') {
       orderClause = sortDir === 'asc' ? asc(clients.name) : desc(clients.name)
     } else {
       const column = (quotes as any)[sortBy]
-      if (column) {
-        orderClause = sortDir === 'asc' ? asc(column) : desc(column)
+      if (column !== undefined && column !== null) {
+        orderClause = sortDir === 'asc' ? asc(column as AnyColumn) : desc(column as AnyColumn)
       }
     }
   }
 
   const countQuery = db.select({ count: sql<number>`count(*)` }).from(quotes)
 
-  let items: any[] = []
+  let items: (FlatQuoteRow & { salesLead: { leadNumber: string | null; client: { name: string | null; surname: string | null } } })[] = []
   let total = 0
 
   if (search.trim().length > 0) {
@@ -157,7 +156,7 @@ export async function listQuotes(params: ListParams) {
       }
     }))
     const totalRes = filteredCount.get()
-    total = Number(totalRes?.count ?? 0)
+    total = totalRes?.count ?? 0
   } else {
     const rows = baseSelect.orderBy(orderClause).limit(pageSize).offset(offset).all() as FlatQuoteRow[]
     items = rows.map((row) => ({
@@ -171,7 +170,7 @@ export async function listQuotes(params: ListParams) {
       }
     }))
     const totalRes = countQuery.get()
-    total = Number(totalRes?.count ?? 0)
+    total = totalRes?.count ?? 0
   }
 
   return { items, total, page, pageSize }
@@ -179,7 +178,7 @@ export async function listQuotes(params: ListParams) {
 
 // ─── Update (DRAFT only) ────────────────────────────────
 
-export async function updateQuote(
+export function updateQuote(
   id: number,
   data: { taxProfileId?: number | null | undefined; notes?: string | undefined },
   lineItems?: { productId: number; quantity: number }[]
@@ -188,8 +187,8 @@ export async function updateQuote(
 
   return db.transaction((tx) => {
     const old = tx.select().from(quotes).where(eq(quotes.id, id)).get()
-    if (!old) throw new Error(`Quote ${id} not found`)
-    if (old.status !== 'DRAFT') throw new Error(`Cannot modify Quote ${id} because it is ${old.status}`)
+    if (old === undefined) throw new Error(`Quote ${id.toString()} not found`)
+    if (old.status !== 'DRAFT') throw new Error(`Cannot modify Quote ${id.toString()} because it is ${old.status}`)
 
     // Update quote metadata
     const updateData: Record<string, unknown> = { updatedAt: sql`(datetime('now'))` }
@@ -203,7 +202,7 @@ export async function updateQuote(
       tx.delete(quoteLineItems).where(eq(quoteLineItems.quoteId, id)).run()
       for (const item of lineItems) {
         const product = tx.select().from(products).where(eq(products.id, item.productId)).get()
-        if (!product) throw new Error(`Product ${item.productId} not found`)
+        if (product === undefined) throw new Error(`Product ${item.productId.toString()} not found`)
 
         tx.insert(quoteLineItems).values({
           quoteId: id,
@@ -233,11 +232,11 @@ export function transitionQuoteStatus(tx: DbTransaction, id: number, nextStatus:
   }
 
   const quote = tx.select().from(quotes).where(eq(quotes.id, id)).get()
-  if (!quote) throw new Error(`Quote ${id} not found`)
+  if (quote === undefined) throw new Error(`Quote ${id.toString()} not found`)
 
-  const allowed = validTransitions[quote.status] || []
+  const allowed = validTransitions[quote.status] ?? []
   if (!allowed.includes(nextStatus)) {
-    throw new Error(`Cannot transition Quote ${id} from ${quote.status} to ${nextStatus}`)
+    throw new Error(`Cannot transition Quote ${id.toString()} from ${quote.status} to ${nextStatus}`)
   }
 
   tx.update(quotes).set({
@@ -245,7 +244,9 @@ export function transitionQuoteStatus(tx: DbTransaction, id: number, nextStatus:
     updatedAt: sql`(datetime('now'))`
   }).where(eq(quotes.id, id)).run()
 
-  return tx.select().from(quotes).where(eq(quotes.id, id)).get()!
+  const updated = tx.select().from(quotes).where(eq(quotes.id, id)).get()
+  if (updated === undefined) throw new Error(`Failed to map Quote ${id.toString()} status transition`)
+  return updated
 }
 
 // ─── Versioning ──────────────────────────────────────────
@@ -279,7 +280,7 @@ export function createQuoteVersion(tx: DbTransaction, quoteId: number) {
 /**
  * Returns all snapshot versions for a given quote.
  */
-export async function getQuoteVersions(quoteId: number) {
+export function getQuoteVersions(quoteId: number) {
   const db = getDb()
   return db.select().from(quoteVersions).where(eq(quoteVersions.quoteId, quoteId)).all()
 }

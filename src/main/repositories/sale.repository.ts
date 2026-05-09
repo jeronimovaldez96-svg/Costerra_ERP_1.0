@@ -10,7 +10,7 @@ import { salesLeads } from '../../shared/schema/sales-lead'
 import { clients } from '../../shared/schema/client'
 import { taxProfileComponents } from '../../shared/schema/tax'
 import { products } from '../../shared/schema/product'
-import { eq, desc, asc, like, sql } from 'drizzle-orm'
+import { eq, desc, asc, sql, type AnyColumn, like } from 'drizzle-orm'
 import type { ListParams } from '../../shared/types'
 import { generateId } from '../utils/id-generator'
 import { getQuoteLineItems, transitionQuoteStatus } from './quote.repository'
@@ -27,22 +27,22 @@ import { consumeStockFifo } from './inventory.repository'
  * 6. Calculates blended costs, revenue, tax, profit
  * 7. Creates immutable Sale + SaleLineItems records
  */
-export async function executeSale(quoteId: number) {
+export function executeSale(quoteId: number) {
   const db = getDb()
-  const saleNumber = await generateId('SALE')
+  const saleNumber = generateId('SALE')
 
   return db.transaction((tx) => {
     // 1. Validate Quote
     const quote = tx.select().from(quotes).where(eq(quotes.id, quoteId)).get()
-    if (!quote) throw new Error(`Quote ${quoteId} not found`)
-    if (quote.status !== 'SENT') throw new Error(`Quote ${quoteId} must be SENT to execute a sale (current: ${quote.status})`)
+    if (quote === undefined) throw new Error(`Quote ${quoteId.toString()} not found`)
+    if (quote.status !== 'SENT') throw new Error(`Quote ${quoteId.toString()} must be SENT to execute a sale (current: ${quote.status})`)
 
     const lineItems = getQuoteLineItems(tx, quoteId)
     if (lineItems.length === 0) throw new Error('Quote has no line items')
 
     // 2. Calculate tax rate from profile
     let effectiveTaxRate = 0
-    if (quote.taxProfileId) {
+    if (quote.taxProfileId !== null) {
       const components = tx.select().from(taxProfileComponents)
         .where(eq(taxProfileComponents.taxProfileId, quote.taxProfileId)).all()
       effectiveTaxRate = components.reduce((sum, c) => sum + c.rate, 0) / 100 // Convert % to decimal
@@ -100,8 +100,6 @@ export async function executeSale(quoteId: number) {
       profitMargin
     }).returning().get()
 
-    if (!sale) throw new Error('Failed to create Sale record')
-
     // 6. Create SaleLineItems
     for (const line of saleLines) {
       tx.insert(saleLineItems).values({
@@ -130,21 +128,22 @@ export async function executeSale(quoteId: number) {
   })
 }
 
-export async function getSale(id: number) {
+export function getSale(id: number) {
   const db = getDb()
   const sale = db.select().from(sales).where(eq(sales.id, id)).get()
-  if (!sale) throw new Error(`Sale ${id} not found`)
+  if (sale === undefined) throw new Error(`Sale ${id.toString()} not found`)
 
   const items = db.select().from(saleLineItems).where(eq(saleLineItems.saleId, id)).all()
   const enrichedItems = items.map((item) => {
     const product = db.select().from(products).where(eq(products.id, item.productId)).get()
-    return { ...item, product: product! }
+    if (product === undefined) throw new Error(`Product ${item.productId.toString()} missing for Sale item ${item.id.toString()}`)
+    return { ...item, product }
   })
 
   return { ...sale, lineItems: enrichedItems }
 }
 
-interface FlatSaleRow {
+export interface FlatSaleRow {
   id: number
   saleNumber: string
   quoteId: number | null
@@ -161,7 +160,7 @@ interface FlatSaleRow {
   clientSurname: string | null
 }
 
-export async function listSales(params: ListParams) {
+export function listSales(params: ListParams) {
   const db = getDb()
   const { page = 1, pageSize = 50, search = '', sortBy, sortDir } = params
   const offset = (page - 1) * pageSize
@@ -188,20 +187,20 @@ export async function listSales(params: ListParams) {
   .leftJoin(clients, eq(salesLeads.clientId, clients.id))
 
   let orderClause = desc(sales.id)
-  if (sortBy) {
+  if (sortBy !== undefined && sortBy !== '') {
     if (sortBy === 'clientName') {
       orderClause = sortDir === 'asc' ? asc(clients.name) : desc(clients.name)
     } else {
       const column = (sales as any)[sortBy]
-      if (column) {
-        orderClause = sortDir === 'asc' ? asc(column) : desc(column)
+      if (column !== undefined && column !== null) {
+        orderClause = sortDir === 'asc' ? asc(column as AnyColumn) : desc(column as AnyColumn)
       }
     }
   }
 
   const countQuery = db.select({ count: sql<number>`count(*)` }).from(sales)
 
-  let items: any[] = []
+  let items: (FlatSaleRow & { quote: { quoteNumber: string | null; salesLead: { leadNumber: string | null; name: string | null; client: { name: string | null; surname: string | null } } } })[] = []
   let total = 0
 
   if (search.trim().length > 0) {
@@ -225,7 +224,7 @@ export async function listSales(params: ListParams) {
       }
     }))
     const totalRes = filteredCount.get()
-    total = Number(totalRes?.count ?? 0)
+    total = totalRes?.count ?? 0
   } else {
     const rows = baseSelect.orderBy(orderClause).limit(pageSize).offset(offset).all() as FlatSaleRow[]
     items = rows.map((row) => ({
@@ -243,7 +242,7 @@ export async function listSales(params: ListParams) {
       }
     }))
     const totalRes = countQuery.get()
-    total = Number(totalRes?.count ?? 0)
+    total = totalRes?.count ?? 0
   }
 
   return { items, total, page, pageSize }

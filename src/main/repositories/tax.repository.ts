@@ -19,19 +19,17 @@ export type TaxProfileWithComponents = typeof taxProfiles.$inferSelect & {
 /**
  * Creates a global Tax Profile alongside its nested structural components natively.
  */
-export async function createTaxProfile(
+export function createTaxProfile(
   data: { name: string; description?: string | undefined },
   components: { name: string; rate: number }[]
-): Promise<TaxProfileWithComponents> {
+): TaxProfileWithComponents {
   const db = getDb()
 
   return db.transaction((tx) => {
     const profileInsert = tx.insert(taxProfiles).values({
       name: data.name,
-      description: data.description || ''
+      description: data.description ?? ''
     }).returning().get()
-
-    if (!profileInsert) throw new Error('Failed to instantiate Tax Profile internally.')
 
     const componentsToInsert = components.map(c => ({
       taxProfileId: profileInsert.id,
@@ -54,11 +52,11 @@ export async function createTaxProfile(
 /**
  * Retrieves a Tax Profile globally including sub-components.
  */
-export async function getTaxProfile(id: number): Promise<TaxProfileWithComponents> {
+export function getTaxProfile(id: number): TaxProfileWithComponents {
   const db = getDb()
   
   const profile = db.select().from(taxProfiles).where(eq(taxProfiles.id, id)).get()
-  if (!profile) throw new Error(`Tax Profile ${id} completely missing.`)
+  if (profile === undefined) throw new Error(`Tax Profile ${id.toString()} completely missing.`)
 
   const components = db.select().from(taxProfileComponents).where(eq(taxProfileComponents.taxProfileId, id)).all()
   
@@ -68,11 +66,11 @@ export async function getTaxProfile(id: number): Promise<TaxProfileWithComponent
 /**
  * Modifies Tax Rules securely. Replaces all components structurally instead of patching arrays loosely.
  */
-export async function updateTaxProfile(
+export function updateTaxProfile(
   id: number,
   data: { name?: string | undefined; description?: string | undefined; isActive?: boolean | undefined },
   components?: { name: string; rate: number }[]
-): Promise<TaxProfileWithComponents> {
+): TaxProfileWithComponents {
   const db = getDb()
 
   return db.transaction((tx) => {
@@ -101,7 +99,7 @@ export async function updateTaxProfile(
 
     // 3. Return reconstructed abstraction
     const profile = tx.select().from(taxProfiles).where(eq(taxProfiles.id, id)).get()
-    if (!profile) throw new Error(`Integrity Exception: Tax Profile ${id} failed retrieval.`)
+    if (profile === undefined) throw new Error(`Integrity Exception: Tax Profile ${id.toString()} failed retrieval.`)
       
     const finalComponents = tx.select().from(taxProfileComponents).where(eq(taxProfileComponents.taxProfileId, id)).all()
     
@@ -112,23 +110,30 @@ export async function updateTaxProfile(
 /**
  * List profiles spanning aggregations globally.
  */
-export async function listTaxProfiles(params: PaginationParams) {
+export function listTaxProfiles(params: PaginationParams) {
   const db = getDb()
   const { page = 1, pageSize = 50, search = '' } = params
   const offset = (page - 1) * pageSize
 
-  let query = db.select().from(taxProfiles).orderBy(desc(taxProfiles.id))
-  let countQuery = db.select({ count: sql<number>`count(*)` }).from(taxProfiles)
+  const term = search.trim().length > 0 ? `%${search}%` : null
+  const whereClause = term !== null ? like(taxProfiles.name, term) : undefined
 
-  if (search.trim().length > 0) {
-    const term = `%${search}%`
-    query = db.select().from(taxProfiles).where(like(taxProfiles.name, term)).orderBy(desc(taxProfiles.id)) as any
-    countQuery = db.select({ count: sql<number>`count(*)` }).from(taxProfiles).where(like(taxProfiles.name, term)) as any
-  }
+  const items = db
+    .select()
+    .from(taxProfiles)
+    .where(whereClause)
+    .orderBy(desc(taxProfiles.id))
+    .limit(pageSize)
+    .offset(offset)
+    .all()
 
-  const items = query.limit(pageSize).offset(offset).all()
-  const totalRes = countQuery.get()
-  const total = totalRes ? Number(totalRes.count) : 0
+  const totalRes = db
+    .select({ count: sql<number>`count(*)` })
+    .from(taxProfiles)
+    .where(whereClause)
+    .get()
+
+  const total = totalRes?.count ?? 0
 
   return {
     items,

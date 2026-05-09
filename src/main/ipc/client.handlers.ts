@@ -19,7 +19,7 @@ export function registerClientHandlers(): void {
   registerRoute(
     IPC_CHANNELS.CLIENT_LIST,
     { schema: paginationSchema },
-    async (params) => {
+    (params) => {
       return clientService.listClients(params)
     }
   )
@@ -27,7 +27,7 @@ export function registerClientHandlers(): void {
   registerRoute(
     IPC_CHANNELS.CLIENT_GET,
     { schema: z.number().int().min(1) },
-    async (id) => {
+    (id) => {
       return clientService.getClient(id)
     }
   )
@@ -35,7 +35,7 @@ export function registerClientHandlers(): void {
   registerRoute(
     IPC_CHANNELS.CLIENT_CREATE,
     { schema: clientCreateSchema },
-    async (payload) => {
+    (payload) => {
       return clientService.createClient(payload)
     }
   )
@@ -43,7 +43,7 @@ export function registerClientHandlers(): void {
   registerRoute(
     IPC_CHANNELS.CLIENT_UPDATE,
     { schema: updateClientPayloadSchema },
-    async (payload) => {
+    (payload) => {
       return clientService.updateClient(payload.id, payload.data)
     }
   )

@@ -30,8 +30,8 @@ export function logEntityChanges<T extends Record<string, unknown>>(
     const oldVal = oldState[key]
     const newVal = newState[key]
 
-    const oldStr = oldVal !== null && oldVal !== undefined ? String(oldVal) : ''
-    const newStr = newVal !== null && newVal !== undefined ? String(newVal) : ''
+    const oldStr = oldVal !== null && oldVal !== undefined ? (typeof oldVal === 'string' ? oldVal : typeof oldVal === 'number' || typeof oldVal === 'boolean' ? oldVal.toString() : JSON.stringify(oldVal)) : ''
+    const newStr = newVal !== null && newVal !== undefined ? (typeof newVal === 'string' ? newVal : typeof newVal === 'number' || typeof newVal === 'boolean' ? newVal.toString() : JSON.stringify(newVal)) : ''
 
     if (oldStr !== newStr) {
       changes.push({

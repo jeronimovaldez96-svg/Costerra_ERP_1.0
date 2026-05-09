@@ -41,9 +41,10 @@ export async function createBackup(isAutomatic = false, overridePath?: string): 
   let filePath: string
   let filename: string
 
-  if (overridePath) {
+  if (overridePath !== undefined && overridePath !== '') {
     filePath = overridePath
-    filename = overridePath.split(/[/\\]/).pop() || 'backup.db'
+    const popped = overridePath.split(/[/\\]/).pop()
+    filename = popped !== undefined && popped !== '' ? popped : 'backup.db'
   } else {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
     filename = `costerra_backup_${timestamp}.db`
@@ -70,8 +71,8 @@ export async function createBackup(isAutomatic = false, overridePath?: string): 
   logger.info(`Backup completed: ${filename} (${(sizeBytes / 1024 / 1024).toFixed(2)} MB)`)
 
   // Enforce retention policy (only for default location backups)
-  if (!overridePath) {
-    await enforceRetentionPolicy()
+  if (overridePath === undefined || overridePath === '') {
+    enforceRetentionPolicy()
   }
 
   return { filename, filePath, sizeBytes }
@@ -85,7 +86,7 @@ export async function createBackup(isAutomatic = false, overridePath?: string): 
  *
  * WARNING: This is destructive — the current database is replaced entirely.
  */
-export async function restoreBackup(backupFilePath: string): Promise<void> {
+export function restoreBackup(backupFilePath: string): void {
   if (!existsSync(backupFilePath)) {
     throw new Error(`Backup file not found: ${backupFilePath}`)
   }
@@ -147,7 +148,7 @@ export function getLastBackupLog() {
  * Keeps only the most recent N backups (configured in APP_CONFIG).
  * Oldest backups are deleted from both disk and the audit log.
  */
-async function enforceRetentionPolicy(): Promise<void> {
+function enforceRetentionPolicy(): void {
   const db = getDb()
   const maxBackups = APP_CONFIG.BACKUP_RETENTION_COUNT
 

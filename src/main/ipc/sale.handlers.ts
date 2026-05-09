@@ -12,18 +12,18 @@ export function registerSaleHandlers(): void {
   registerRoute(
     IPC_CHANNELS.SALE_EXECUTE,
     { schema: saleExecuteSchema },
-    async (payload) => saleService.executeSale(payload.quoteId)
+    (payload) => saleService.executeSale(payload.quoteId)
   )
 
   registerRoute(
     IPC_CHANNELS.SALE_LIST,
     { schema: paginationSchema },
-    async (params) => saleService.listSales(params)
+    (params) => saleService.listSales(params)
   )
 
   registerRoute(
     IPC_CHANNELS.SALE_GET,
     { schema: z.number().int().min(1) },
-    async (id) => saleService.getSale(id)
+    (id) => saleService.getSale(id)
   )
 }

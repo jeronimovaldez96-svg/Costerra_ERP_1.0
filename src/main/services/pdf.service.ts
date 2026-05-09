@@ -22,29 +22,31 @@ async function generatePdfBufferFromHtml(htmlContent: string): Promise<Buffer> {
       }
     })
 
-    win.webContents.on('did-finish-load', async () => {
-      try {
-        const pdfBuffer = await win.webContents.printToPDF({
-          printBackground: true,
-          margins: { marginType: 'none' }, // CSS handles padding
-          pageSize: 'A4'
-        })
-        win.destroy()
-        resolve(pdfBuffer)
-      } catch (error) {
-        win.destroy()
-        reject(error)
-      }
+    win.webContents.on('did-finish-load', () => {
+      void (async () => {
+        try {
+          const pdfBuffer = await win.webContents.printToPDF({
+            printBackground: true,
+            margins: { marginType: 'none' }, // CSS handles padding
+            pageSize: 'A4'
+          })
+          win.destroy()
+          resolve(pdfBuffer)
+        } catch (error) {
+          win.destroy()
+          reject(error instanceof Error ? error : new Error(String(error)))
+        }
+      })()
     })
 
     win.webContents.on('did-fail-load', (_, errorCode, errorDescription) => {
       win.destroy()
-      reject(new Error(`Headless render failed: ${errorDescription} (${errorCode})`))
+      reject(new Error(`Headless render failed: ${errorDescription} (${errorCode.toString()})`))
     })
 
     // Encode to data URL to avoid writing temp HTML files
     const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`
-    win.loadURL(dataUrl)
+    void win.loadURL(dataUrl)
   })
 }
 
@@ -59,9 +61,9 @@ async function writeBufferToTemp(filename: string, buffer: Buffer): Promise<stri
 }
 
 export async function generateQuotePdf(quoteId: number): Promise<string> {
-  const quoteData = await getQuote(quoteId)
-  const leadData = await getSalesLead(quoteData.salesLeadId)
-  const clientData = await getClient(leadData.clientId)
+  const quoteData = getQuote(quoteId)
+  const leadData = getSalesLead(quoteData.salesLeadId)
+  const clientData = getClient(leadData.clientId)
 
   const templateData: QuoteTemplateData = {
     quote: quoteData,
@@ -78,10 +80,10 @@ export async function generateQuotePdf(quoteId: number): Promise<string> {
 }
 
 export async function generateSalePdf(saleId: number): Promise<string> {
-  const saleData = await getSale(saleId)
-  const quoteData = await getQuote(saleData.quoteId)
-  const leadData = await getSalesLead(quoteData.salesLeadId)
-  const clientData = await getClient(leadData.clientId)
+  const saleData = getSale(saleId)
+  const quoteData = getQuote(saleData.quoteId)
+  const leadData = getSalesLead(quoteData.salesLeadId)
+  const clientData = getClient(leadData.clientId)
 
   const templateData: SaleTemplateData = {
     sale: saleData,
