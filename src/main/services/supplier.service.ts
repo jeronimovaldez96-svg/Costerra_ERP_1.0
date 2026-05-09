@@ -15,7 +15,7 @@ export async function listSuppliers(params: ListParams): Promise<PaginatedResult
   const page = params.page ?? 1
   const pageSize = params.pageSize ?? 50
   const search = params.search ?? ''
-  return repo.listSuppliers(page, pageSize, search)
+  return repo.listSuppliers(page, pageSize, search, params.sortBy, params.sortDir)
 }
 
 export async function getSupplier(id: number): Promise<SupplierWithHistory> {

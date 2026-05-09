@@ -4,11 +4,9 @@
 // ────────────────────────────────────────────────────────
 
 import { eq, sql } from 'drizzle-orm'
-import { getDb } from '../database/client'
+import { getDb, type DbTransaction } from '../database/client'
 import { inventoryBatches, products } from '../../shared/schema'
 import type { InventoryBatch, InventorySummary } from '../../shared/types'
-
-type DbTransaction = Parameters<Parameters<ReturnType<typeof getDb>['transaction']>[0]>[0]
 
 /**
  * Sweeps a completed PO line items and receives them strictly into the double-entry FIFO ledger.
@@ -29,10 +27,36 @@ export function receivePurchaseOrderItems(tx: DbTransaction, items: { purchaseOr
 /**
  * Aggregates high-level inventory availability (remainingQty - reservedQty) uniquely grouped by Product.
  */
-export function getInventorySummary(): InventorySummary[] {
+export function getInventorySummary(
+  search: string = '',
+  sortBy?: string,
+  sortDir?: 'asc' | 'desc'
+): InventorySummary[] {
   const db = getDb()
 
-  const query = sql`
+  let whereClause = ''
+  if (search.trim().length > 0) {
+    const term = `%${search}%`
+    // Manual where clause for raw query
+    whereClause = `
+      WHERE p.name LIKE '${term}'
+      OR p.skuNumber LIKE '${term}'
+      OR p.productGroup LIKE '${term}'
+    `
+  }
+
+  let orderClause = 'ORDER BY p.name ASC'
+  if (sortBy) {
+    const dir = sortDir === 'desc' ? 'DESC' : 'ASC'
+    if (sortBy === 'productName') orderClause = `ORDER BY p.name ${dir}`
+    else if (sortBy === 'skuNumber') orderClause = `ORDER BY p.skuNumber ${dir}`
+    else if (sortBy === 'availableUnits') orderClause = `ORDER BY availableUnits ${dir}`
+    else if (sortBy === 'reservedUnits') orderClause = `ORDER BY reservedUnits ${dir}`
+    else if (sortBy === 'avgUnitCost') orderClause = `ORDER BY avgUnitCost ${dir}`
+    else if (sortBy === 'totalStockValue') orderClause = `ORDER BY totalStockValue ${dir}`
+  }
+
+  const query = sql.raw(`
     SELECT 
       p.id AS productId,
       p.skuNumber,
@@ -50,12 +74,12 @@ export function getInventorySummary(): InventorySummary[] {
       COALESCE(SUM(b.remainingQty * b.unitCost), 0) AS totalStockValue
     FROM Product p
     LEFT JOIN InventoryBatch b ON p.id = b.productId
+    ${whereClause}
     GROUP BY p.id
-    ORDER BY p.name ASC;
-  `
+    ${orderClause}
+  `)
 
   const rows = db.all(query)
-  // Typecast SQL output manually due to raw aggregate complexity. SQLite driver naturally uses integers and floats natively.
   return rows as InventorySummary[]
 }
 
@@ -136,3 +160,46 @@ export function modifyReservations(tx: DbTransaction, productId: number, quantit
   }
 }
 
+/**
+ * Hard FIFO consumption — irreversibly decrements remainingQty from oldest batches.
+ * Returns the blended weighted-average unit cost across all consumed sub-batches.
+ * Used exclusively during atomic Sale execution.
+ */
+export function consumeStockFifo(tx: DbTransaction, productId: number, quantity: number): number {
+  if (quantity <= 0) throw new Error('Consume quantity must be positive')
+
+  let pending = quantity
+  let totalCost = 0
+
+  const query = sql`
+    SELECT id, remainingQty, unitCost
+    FROM InventoryBatch
+    WHERE productId = ${productId} AND remainingQty > 0
+    ORDER BY receivedAt ASC;
+  `
+  const batches = tx.all(query) as { id: number; remainingQty: number; unitCost: number }[]
+
+  for (const batch of batches) {
+    if (pending <= 0) break
+
+    const toConsume = Math.min(pending, batch.remainingQty)
+    totalCost += toConsume * batch.unitCost
+
+    // Decrement remaining AND reduce reserved proportionally
+    tx.run(sql`
+      UPDATE InventoryBatch
+      SET remainingQty = remainingQty - ${toConsume},
+          reservedQty = MAX(0, reservedQty - ${toConsume})
+      WHERE id = ${batch.id}
+    `)
+
+    pending -= toConsume
+  }
+
+  if (pending > 0) {
+    throw new Error(`Insufficient physical stock for Product ${productId}. Short by ${pending} units.`)
+  }
+
+  // Blended weighted-average cost across consumed batches
+  return totalCost / quantity
+}

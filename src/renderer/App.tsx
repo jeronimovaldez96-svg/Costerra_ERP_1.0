@@ -1,29 +1,53 @@
 // ────────────────────────────────────────────────────────
 // Costerra ERP v2 — Root Application Component
-// Minimal bootstrap — routes and UI will be added in Phase 2+.
 // ────────────────────────────────────────────────────────
 
 import { Routes, Route } from 'react-router-dom'
+import { ErrorBoundary } from './components/ui/ErrorBoundary'
+import { ToastProvider } from './components/ui/ToastProvider'
+import { AppLayout } from './components/layout/AppLayout'
 
-function DashboardPlaceholder(): React.JSX.Element {
-  return (
-    <div className="flex h-screen w-screen items-center justify-center bg-slate-950">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-white">Costerra ERP</h1>
-        <div className="mt-2 h-1 w-16 mx-auto rounded-full bg-blue-500" />
-        <p className="mt-4 text-sm text-slate-400">v2.0 — Foundation Initialized</p>
-        <p className="mt-1 text-xs text-slate-600">
-          Drizzle ORM • React 19 • TypeScript Strict • Electron
-        </p>
-      </div>
-    </div>
-  )
-}
+// Pages
+import { Dashboard } from './pages/Dashboard'
+import { Products } from './pages/inventory/Products'
+import { Suppliers } from './pages/inventory/Suppliers'
+import { PurchaseOrders } from './pages/inventory/PurchaseOrders'
+import { Stock } from './pages/inventory/Stock'
+
+// Sales & CRM
+import { Clients } from './pages/sales/Clients'
+import { Leads } from './pages/sales/Leads'
+import { Quotes } from './pages/sales/Quotes'
+import { Invoices } from './pages/sales/Invoices'
+import { Settings } from './pages/Settings'
 
 export default function App(): React.JSX.Element {
   return (
-    <Routes>
-      <Route path="*" element={<DashboardPlaceholder />} />
-    </Routes>
+    <ErrorBoundary>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<Dashboard />} />
+          
+          {/* Inventory */}
+          <Route path="/inventory/products" element={<Products />} />
+          <Route path="/inventory/suppliers" element={<Suppliers />} />
+          <Route path="/inventory/purchase-orders" element={<PurchaseOrders />} />
+          <Route path="/inventory/stock" element={<Stock />} />
+
+          {/* Sales & CRM */}
+          <Route path="/sales/clients" element={<Clients />} />
+          <Route path="/sales/leads" element={<Leads />} />
+          <Route path="/sales/quotes" element={<Quotes />} />
+          <Route path="/sales/invoices" element={<Invoices />} />
+
+          {/* System */}
+          <Route path="/settings" element={<Settings />} />
+
+          {/* 404 Fallback */}
+          <Route path="*" element={<div className="p-8 text-white text-center">404 Not Found</div>} />
+        </Route>
+      </Routes>
+      <ToastProvider />
+    </ErrorBoundary>
   )
 }

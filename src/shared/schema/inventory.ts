@@ -27,8 +27,8 @@ export const inventoryBatches = sqliteTable(
       .notNull()
       .references(() => products.id),
     purchaseOrderItemId: integer('purchaseOrderItemId')
-      .notNull()
       .references(() => purchaseOrderItems.id),
+    returnLineItemId: integer('returnLineItemId'),
     initialQty: integer('initialQty').notNull(),
     remainingQty: integer('remainingQty').notNull(),
     reservedQty: integer('reservedQty').notNull().default(0),

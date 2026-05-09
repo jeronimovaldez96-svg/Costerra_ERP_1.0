@@ -3,10 +3,10 @@
 // ────────────────────────────────────────────────────────
 
 import * as invRepo from '../repositories/inventory.repository'
-import type { InventoryBatch, InventorySummary } from '../../shared/types'
+import type { InventoryBatch, InventorySummary, ListParams } from '../../shared/types'
 
-export async function getInventorySummary(): Promise<InventorySummary[]> {
-  return invRepo.getInventorySummary()
+export async function getInventorySummary(params?: ListParams): Promise<InventorySummary[]> {
+  return invRepo.getInventorySummary(params?.search, params?.sortBy, params?.sortDir)
 }
 
 export async function listInventoryBatchesByProduct(productId: number): Promise<InventoryBatch[]> {

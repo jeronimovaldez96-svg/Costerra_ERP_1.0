@@ -73,7 +73,7 @@ export const poUpdateSchema = z.object({
 })
 
 export const poTransitionSchema = z.object({
-  status: z.enum(['IN_TRANSIT', 'DELIVERED'])
+  status: z.enum(['ORDERED', 'IN_TRANSIT', 'DELIVERED', 'IN_INVENTORY'])
 })
 
 // ─── Taxes ───────────────────────────────────────────────
@@ -92,11 +92,63 @@ export const taxProfileUpdateSchema = taxProfileCreateSchema.extend({
   isActive: z.boolean().optional()
 }).partial()
 
+// ─── Sales Leads ─────────────────────────────────────────
+export const salesLeadCreateSchema = z.object({
+  clientId: z.number().int().min(1, 'Client ID is required'),
+  name: z.string().min(1, 'Lead Name is required')
+})
+
+export const salesLeadUpdateSchema = z.object({
+  name: z.string().optional(),
+  status: z.enum(['IN_PROGRESS', 'CLOSED_SALE', 'CLOSED_NO_SALE']).optional()
+})
+
+// ─── Quotes ──────────────────────────────────────────────
+export const quoteLineItemSchema = z.object({
+  productId: z.number().int().min(1),
+  quantity: z.number().int().min(1)
+})
+
+export const quoteCreateSchema = z.object({
+  salesLeadId: z.number().int().min(1),
+  taxProfileId: z.number().int().min(1).nullable().optional(),
+  notes: z.string().optional().default(''),
+  lineItems: z.array(quoteLineItemSchema).min(1, 'Quote must have at least one valid line item')
+})
+
+export const quoteUpdateSchema = z.object({
+  taxProfileId: z.number().int().nullable().optional(),
+  notes: z.string().optional(),
+  lineItems: z.array(quoteLineItemSchema).min(1, 'Quote must have at least one valid line item').optional()
+})
+
+export const quoteTransitionSchema = z.object({
+  status: z.enum(['SENT', 'REJECTED']) // DRAFT handled by create, SOLD / NOT_SOLD handled by Sales Cascade.
+})
+
+// ─── Sales ───────────────────────────────────────────────
+export const saleExecuteSchema = z.object({
+  quoteId: z.number().int().min(1, 'Quote ID is required to execute sale')
+})
+
 // Request wrapper schema for update operations (ID + payload)
 export const updatePayloadSchema = <T extends z.ZodTypeAny>(schema: T) =>
   z.object({
     id: z.number().int().min(1),
     data: schema
   })
+
+// ─── Returns ─────────────────────────────────────────────
+export const returnLineItemSchema = z.object({
+  saleLineItemId: z.number().int().min(1),
+  quantityReturned: z.number().int().min(1, 'Quantity must be at least 1'),
+  restockDisposition: z.enum(['RESTOCK', 'DEFECTIVE']).default('RESTOCK')
+})
+
+export const returnCreateSchema = z.object({
+  saleId: z.number().int().min(1, 'Sale ID is required'),
+  reason: z.string().min(1, 'Reason is required'),
+  items: z.array(returnLineItemSchema).min(1, 'At least one item must be returned')
+})
 
 export type PaginationSchema = z.infer<typeof paginationSchema>

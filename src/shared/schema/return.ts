@@ -52,7 +52,10 @@ export const returnLineItems = sqliteTable(
       .references(() => saleLineItems.id),
     quantity: integer('quantity').notNull(),
     unitRefund: real('unitRefund').notNull(),
-    lineRefund: real('lineRefund').notNull()
+    lineRefund: real('lineRefund').notNull(),
+    restockDisposition: text('restockDisposition', { enum: ['RESTOCK', 'DEFECTIVE'] })
+      .notNull()
+      .default('RESTOCK')
   },
   (table) => [index('ReturnLineItem_returnId_idx').on(table.returnId)]
 )

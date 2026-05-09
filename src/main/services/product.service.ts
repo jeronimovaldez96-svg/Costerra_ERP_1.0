@@ -19,7 +19,7 @@ export async function listProducts(params: ListParams): Promise<PaginatedResult<
   const pageSize = params.pageSize ?? 50
   const search = params.search ?? ''
 
-  return repo.listProducts(page, pageSize, search)
+  return repo.listProducts(page, pageSize, search, params.sortBy, params.sortDir)
 }
 
 export async function getProduct(id: number): Promise<ProductWithHistory> {

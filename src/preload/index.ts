@@ -6,6 +6,7 @@
 
 import { contextBridge, ipcRenderer } from 'electron'
 import type { IpcChannel } from '../shared/ipc-channels'
+import type { IpcResponse } from '../shared/types'
 
 /**
  * The API exposed to the renderer via `window.api`.
@@ -16,8 +17,14 @@ const api = {
    * Generic invoke — sends to Main and returns the result.
    * All renderer hooks should use this as the transport layer.
    */
-  invoke: <T = unknown>(channel: IpcChannel, ...args: unknown[]): Promise<T> => {
-    return ipcRenderer.invoke(channel, ...args) as Promise<T>
+  invoke: async <T = unknown>(channel: IpcChannel, ...args: unknown[]): Promise<T> => {
+    const response = (await ipcRenderer.invoke(channel, ...args)) as IpcResponse<T>
+
+    if (!response.success) {
+      throw new Error(response.error || `IPC error on channel ${channel}`)
+    }
+
+    return response.data as T
   },
 
   /**

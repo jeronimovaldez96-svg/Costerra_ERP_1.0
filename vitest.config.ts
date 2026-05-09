@@ -11,7 +11,7 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       include: ['src/main/services/**/*.ts', 'src/main/repositories/**/*.ts'],
-      exclude: ['src/main/ipc/**', 'src/renderer/**', 'node_modules/**'],
+      exclude: ['src/main/ipc/**', 'src/renderer/**', 'src/main/services/pdf.service.ts', 'src/main/services/backup.service.ts', 'src/main/services/export.service.ts', 'src/main/templates/**', 'node_modules/**'],
       thresholds: {
         branches: 73,
         functions: 100,

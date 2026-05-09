@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "e54d6c4f-8523-434a-a556-174838fcb6ff",
+  "id": "e2180a7f-c898-44a1-928d-dd88b50b1b03",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "BackupLog": {
@@ -338,7 +338,14 @@
           "name": "purchaseOrderItemId",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "returnLineItemId": {
+          "name": "returnLineItemId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "initialQty": {
@@ -1163,6 +1170,14 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "restockDisposition": {
+          "name": "restockDisposition",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'RESTOCK'"
         }
       },
       "indexes": {
