@@ -20,7 +20,7 @@ export async function listPurchaseOrders(params: ListParams): Promise<PaginatedR
   const page = params.page ?? 1
   const pageSize = params.pageSize ?? 50
   const search = params.search ?? ''
-  return poRepo.listPurchaseOrders(page, pageSize, search)
+  return poRepo.listPurchaseOrders(page, pageSize, search, params.sortBy, params.sortDir)
 }
 
 export async function getPurchaseOrder(id: number): Promise<PurchaseOrderWithItems> {

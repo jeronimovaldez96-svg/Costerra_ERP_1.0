@@ -17,7 +17,7 @@ export async function getQuote(id: number) {
   return quoteRepo.getQuote(id)
 }
 
-export async function listQuotes(params: { page?: number; pageSize?: number; search?: string }) {
+export async function listQuotes(params: { page?: number; pageSize?: number; search?: string; sortBy?: string; sortDir?: 'asc' | 'desc' }) {
   return quoteRepo.listQuotes(params)
 }
 

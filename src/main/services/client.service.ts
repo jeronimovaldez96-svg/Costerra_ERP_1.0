@@ -15,7 +15,7 @@ export async function listClients(params: ListParams): Promise<PaginatedResult<C
   const page = params.page ?? 1
   const pageSize = params.pageSize ?? 50
   const search = params.search ?? ''
-  return repo.listClients(page, pageSize, search)
+  return repo.listClients(page, pageSize, search, params.sortBy, params.sortDir)
 }
 
 export async function getClient(id: number): Promise<ClientWithHistory> {

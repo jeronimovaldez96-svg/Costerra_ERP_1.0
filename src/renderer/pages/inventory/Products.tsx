@@ -51,11 +51,22 @@ export function Products() {
   const [totalPages, setTotalPages] = useState(1)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [viewProductId, setViewProductId] = useState<number | null>(null)
+  
+  // Sorting & Filtering State
+  const [search, setSearch] = useState('')
+  const [sortBy, setSortBy] = useState<string | undefined>(undefined)
+  const [sortDir, setSortDir] = useState<'asc' | 'desc' | undefined>(undefined)
 
-  const fetchProducts = useCallback(async (pageIndex: number) => {
+  const fetchProducts = useCallback(async (pageIndex: number, currentSearch: string, currentSortBy?: string, currentSortDir?: 'asc' | 'desc') => {
     setIsLoading(true)
     try {
-      const res = await window.api.invoke<{ items: Product[], total: number }>('product:list', { page: pageIndex, pageSize: 15 })
+      const res = await window.api.invoke<{ items: Product[], total: number }>('product:list', { 
+        page: pageIndex, 
+        pageSize: 15,
+        search: currentSearch,
+        sortBy: currentSortBy,
+        sortDir: currentSortDir
+      })
       setData(res.items)
       setTotalPages(Math.ceil(res.total / 15))
     } catch (error) {
@@ -66,12 +77,12 @@ export function Products() {
   }, [])
 
   useEffect(() => {
-    fetchProducts(page)
-  }, [page, fetchProducts])
+    fetchProducts(page, search, sortBy, sortDir)
+  }, [page, search, sortBy, sortDir, fetchProducts])
 
   const handleProductCreated = useCallback(() => {
-    fetchProducts(page)
-  }, [page, fetchProducts])
+    fetchProducts(page, search, sortBy, sortDir)
+  }, [page, search, sortBy, sortDir, fetchProducts])
 
   return (
     <PageContainer title="Products">
@@ -84,7 +95,7 @@ export function Products() {
       </div>
 
       <div className="flex-1 no-drag">
-        {isLoading ? (
+        {isLoading && data.length === 0 ? (
           <div className="flex items-center justify-center h-64">
             <span className="w-8 h-8 rounded-full border-4 border-primary-500/30 border-t-primary-500 animate-spin" />
           </div>
@@ -96,6 +107,8 @@ export function Products() {
             pageCount={totalPages}
             onPageChange={setPage}
             onRowClick={(row) => setViewProductId(row.id)}
+            onSearchChange={(val) => { setSearch(val); setPage(1); }}
+            onSortChange={(col, dir) => { setSortBy(col); setSortDir(dir); setPage(1); }}
           />
         )}
       </div>

@@ -1,20 +1,111 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { PageContainer } from '../components/layout/PageContainer'
 import { GlassCard } from '../components/layout/GlassCard'
 import { Button } from '../components/ui/Button'
 import { toast } from '../store/useToastStore'
-import { Download, Database, RefreshCcw } from 'lucide-react'
+import { Download, Database, RefreshCcw, Upload, History, Clock } from 'lucide-react'
+
+interface BackupLog {
+  filename: string
+  filePath: string
+  sizeBytes: number
+  isAutomatic: boolean
+  createdAt: string
+}
 
 export function Settings() {
   const [isBackingUp, setIsBackingUp] = useState(false)
   const [isExporting, setIsExporting] = useState(false)
   const [isResetting, setIsResetting] = useState(false)
+  const [isRestoring, setIsRestoring] = useState(false)
+  const [isImporting, setIsImporting] = useState(false)
+  
+  const [backups, setBackups] = useState<BackupLog[]>([])
+  const [backupInterval, setBackupInterval] = useState('24')
+  const [backupDirectory, setBackupDirectory] = useState('')
+  const [isSavingInterval, setIsSavingInterval] = useState(false)
+  const [isSavingDirectory, setIsSavingDirectory] = useState(false)
+
+  useEffect(() => {
+    fetchBackups()
+    fetchInterval()
+    fetchDirectory()
+  }, [])
+
+  const fetchBackups = async () => {
+    try {
+      const res = await window.api.invoke<BackupLog[]>('backup:list')
+      setBackups(res.slice(0, 5)) // Show only last 5
+    } catch (error) {
+      console.error('Failed to fetch backups', error)
+    }
+  }
+
+  const fetchInterval = async () => {
+    try {
+      const res = await window.api.invoke<string>('settings:get', { key: 'BACKUP_INTERVAL_HOURS', defaultValue: '24' })
+      setBackupInterval(res)
+    } catch (error) {
+      console.error('Failed to fetch interval', error)
+    }
+  }
+
+  const fetchDirectory = async () => {
+    try {
+      const res = await window.api.invoke<string>('settings:get', { key: 'BACKUP_DIRECTORY', defaultValue: '' })
+      setBackupDirectory(res)
+    } catch (error) {
+      console.error('Failed to fetch directory', error)
+    }
+  }
+
+  const handleUpdateInterval = async () => {
+    setIsSavingInterval(true)
+    try {
+      await window.api.invoke('settings:update', { key: 'BACKUP_INTERVAL_HOURS', value: backupInterval })
+      toast.success('Settings Updated', 'Auto-backup interval has been saved.')
+    } catch (error) {
+      toast.error('Update Failed', (error as Error).message)
+    } finally {
+      setIsSavingInterval(false)
+    }
+  }
+
+  const handleSelectDirectory = async () => {
+    try {
+      const path = await window.api.invoke<string | null>('system:select-directory', {
+        title: 'Select Auto-Backup Directory'
+      })
+      if (path) {
+        setIsSavingDirectory(true)
+        await window.api.invoke('settings:update', { key: 'BACKUP_DIRECTORY', value: path })
+        setBackupDirectory(path)
+        toast.success('Directory Set', 'Automated backups will now be saved to the selected folder.')
+      }
+    } catch (error) {
+      toast.error('Update Failed', (error as Error).message)
+    } finally {
+      setIsSavingDirectory(false)
+    }
+  }
 
   const handleBackup = async () => {
-    setIsBackingUp(true)
     try {
-      await window.api.invoke('backup:create', { isAutomatic: false })
-      toast.success('Backup Successful', 'Your database backup was created securely.')
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+      const defaultFilename = `costerra_backup_${timestamp}.db`
+      
+      const filePath = await window.api.invoke<string | null>('system:save-dialog', {
+        title: 'Save Manual Backup',
+        defaultPath: defaultFilename,
+        filters: [{ name: 'Database Files', extensions: ['db'] }]
+      })
+
+      if (!filePath) return
+
+      setIsBackingUp(true)
+      await window.api.invoke('backup:create', { isAutomatic: false, filePath })
+      toast.success('Backup Successful', `Manual backup saved to: ${filePath}`)
+      fetchBackups()
     } catch (error) {
       toast.error('Backup Failed', (error as Error).message)
     } finally {
@@ -22,10 +113,49 @@ export function Settings() {
     }
   }
 
+  const handleImportBackup = async () => {
+    setIsImporting(true)
+    try {
+      const filePath = await window.api.invoke<string | null>('system:select-file', {
+        title: 'Select Backup Database',
+        filters: [{ name: 'Database Files', extensions: ['db'] }]
+      })
+
+      if (!filePath) return
+
+      if (window.confirm('Are you sure you want to IMPORT and RESTORE this database? This will completely overwrite your current data.')) {
+        setIsRestoring(true)
+        await window.api.invoke('backup:restore', { backupFilePath: filePath })
+        toast.success('Import Successful', 'Database has been restored from the selected file. Reloading...')
+        setTimeout(() => window.location.reload(), 2000)
+      }
+    } catch (error) {
+      toast.error('Import Failed', (error as Error).message)
+    } finally {
+      setIsImporting(false)
+      setIsRestoring(false)
+    }
+  }
+
+  const handleRestoreFromHistory = async (filePath: string) => {
+    if (!window.confirm('Are you sure you want to RESTORE this backup? Your current data will be overwritten.')) {
+      return
+    }
+
+    setIsRestoring(true)
+    try {
+      await window.api.invoke('backup:restore', { backupFilePath: filePath })
+      toast.success('Restore Successful', 'Database has been rolled back. Reloading...')
+      setTimeout(() => window.location.reload(), 2000)
+    } catch (error) {
+      toast.error('Restore Failed', (error as Error).message)
+      setIsRestoring(false)
+    }
+  }
+
   const handleExport = async () => {
     setIsExporting(true)
     try {
-      // For now we export sales, could be extended to a dropdown of entities
       const res = await window.api.invoke<{ filePath: string }>('export:xlsx', { entity: 'sales' })
       if (res?.filePath) {
         toast.success('Export Complete', `File saved to ${res.filePath}`)
@@ -48,39 +178,125 @@ export function Settings() {
     try {
       await window.api.invoke('database:reset', { confirmed: true })
       toast.success('Reset Complete', 'Database has been wiped and re-initialized.')
-      // In a real app we might force a reload here, but toast is fine for now
       setTimeout(() => window.location.reload(), 2000)
     } catch (error) {
       toast.error('Reset Failed', (error as Error).message)
-      setIsResetting(false) // Only reset state if failed, otherwise reloading
+      setIsResetting(false)
     }
   }
 
   return (
     <PageContainer title="Settings">
-      <div className="space-y-6 max-w-3xl">
+      <div className="space-y-6 max-w-4xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <GlassCard className="h-full">
+            <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+              <Database size={20} className="text-primary-400" />
+              Backup & Recovery
+            </h2>
+            
+            <div className="space-y-6">
+              <div className="flex flex-col gap-2">
+                <h3 className="font-medium text-slate-200 text-sm uppercase tracking-wider">Manual Operations</h3>
+                <div className="flex flex-wrap gap-3 mt-1">
+                  <Button onClick={handleBackup} isLoading={isBackingUp} size="sm">
+                    <Database size={14} className="mr-2" />
+                    Create Backup (Save As...)
+                  </Button>
+                  <Button variant="secondary" onClick={handleImportBackup} isLoading={isImporting || isRestoring} size="sm">
+                    <Upload size={14} className="mr-2" />
+                    Restore from File
+                  </Button>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-white/5 space-y-4">
+                <div>
+                  <h3 className="font-medium text-slate-200 text-sm uppercase tracking-wider mb-3 flex items-center gap-2">
+                    <Clock size={14} className="text-primary-400" />
+                    Auto-Backup Interval
+                  </h3>
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex-1 max-w-[120px]">
+                      <input 
+                        type="number"
+                        value={backupInterval}
+                        onChange={(e) => setBackupInterval(e.target.value)}
+                        className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 pr-8"
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium">h</span>
+                    </div>
+                    <Button variant="secondary" onClick={handleUpdateInterval} isLoading={isSavingInterval} size="sm">
+                      Save Interval
+                    </Button>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-medium text-slate-200 text-sm uppercase tracking-wider mb-3">Auto-Backup Directory</h3>
+                  <div className="space-y-2">
+                    <div className="p-3 rounded-lg bg-slate-900/50 border border-white/10 text-xs text-slate-400 break-all min-h-[40px]">
+                      {backupDirectory || 'Using default application data folder...'}
+                    </div>
+                    <Button variant="secondary" onClick={handleSelectDirectory} isLoading={isSavingDirectory} size="sm" className="w-full">
+                      Change Directory
+                    </Button>
+                  </div>
+                </div>
+                
+                <p className="text-xs text-slate-500 italic mt-2">Backups are triggered on app startup if the interval has passed.</p>
+              </div>
+            </div>
+          </GlassCard>
+
+          <GlassCard className="h-full">
+            <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+              <History size={20} className="text-primary-400" />
+              Recent Backups
+            </h2>
+            
+            <div className="space-y-3">
+              {backups.length === 0 ? (
+                <div className="text-center py-8 text-slate-500 text-sm">
+                  No local backups found.
+                </div>
+              ) : (
+                backups.map((b) => (
+                  <div key={b.createdAt} className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-slate-200 truncate">{b.filename}</p>
+                      <p className="text-xs text-slate-500">
+                        {new Date(b.createdAt).toLocaleString()} • {(b.sizeBytes / 1024 / 1024).toFixed(1)} MB
+                        {b.isAutomatic && <span className="ml-2 text-primary-400/80 font-semibold uppercase text-[10px]">Auto</span>}
+                      </p>
+                    </div>
+                    <Button 
+                      variant="secondary" 
+                      size="sm" 
+                      onClick={() => handleRestoreFromHistory(b.filePath)}
+                      disabled={isRestoring}
+                      className="ml-4 shrink-0"
+                    >
+                      Restore
+                    </Button>
+                  </div>
+                ))
+              )}
+            </div>
+          </GlassCard>
+        </div>
+
         <GlassCard>
-          <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-            <Database size={20} className="text-primary-400" />
-            System Operations
+          <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+            <Download size={20} className="text-emerald-400" />
+            Data Management
           </h2>
           
           <div className="space-y-4">
             <div className="flex items-center justify-between py-4 border-b border-white/5">
               <div>
-                <h3 className="font-medium text-slate-200">Manual Backup</h3>
-                <p className="text-sm text-slate-400">Create an instant, atomic backup of your current database without blocking writes.</p>
-              </div>
-              <Button onClick={handleBackup} isLoading={isBackingUp}>
-                <Database size={16} className="mr-2" />
-                Create Backup
-              </Button>
-            </div>
-
-            <div className="flex items-center justify-between py-4 border-b border-white/5">
-              <div>
-                <h3 className="font-medium text-slate-200">Export Sales Data</h3>
-                <p className="text-sm text-slate-400">Export your finalized sales ledger to an XLSX spreadsheet.</p>
+                <h3 className="font-medium text-slate-200">Export Ledger</h3>
+                <p className="text-sm text-slate-400">Export your finalized sales ledger to an XLSX spreadsheet for accounting.</p>
               </div>
               <Button variant="secondary" onClick={handleExport} isLoading={isExporting}>
                 <Download size={16} className="mr-2" />
@@ -90,12 +306,12 @@ export function Settings() {
 
             <div className="flex items-center justify-between py-4">
               <div>
-                <h3 className="font-medium text-red-400">Factory Reset</h3>
-                <p className="text-sm text-slate-400">Wipe all data and start fresh. A mandatory full backup will be created first to prevent data loss.</p>
+                <h3 className="font-medium text-red-400">System Reset</h3>
+                <p className="text-sm text-slate-400">Wipe all data and start fresh. A mandatory full backup is created automatically first.</p>
               </div>
               <Button variant="danger" onClick={handleReset} isLoading={isResetting}>
                 <RefreshCcw size={16} className="mr-2" />
-                Reset Database
+                Factory Reset
               </Button>
             </div>
           </div>

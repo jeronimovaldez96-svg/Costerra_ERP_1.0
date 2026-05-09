@@ -21,7 +21,7 @@ export async function getSalesLeadDetail(id: number) {
   return leadRepo.getSalesLeadDetail(id)
 }
 
-export async function listSalesLeads(params: { page?: number; pageSize?: number; search?: string }) {
+export async function listSalesLeads(params: { page?: number; pageSize?: number; search?: string; sortBy?: string; sortDir?: 'asc' | 'desc' }) {
   return leadRepo.listSalesLeads(params)
 }
 

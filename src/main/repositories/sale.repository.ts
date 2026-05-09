@@ -10,7 +10,7 @@ import { salesLeads } from '../../shared/schema/sales-lead'
 import { clients } from '../../shared/schema/client'
 import { taxProfiles, taxProfileComponents } from '../../shared/schema/tax'
 import { products } from '../../shared/schema/product'
-import { eq, desc, sql } from 'drizzle-orm'
+import { eq, desc, asc, like, sql } from 'drizzle-orm'
 import { generateId } from '../utils/id-generator'
 import { getQuoteLineItems, transitionQuoteStatus } from './quote.repository'
 import { consumeStockFifo } from './inventory.repository'
@@ -147,9 +147,9 @@ export async function getSale(id: number) {
   return { ...sale, lineItems: enrichedItems }
 }
 
-export async function listSales(params: { page?: number; pageSize?: number }) {
+export async function listSales(params: { page?: number; pageSize?: number; search?: string; sortBy?: string; sortDir?: 'asc' | 'desc' }) {
   const db = getDb()
-  const { page = 1, pageSize = 50 } = params
+  const { page = 1, pageSize = 50, search = '', sortBy, sortDir } = params
   const offset = (page - 1) * pageSize
 
   const baseSelect = db.select({
@@ -178,8 +178,31 @@ export async function listSales(params: { page?: number; pageSize?: number }) {
   .leftJoin(salesLeads, eq(quotes.salesLeadId, salesLeads.id))
   .leftJoin(clients, eq(salesLeads.clientId, clients.id))
 
-  const items = baseSelect.orderBy(desc(sales.id)).limit(pageSize).offset(offset).all()
-  const totalRes = db.select({ count: sql<number>`count(*)` }).from(sales).get()
+  let orderClause: any = desc(sales.id)
+  if (sortBy) {
+    if (sortBy === 'clientName') {
+      orderClause = sortDir === 'asc' ? asc(clients.name) : desc(clients.name)
+    } else {
+      const column = (sales as any)[sortBy]
+      if (column) {
+        orderClause = sortDir === 'asc' ? asc(column) : desc(column)
+      }
+    }
+  }
+
+  let query: any = baseSelect
+  let countQuery: any = db.select({ count: sql<number>`count(*)` }).from(sales)
+
+  if (search.trim().length > 0) {
+    const term = `%${search}%`
+    query = baseSelect.where(like(sales.saleNumber, term))
+    countQuery = db.select({ count: sql<number>`count(*)` }).from(sales).where(like(sales.saleNumber, term))
+  }
+  
+  query = query.orderBy(orderClause)
+
+  const items = query.limit(pageSize).offset(offset).all()
+  const totalRes = countQuery.get()
   const total = totalRes ? Number(totalRes.count) : 0
 
   return { items, total, page, pageSize }

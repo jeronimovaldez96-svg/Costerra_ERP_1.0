@@ -3,7 +3,7 @@
 // Handles atomic DB insertions for POs and locking logic.
 // ────────────────────────────────────────────────────────
 
-import { eq, desc, sql } from 'drizzle-orm'
+import { eq, desc, asc, sql } from 'drizzle-orm'
 import { getDb } from '../database/client'
 import { purchaseOrders, purchaseOrderItems, products, suppliers } from '../../shared/schema'
 import type { 
@@ -19,7 +19,9 @@ type DbTransaction = Parameters<Parameters<ReturnType<typeof getDb>['transaction
 export function listPurchaseOrders(
   page: number,
   pageSize: number,
-  search: string
+  search: string,
+  sortBy?: string,
+  sortDir?: 'asc' | 'desc'
 ): PaginatedResult<PurchaseOrder> {
   const db = getDb()
   const offset = (page - 1) * pageSize
@@ -29,6 +31,16 @@ export function listPurchaseOrders(
   if (search.trim().length > 0) {
     const term = `%${search}%`
     whereClause = sql`${purchaseOrders.poNumber} LIKE ${term} OR ${purchaseOrders.description} LIKE ${term}`
+  }
+
+  let orderClause = desc(purchaseOrders.createdAt)
+  if (sortBy) {
+    const column = (purchaseOrders as any)[sortBy]
+    if (column) {
+      orderClause = sortDir === 'asc' ? asc(column) : desc(column)
+    } else if (sortBy === 'supplierName') {
+      orderClause = sortDir === 'asc' ? asc(suppliers.name) : desc(suppliers.name)
+    }
   }
 
   const totalRes = db.select({ count: sql<number>`count(*)` }).from(purchaseOrders).where(whereClause).get()
@@ -48,7 +60,7 @@ export function listPurchaseOrders(
     .from(purchaseOrders)
     .leftJoin(suppliers, eq(purchaseOrders.supplierId, suppliers.id))
     .where(whereClause)
-    .orderBy(desc(purchaseOrders.createdAt))
+    .orderBy(orderClause)
     .limit(pageSize)
     .offset(offset)
     .all()

@@ -3,7 +3,7 @@
 // Drizzle queries for the Supplier entity.
 // ────────────────────────────────────────────────────────
 
-import { eq, desc, like, or, sql } from 'drizzle-orm'
+import { eq, desc, asc, like, or, sql } from 'drizzle-orm'
 import { getDb } from '../database/client'
 import { suppliers, supplierHistory } from '../../shared/schema'
 import type { Supplier, SupplierInsert, SupplierWithHistory, PaginatedResult } from '../../shared/types'
@@ -12,7 +12,9 @@ import { logEntityChanges } from './audit.repository'
 export async function listSuppliers(
   page: number,
   pageSize: number,
-  search: string
+  search: string,
+  sortBy?: string,
+  sortDir?: 'asc' | 'desc'
 ): Promise<PaginatedResult<Supplier>> {
   const db = getDb()
   const offset = (page - 1) * pageSize
@@ -23,13 +25,21 @@ export async function listSuppliers(
     whereClause = or(like(suppliers.name, term), like(suppliers.contactName, term), like(suppliers.email, term))
   }
 
+  let orderClause = desc(suppliers.createdAt)
+  if (sortBy) {
+    const column = (suppliers as any)[sortBy]
+    if (column) {
+      orderClause = sortDir === 'asc' ? asc(column) : desc(column)
+    }
+  }
+
   const [totalRes, items] = await Promise.all([
     db.select({ count: sql<number>`count(*)` }).from(suppliers).where(whereClause),
     db
       .select()
       .from(suppliers)
       .where(whereClause)
-      .orderBy(desc(suppliers.createdAt))
+      .orderBy(orderClause)
       .limit(pageSize)
       .offset(offset)
   ])

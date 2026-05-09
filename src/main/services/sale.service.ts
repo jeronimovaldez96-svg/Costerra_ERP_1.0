@@ -12,6 +12,6 @@ export async function getSale(id: number) {
   return saleRepo.getSale(id)
 }
 
-export async function listSales(params: { page?: number; pageSize?: number }) {
+export async function listSales(params: { page?: number; pageSize?: number; search?: string; sortBy?: string; sortDir?: 'asc' | 'desc' }) {
   return saleRepo.listSales(params)
 }

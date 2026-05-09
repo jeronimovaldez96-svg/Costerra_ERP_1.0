@@ -6,13 +6,14 @@ import { z } from 'zod'
 import { IPC_CHANNELS } from '../../shared/ipc-channels'
 import { registerRoute } from './router'
 import * as inventoryService from '../services/inventory.service'
+import { paginationSchema } from '../../shared/validation'
 
 export function registerInventoryHandlers(): void {
   registerRoute(
     IPC_CHANNELS.INVENTORY_SUMMARY,
-    { schema: z.void() },
-    async () => {
-      return inventoryService.getInventorySummary()
+    { schema: paginationSchema },
+    async (params) => {
+      return inventoryService.getInventorySummary(params)
     }
   )
 

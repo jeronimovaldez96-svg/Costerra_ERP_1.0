@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { PageContainer } from '../../components/layout/PageContainer'
 import { DataTable } from '../../components/ui/DataTable'
 import { Button } from '../../components/ui/Button'
@@ -64,14 +64,21 @@ export function Leads() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
   const [viewLeadId, setViewLeadId] = useState<number | null>(null)
 
-  useEffect(() => {
-    fetchLeads(page)
-  }, [page])
+  // Sorting & Filtering State
+  const [search, setSearch] = useState('')
+  const [sortBy, setSortBy] = useState<string | undefined>(undefined)
+  const [sortDir, setSortDir] = useState<'asc' | 'desc' | undefined>(undefined)
 
-  const fetchLeads = async (pageIndex: number) => {
+  const fetchLeads = useCallback(async (pageIndex: number, currentSearch: string, currentSortBy?: string, currentSortDir?: 'asc' | 'desc') => {
     setIsLoading(true)
     try {
-      const res = await window.api.invoke<{ items: SalesLead[], total: number }>('lead:list', { page: pageIndex, pageSize: 15 })
+      const res = await window.api.invoke<{ items: SalesLead[], total: number }>('lead:list', { 
+        page: pageIndex, 
+        pageSize: 15,
+        search: currentSearch,
+        sortBy: currentSortBy,
+        sortDir: currentSortDir
+      })
       setData(res.items)
       setTotalPages(Math.ceil(res.total / 15))
     } catch (error) {
@@ -79,11 +86,15 @@ export function Leads() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
 
-  const handleLeadCreated = () => {
-    fetchLeads(page)
-  }
+  useEffect(() => {
+    fetchLeads(page, search, sortBy, sortDir)
+  }, [page, search, sortBy, sortDir, fetchLeads])
+
+  const handleLeadCreated = useCallback(() => {
+    fetchLeads(page, search, sortBy, sortDir)
+  }, [page, search, sortBy, sortDir, fetchLeads])
 
   return (
     <PageContainer title="Sales Leads">
@@ -96,7 +107,7 @@ export function Leads() {
       </div>
 
       <div className="flex-1 no-drag">
-        {isLoading ? (
+        {isLoading && data.length === 0 ? (
           <div className="flex items-center justify-center h-64">
             <span className="w-8 h-8 rounded-full border-4 border-primary-500/30 border-t-primary-500 animate-spin" />
           </div>
@@ -108,6 +119,8 @@ export function Leads() {
             pageCount={totalPages}
             onPageChange={setPage}
             onRowClick={(row) => setViewLeadId(row.id)}
+            onSearchChange={(val) => { setSearch(val); setPage(1); }}
+            onSortChange={(col, dir) => { setSortBy(col); setSortDir(dir); setPage(1); }}
           />
         )}
       </div>

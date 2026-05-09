@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { PageContainer } from '../../components/layout/PageContainer'
 import { DataTable } from '../../components/ui/DataTable'
 import { Button } from '../../components/ui/Button'
@@ -39,15 +39,22 @@ export function Clients() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  
+  // Sorting & Filtering State
+  const [search, setSearch] = useState('')
+  const [sortBy, setSortBy] = useState<string | undefined>(undefined)
+  const [sortDir, setSortDir] = useState<'asc' | 'desc' | undefined>(undefined)
 
-  useEffect(() => {
-    fetchClients(page)
-  }, [page])
-
-  const fetchClients = async (pageIndex: number) => {
+  const fetchClients = useCallback(async (pageIndex: number, currentSearch: string, currentSortBy?: string, currentSortDir?: 'asc' | 'desc') => {
     setIsLoading(true)
     try {
-      const res = await window.api.invoke<{ items: Client[], total: number }>('client:list', { page: pageIndex, pageSize: 15 })
+      const res = await window.api.invoke<{ items: Client[], total: number }>('client:list', { 
+        page: pageIndex, 
+        pageSize: 15,
+        search: currentSearch,
+        sortBy: currentSortBy,
+        sortDir: currentSortDir
+      })
       setData(res.items)
       setTotalPages(Math.ceil(res.total / 15))
     } catch (error) {
@@ -55,11 +62,15 @@ export function Clients() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
 
-  const handleClientCreated = () => {
-    fetchClients(page)
-  }
+  useEffect(() => {
+    fetchClients(page, search, sortBy, sortDir)
+  }, [page, search, sortBy, sortDir, fetchClients])
+
+  const handleClientCreated = useCallback(() => {
+    fetchClients(page, search, sortBy, sortDir)
+  }, [page, search, sortBy, sortDir, fetchClients])
 
   return (
     <PageContainer title="Clients">
@@ -72,7 +83,7 @@ export function Clients() {
       </div>
 
       <div className="flex-1 no-drag">
-        {isLoading ? (
+        {isLoading && data.length === 0 ? (
           <div className="flex items-center justify-center h-64">
             <span className="w-8 h-8 rounded-full border-4 border-primary-500/30 border-t-primary-500 animate-spin" />
           </div>
@@ -84,6 +95,8 @@ export function Clients() {
             pageCount={totalPages}
             onPageChange={setPage}
             onRowClick={(row) => toast.info('Client Details', `View details for ${row.name} ${row.surname}`)}
+            onSearchChange={(val) => { setSearch(val); setPage(1); }}
+            onSortChange={(col, dir) => { setSortBy(col); setSortDir(dir); setPage(1); }}
           />
         )}
       </div>

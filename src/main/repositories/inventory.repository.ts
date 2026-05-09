@@ -27,10 +27,36 @@ export function receivePurchaseOrderItems(tx: DbTransaction, items: { purchaseOr
 /**
  * Aggregates high-level inventory availability (remainingQty - reservedQty) uniquely grouped by Product.
  */
-export function getInventorySummary(): InventorySummary[] {
+export function getInventorySummary(
+  search: string = '',
+  sortBy?: string,
+  sortDir?: 'asc' | 'desc'
+): InventorySummary[] {
   const db = getDb()
 
-  const query = sql`
+  let whereClause = ''
+  if (search.trim().length > 0) {
+    const term = `%${search}%`
+    // Manual where clause for raw query
+    whereClause = `
+      WHERE p.name LIKE '${term}'
+      OR p.skuNumber LIKE '${term}'
+      OR p.productGroup LIKE '${term}'
+    `
+  }
+
+  let orderClause = 'ORDER BY p.name ASC'
+  if (sortBy) {
+    const dir = sortDir === 'desc' ? 'DESC' : 'ASC'
+    if (sortBy === 'productName') orderClause = `ORDER BY p.name ${dir}`
+    else if (sortBy === 'skuNumber') orderClause = `ORDER BY p.skuNumber ${dir}`
+    else if (sortBy === 'availableUnits') orderClause = `ORDER BY availableUnits ${dir}`
+    else if (sortBy === 'reservedUnits') orderClause = `ORDER BY reservedUnits ${dir}`
+    else if (sortBy === 'avgUnitCost') orderClause = `ORDER BY avgUnitCost ${dir}`
+    else if (sortBy === 'totalStockValue') orderClause = `ORDER BY totalStockValue ${dir}`
+  }
+
+  const query = sql.raw(`
     SELECT 
       p.id AS productId,
       p.skuNumber,
@@ -48,12 +74,12 @@ export function getInventorySummary(): InventorySummary[] {
       COALESCE(SUM(b.remainingQty * b.unitCost), 0) AS totalStockValue
     FROM Product p
     LEFT JOIN InventoryBatch b ON p.id = b.productId
+    ${whereClause}
     GROUP BY p.id
-    ORDER BY p.name ASC;
-  `
+    ${orderClause}
+  `)
 
   const rows = db.all(query)
-  // Typecast SQL output manually due to raw aggregate complexity. SQLite driver naturally uses integers and floats natively.
   return rows as InventorySummary[]
 }
 

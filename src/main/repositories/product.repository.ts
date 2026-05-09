@@ -3,7 +3,7 @@
 // Drizzle queries for the Product entity.
 // ────────────────────────────────────────────────────────
 
-import { eq, desc, like, or, sql } from 'drizzle-orm'
+import { eq, desc, asc, like, or, sql } from 'drizzle-orm'
 import { getDb } from '../database/client'
 import { products, productHistory } from '../../shared/schema'
 import type { Product, ProductInsert, ProductWithHistory, PaginatedResult } from '../../shared/types'
@@ -12,7 +12,9 @@ import { logEntityChanges } from './audit.repository'
 export async function listProducts(
   page: number,
   pageSize: number,
-  search: string
+  search: string,
+  sortBy?: string,
+  sortDir?: 'asc' | 'desc'
 ): Promise<PaginatedResult<Product>> {
   const db = getDb()
   const offset = (page - 1) * pageSize
@@ -29,6 +31,15 @@ export async function listProducts(
     )
   }
 
+  // Build order by clause
+  let orderClause = desc(products.createdAt)
+  if (sortBy) {
+    const column = (products as any)[sortBy]
+    if (column) {
+      orderClause = sortDir === 'asc' ? asc(column) : desc(column)
+    }
+  }
+
   // Execute count and data queries in parallel
   const [totalRes, items] = await Promise.all([
     db
@@ -39,7 +50,7 @@ export async function listProducts(
       .select()
       .from(products)
       .where(whereClause)
-      .orderBy(desc(products.createdAt))
+      .orderBy(orderClause)
       .limit(pageSize)
       .offset(offset)
   ])

@@ -11,6 +11,52 @@ import { initDatabase, closeDatabase } from './database/client'
 import { APP_CONFIG } from '../shared/constants'
 import { logger } from './utils/logger'
 import { registerAllIpcHandlers } from './ipc'
+import * as backupService from './services/backup.service'
+import * as settingsService from './services/settings.service'
+
+/**
+ * Checks if a backup is due and triggers it.
+ * Interval is user-defined via Settings (default 24h).
+ */
+async function autoBackupCheck(): Promise<void> {
+  try {
+    const intervalHours = await settingsService.getNumericSetting('BACKUP_INTERVAL_HOURS', 24)
+    const customDir = await settingsService.getSetting('BACKUP_DIRECTORY', '')
+    const lastBackup = backupService.getLastBackupLog()
+
+    if (!lastBackup) {
+      logger.info('No previous backup found. Creating first automatic backup.')
+      await performAutoBackup(customDir)
+      return
+    }
+
+    const lastDate = new Date(lastBackup.createdAt)
+    const now = new Date()
+    const diffMs = now.getTime() - lastDate.getTime()
+    const diffHours = diffMs / (1000 * 60 * 60)
+
+    if (diffHours >= intervalHours) {
+      logger.info(`Auto-backup due (last was ${diffHours.toFixed(1)}h ago, interval is ${intervalHours}h).`)
+      await performAutoBackup(customDir)
+    } else {
+      logger.info(`Auto-backup not due (last was ${diffHours.toFixed(1)}h ago, interval is ${intervalHours}h).`)
+    }
+  } catch (err) {
+    logger.error('Failed to run auto-backup check', err)
+  }
+}
+
+async function performAutoBackup(customDir: string): Promise<void> {
+  let targetPath: string | undefined = undefined
+
+  if (customDir && customDir.trim().length > 0) {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+    const filename = `costerra_auto_backup_${timestamp}.db`
+    targetPath = join(customDir, filename)
+  }
+
+  await backupService.createBackup(true, targetPath)
+}
 
 /** Ensure required data directories exist inside userData */
 function ensureDataDirectories(): void {
@@ -82,7 +128,10 @@ void app.whenReady().then(() => {
   initDatabase()
   logger.info('Database initialized')
 
-  // 3. Register all IPC handlers
+  // 3. Run auto-backup check
+  void autoBackupCheck()
+
+  // 4. Register all IPC handlers
   registerAllIpcHandlers()
   logger.info('IPC handlers registered')
 

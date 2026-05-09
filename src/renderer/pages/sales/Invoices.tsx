@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { PageContainer } from '../../components/layout/PageContainer'
 import { DataTable } from '../../components/ui/DataTable'
 import { ViewInvoiceModal } from '../../components/modals/ViewInvoiceModal'
@@ -52,14 +52,21 @@ export function Invoices() {
   const [totalPages, setTotalPages] = useState(1)
   const [viewSaleId, setViewSaleId] = useState<number | null>(null)
 
-  useEffect(() => {
-    fetchSales(page)
-  }, [page])
+  // Sorting & Filtering State
+  const [search, setSearch] = useState('')
+  const [sortBy, setSortBy] = useState<string | undefined>(undefined)
+  const [sortDir, setSortDir] = useState<'asc' | 'desc' | undefined>(undefined)
 
-  const fetchSales = async (pageIndex: number) => {
+  const fetchSales = useCallback(async (pageIndex: number, currentSearch: string, currentSortBy?: string, currentSortDir?: 'asc' | 'desc') => {
     setIsLoading(true)
     try {
-      const res = await window.api.invoke<{ items: Sale[], total: number }>('sale:list', { page: pageIndex, pageSize: 15 })
+      const res = await window.api.invoke<{ items: Sale[], total: number }>('sale:list', { 
+        page: pageIndex, 
+        pageSize: 15,
+        search: currentSearch,
+        sortBy: currentSortBy,
+        sortDir: currentSortDir
+      })
       setData(res.items)
       setTotalPages(Math.ceil(res.total / 15))
     } catch (error) {
@@ -67,7 +74,11 @@ export function Invoices() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchSales(page, search, sortBy, sortDir)
+  }, [page, search, sortBy, sortDir, fetchSales])
 
   return (
     <PageContainer title="Invoices & Sales">
@@ -76,7 +87,7 @@ export function Invoices() {
       </div>
 
       <div className="flex-1 no-drag">
-        {isLoading ? (
+        {isLoading && data.length === 0 ? (
           <div className="flex items-center justify-center h-64">
             <span className="w-8 h-8 rounded-full border-4 border-primary-500/30 border-t-primary-500 animate-spin" />
           </div>
@@ -88,6 +99,8 @@ export function Invoices() {
             pageCount={totalPages}
             onPageChange={setPage}
             onRowClick={(row) => setViewSaleId(row.id)}
+            onSearchChange={(val) => { setSearch(val); setPage(1); }}
+            onSortChange={(col, dir) => { setSortBy(col); setSortDir(dir); setPage(1); }}
           />
         )}
       </div>

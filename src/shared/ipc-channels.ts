@@ -95,6 +95,13 @@ export const IPC_CHANNELS = {
   EXPORT_XLSX: 'export:xlsx',
   GET_APP_PATH: 'system:get-app-path',
   DATABASE_RESET: 'database:reset',
+  SYSTEM_SELECT_FILE: 'system:select-file',
+  SYSTEM_SELECT_DIRECTORY: 'system:select-directory',
+  SYSTEM_SAVE_DIALOG: 'system:save-dialog',
+
+  // ─── Settings ──────────────────────────────────────
+  SETTINGS_GET: 'settings:get',
+  SETTINGS_UPDATE: 'settings:update',
 
   // ─── App Updates ──────────────────────────────────
   UPDATE_CHECK: 'update:check',

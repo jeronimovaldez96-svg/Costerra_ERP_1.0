@@ -30,7 +30,7 @@ function getBackupsDir(): string {
  * Creates a full database backup using better-sqlite3's native .backup() API.
  * This is an atomic, online operation that does not lock the database.
  */
-export async function createBackup(isAutomatic = false): Promise<{
+export async function createBackup(isAutomatic = false, overridePath?: string): Promise<{
   filename: string
   filePath: string
   sizeBytes: number
@@ -38,10 +38,18 @@ export async function createBackup(isAutomatic = false): Promise<{
   const db = getDb()
   const raw = getRawSqlite()
 
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-  const filename = `costerra_backup_${timestamp}.db`
-  const backupsDir = getBackupsDir()
-  const filePath = join(backupsDir, filename)
+  let filePath: string
+  let filename: string
+
+  if (overridePath) {
+    filePath = overridePath
+    filename = overridePath.split(/[/\\]/).pop() || 'backup.db'
+  } else {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+    filename = `costerra_backup_${timestamp}.db`
+    const backupsDir = getBackupsDir()
+    filePath = join(backupsDir, filename)
+  }
 
   logger.info(`Creating backup: ${filePath}`)
 
@@ -61,8 +69,10 @@ export async function createBackup(isAutomatic = false): Promise<{
 
   logger.info(`Backup completed: ${filename} (${(sizeBytes / 1024 / 1024).toFixed(2)} MB)`)
 
-  // Enforce retention policy
-  await enforceRetentionPolicy()
+  // Enforce retention policy (only for default location backups)
+  if (!overridePath) {
+    await enforceRetentionPolicy()
+  }
 
   return { filename, filePath, sizeBytes }
 }
@@ -122,6 +132,14 @@ export function listBackups(): Array<{
       isAutomatic: log.isAutomatic,
       createdAt: log.createdAt
     }))
+}
+
+/**
+ * Returns the most recent backup log entry.
+ */
+export function getLastBackupLog() {
+  const db = getDb()
+  return db.select().from(backupLogs).orderBy(desc(backupLogs.createdAt)).limit(1).get()
 }
 
 /**

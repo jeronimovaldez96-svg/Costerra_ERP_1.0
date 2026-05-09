@@ -9,7 +9,7 @@ import { salesLeads } from '../../shared/schema/sales-lead'
 import { clients } from '../../shared/schema/client'
 import { products } from '../../shared/schema/product'
 import { taxProfiles, taxProfileComponents } from '../../shared/schema/tax'
-import { eq, desc, like, sql } from 'drizzle-orm'
+import { eq, desc, asc, like, sql } from 'drizzle-orm'
 import { generateId } from '../utils/id-generator'
 
 // ─── Create ──────────────────────────────────────────────
@@ -86,9 +86,9 @@ export async function getQuote(id: number) {
   return getQuoteById(db, id)
 }
 
-export async function listQuotes(params: { page?: number; pageSize?: number; search?: string }) {
+export async function listQuotes(params: { page?: number; pageSize?: number; search?: string; sortBy?: string; sortDir?: 'asc' | 'desc' }) {
   const db = getDb()
-  const { page = 1, pageSize = 50, search = '' } = params
+  const { page = 1, pageSize = 50, search = '', sortBy, sortDir } = params
   const offset = (page - 1) * pageSize
 
   const baseSelect = db.select({
@@ -112,14 +112,28 @@ export async function listQuotes(params: { page?: number; pageSize?: number; sea
   .leftJoin(salesLeads, eq(quotes.salesLeadId, salesLeads.id))
   .leftJoin(clients, eq(salesLeads.clientId, clients.id))
 
-  let query = baseSelect.orderBy(desc(quotes.id))
-  let countQuery = db.select({ count: sql<number>`count(*)` }).from(quotes)
+  let orderClause: any = desc(quotes.id)
+  if (sortBy) {
+    if (sortBy === 'clientName') {
+      orderClause = sortDir === 'asc' ? asc(clients.name) : desc(clients.name)
+    } else {
+      const column = (quotes as any)[sortBy]
+      if (column) {
+        orderClause = sortDir === 'asc' ? asc(column) : desc(column)
+      }
+    }
+  }
+
+  let query: any = baseSelect
+  let countQuery: any = db.select({ count: sql<number>`count(*)` }).from(quotes)
 
   if (search.trim().length > 0) {
     const term = `%${search}%`
-    query = baseSelect.where(like(quotes.quoteNumber, term)).orderBy(desc(quotes.id))
+    query = baseSelect.where(like(quotes.quoteNumber, term))
     countQuery = db.select({ count: sql<number>`count(*)` }).from(quotes).where(like(quotes.quoteNumber, term))
   }
+  
+  query = query.orderBy(orderClause)
 
   const items = query.limit(pageSize).offset(offset).all()
   const totalRes = countQuery.get()
