@@ -15,7 +15,6 @@ import type { ListParams } from '../../shared/types'
 import { generateId } from '../utils/id-generator'
 import { getQuoteLineItems, transitionQuoteStatus } from './quote.repository'
 import { consumeStockFifo } from './inventory.repository'
-import { modifySalesLeadStatus } from './sales-lead.repository'
 
 /**
  * Executes a Sale from a SENT Quote atomically.
@@ -124,10 +123,7 @@ export async function executeSale(quoteId: number) {
       }
     }
 
-    // 9. Cascade: transition Lead to CLOSED_SALE
-    modifySalesLeadStatus(tx, quote.salesLeadId, 'CLOSED_SALE')
-
-    // 10. Update tax amount on the quote record for reference
+    // 9. Update tax amount on the quote record for reference
     tx.update(quotes).set({ taxAmount }).where(eq(quotes.id, quoteId)).run()
 
     return sale
