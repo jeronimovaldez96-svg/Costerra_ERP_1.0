@@ -144,10 +144,10 @@ describe('Sales Pipeline End-to-End', () => {
     const leadAfterSale = getSalesLead(lead.id)
     expect(leadAfterSale.status).toBe('IN_PROGRESS')
 
-    // Manually update lead to SOLD
-    updateSalesLeadStatus(lead.id, 'SOLD')
+    // Manually update lead to CLOSED_SALE
+    updateSalesLeadStatus(lead.id, 'CLOSED_SALE')
     const soldLead = getSalesLead(lead.id)
-    expect(soldLead.status).toBe('SOLD')
+    expect(soldLead.status).toBe('CLOSED_SALE')
 
     // ═══════════════════════════════════════════════════
     // 7. VERIFY INVENTORY AFTER SALE
