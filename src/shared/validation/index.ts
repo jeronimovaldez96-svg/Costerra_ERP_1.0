@@ -100,7 +100,7 @@ export const salesLeadCreateSchema = z.object({
 
 export const salesLeadUpdateSchema = z.object({
   name: z.string().optional(),
-  status: z.enum(['IN_PROGRESS', 'SOLD', 'NOT_SOLD', 'CLOSED']).optional()
+  status: z.enum(['IN_PROGRESS', 'CLOSED_SALE', 'CLOSED_NO_SALE']).optional()
 })
 
 // ─── Quotes ──────────────────────────────────────────────

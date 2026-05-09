@@ -123,8 +123,8 @@ export async function executeSale(quoteId: number) {
       }
     }
 
-    // 9. Cascade: transition Lead to SOLD
-    modifySalesLeadStatus(tx, quote.salesLeadId, 'SOLD')
+    // 9. Cascade: transition Lead to CLOSED_SALE
+    modifySalesLeadStatus(tx, quote.salesLeadId, 'CLOSED_SALE')
 
     // 10. Update tax amount on the quote record for reference
     tx.update(quotes).set({ taxAmount }).where(eq(quotes.id, quoteId)).run()

@@ -41,6 +41,7 @@ export const IPC_CHANNELS = {
   // ─── Sales Lead ────────────────────────────────────
   LEAD_LIST: 'lead:list',
   LEAD_GET: 'lead:get',
+  LEAD_DETAIL: 'lead:detail',
   LEAD_CREATE: 'lead:create',
   LEAD_UPDATE_STATUS: 'lead:update-status',
 

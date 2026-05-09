@@ -74,7 +74,7 @@ export async function listSalesLeads(params: { page?: number; pageSize?: number;
 
 
 // Low-level helper mapped for the transaction cascades internally used by Sales
-export function modifySalesLeadStatus(tx: DbTransaction, id: number, nextStatus: 'IN_PROGRESS' | 'SOLD' | 'NOT_SOLD' | 'CLOSED') {
+export function modifySalesLeadStatus(tx: DbTransaction, id: number, nextStatus: 'IN_PROGRESS' | 'CLOSED_SALE' | 'CLOSED_NO_SALE') {
   const old = tx.select().from(salesLeads).where(eq(salesLeads.id, id)).get()
   if (!old) throw new Error(`Lead ${id} missing`)
 
@@ -82,4 +82,25 @@ export function modifySalesLeadStatus(tx: DbTransaction, id: number, nextStatus:
     status: nextStatus,
     updatedAt: sql`(datetime('now'))`
   }).where(eq(salesLeads.id, id)).run()
+}
+
+/**
+ * Returns a full lead detail including client info and all associated quotes.
+ * Used by the ViewLeadModal to show the complete pipeline for a lead.
+ */
+export async function getSalesLeadDetail(id: number) {
+  const db = getDb()
+
+  const lead = db.select().from(salesLeads).where(eq(salesLeads.id, id)).get()
+  if (!lead) throw new Error(`Sales Lead ${id} not found`)
+
+  const client = db.select().from(clients).where(eq(clients.id, lead.clientId)).get()
+
+  const leadQuotes = db.select().from(quotes).where(eq(quotes.salesLeadId, id)).orderBy(desc(quotes.id)).all()
+
+  return {
+    ...lead,
+    client: client ?? null,
+    quotes: leadQuotes
+  }
 }

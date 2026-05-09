@@ -3,6 +3,7 @@ import { PageContainer } from '../../components/layout/PageContainer'
 import { DataTable } from '../../components/ui/DataTable'
 import { Button } from '../../components/ui/Button'
 import { CreateLeadModal } from '../../components/modals/CreateLeadModal'
+import { ViewLeadModal } from '../../components/modals/ViewLeadModal'
 import { Plus } from 'lucide-react'
 import { toast } from '../../store/useToastStore'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -12,15 +13,20 @@ interface SalesLead {
   leadNumber: string
   client: { name: string, surname: string }
   name: string
-  status: 'IN_PROGRESS' | 'SOLD' | 'NOT_SOLD' | 'CLOSED'
+  status: 'IN_PROGRESS' | 'CLOSED_SALE' | 'CLOSED_NO_SALE'
   createdAt: string
 }
 
-const statusColors = {
+const statusColors: Record<string, string> = {
   IN_PROGRESS: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  SOLD: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-  NOT_SOLD: 'bg-red-500/10 text-red-400 border-red-500/20',
-  CLOSED: 'bg-slate-500/10 text-slate-400 border-slate-500/20'
+  CLOSED_SALE: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  CLOSED_NO_SALE: 'bg-red-500/10 text-red-400 border-red-500/20'
+}
+
+const statusLabels: Record<string, string> = {
+  IN_PROGRESS: 'In Progress',
+  CLOSED_SALE: 'Closed with Sale',
+  CLOSED_NO_SALE: 'Closed with no Sale'
 }
 
 const columns: ColumnDef<SalesLead>[] = [
@@ -42,8 +48,8 @@ const columns: ColumnDef<SalesLead>[] = [
     cell: ({ row }) => {
       const status = row.original.status
       return (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${statusColors[status]}`}>
-          {status.replace('_', ' ')}
+        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${statusColors[status] || 'bg-slate-500/10 text-slate-400 border-slate-500/20'}`}>
+          {statusLabels[status] || status.replace('_', ' ')}
         </span>
       )
     }
@@ -56,6 +62,7 @@ export function Leads() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [viewLeadId, setViewLeadId] = useState<number | null>(null)
 
   useEffect(() => {
     fetchLeads(page)
@@ -100,7 +107,7 @@ export function Leads() {
             pageIndex={page}
             pageCount={totalPages}
             onPageChange={setPage}
-            onRowClick={(row) => toast.info('Lead Details', `View pipeline for ${row.leadNumber}`)}
+            onRowClick={(row) => setViewLeadId(row.id)}
           />
         )}
       </div>
@@ -109,6 +116,13 @@ export function Leads() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onCreated={handleLeadCreated}
+      />
+
+      <ViewLeadModal
+        isOpen={viewLeadId !== null}
+        onClose={() => setViewLeadId(null)}
+        onUpdated={handleLeadCreated}
+        leadId={viewLeadId}
       />
     </PageContainer>
   )

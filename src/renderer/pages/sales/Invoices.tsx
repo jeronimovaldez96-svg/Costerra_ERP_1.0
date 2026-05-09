@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 import { PageContainer } from '../../components/layout/PageContainer'
 import { DataTable } from '../../components/ui/DataTable'
-import { Button } from '../../components/ui/Button'
-import { Plus } from 'lucide-react'
+import { ViewInvoiceModal } from '../../components/modals/ViewInvoiceModal'
 import { toast } from '../../store/useToastStore'
 import type { ColumnDef } from '@tanstack/react-table'
 
@@ -51,6 +50,7 @@ export function Invoices() {
   const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [viewSaleId, setViewSaleId] = useState<number | null>(null)
 
   useEffect(() => {
     fetchSales(page)
@@ -73,10 +73,6 @@ export function Invoices() {
     <PageContainer title="Invoices & Sales">
       <div className="mb-6 flex justify-between items-center no-drag">
         <p className="text-slate-400">View completed transactions, revenue, and margins.</p>
-        <Button onClick={() => toast.info('WIP', 'Sale execution is done via Quotes.')}>
-          <Plus size={16} className="mr-2" />
-          Direct Sale
-        </Button>
       </div>
 
       <div className="flex-1 no-drag">
@@ -91,10 +87,16 @@ export function Invoices() {
             pageIndex={page}
             pageCount={totalPages}
             onPageChange={setPage}
-            onRowClick={(row) => toast.info('Invoice Details', `View breakdown for ${row.saleNumber}`)}
+            onRowClick={(row) => setViewSaleId(row.id)}
           />
         )}
       </div>
+
+      <ViewInvoiceModal
+        isOpen={viewSaleId !== null}
+        onClose={() => setViewSaleId(null)}
+        saleId={viewSaleId}
+      />
     </PageContainer>
   )
 }

@@ -24,6 +24,12 @@ export function registerSalesLeadHandlers(): void {
   )
 
   registerRoute(
+    IPC_CHANNELS.LEAD_DETAIL,
+    { schema: z.number().int().min(1) },
+    async (id) => leadService.getSalesLeadDetail(id)
+  )
+
+  registerRoute(
     IPC_CHANNELS.LEAD_CREATE,
     { schema: salesLeadCreateSchema },
     async (payload) => leadService.createSalesLead(payload.clientId, payload.name)
