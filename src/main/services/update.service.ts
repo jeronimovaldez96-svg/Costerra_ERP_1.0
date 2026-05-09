@@ -30,7 +30,7 @@ class UpdateService {
       this.setStatus({ state: 'checking' })
     })
 
-    autoUpdater.on('update-available', (info) => {
+    autoUpdater.on('update-available', (info: { version: string }) => {
       this.setStatus({ state: 'available', version: info.version })
     })
 
@@ -40,15 +40,15 @@ class UpdateService {
       setTimeout(() => this.setStatus({ state: 'idle' }), 5000)
     })
 
-    autoUpdater.on('download-progress', (progress) => {
+    autoUpdater.on('download-progress', (progress: { percent: number }) => {
       this.setStatus({ state: 'downloading', percent: progress.percent })
     })
 
-    autoUpdater.on('update-downloaded', (info) => {
+    autoUpdater.on('update-downloaded', (info: { version: string }) => {
       this.setStatus({ state: 'ready', version: info.version })
     })
 
-    autoUpdater.on('error', (err) => {
+    autoUpdater.on('error', (err: Error) => {
       logger.error('AutoUpdater error', err)
       this.setStatus({ state: 'error', message: err.message })
     })

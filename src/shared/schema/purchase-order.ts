@@ -4,7 +4,7 @@
 // Line items are editable while PO is in DRAFT status.
 // ────────────────────────────────────────────────────────
 
-import { sqliteTable, text, integer, real, index, uniqueIndex } from 'drizzle-orm/sqlite-core'
+import { sqliteTable, text, integer, real, index } from 'drizzle-orm/sqlite-core'
 import { sql } from 'drizzle-orm'
 import { suppliers } from './supplier'
 import { products } from './product'
