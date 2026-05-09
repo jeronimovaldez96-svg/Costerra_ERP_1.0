@@ -44,14 +44,14 @@ export async function executeSale(quoteId: number) {
     let effectiveTaxRate = 0
     if (quote.taxProfileId) {
       const components = tx.select().from(taxProfileComponents)
-        .where(eq(taxProfileComponents.taxProfileId, quote.taxProfileId!)).all()
+        .where(eq(taxProfileComponents.taxProfileId, quote.taxProfileId)).all()
       effectiveTaxRate = components.reduce((sum, c) => sum + c.rate, 0) / 100 // Convert % to decimal
     }
 
     // 3. Execute FIFO consumption and build sale line items
     let totalRevenue = 0
     let totalCost = 0
-    const saleLines: Array<{
+    const saleLines: {
       productId: number
       quantity: number
       unitPrice: number
@@ -59,7 +59,7 @@ export async function executeSale(quoteId: number) {
       lineRevenue: number
       lineCost: number
       lineProfit: number
-    }> = []
+    }[] = []
 
     for (const item of lineItems) {
       // FIFO consume — returns the blended cost across consumed batches
@@ -144,6 +144,23 @@ export async function getSale(id: number) {
   return { ...sale, lineItems: enrichedItems }
 }
 
+interface FlatSaleRow {
+  id: number
+  saleNumber: string
+  quoteId: number | null
+  totalRevenue: number
+  taxAmount: number
+  totalCost: number
+  profitAmount: number
+  profitMargin: number
+  saleDate: string
+  quoteNumber: string | null
+  leadNumber: string | null
+  leadName: string | null
+  clientName: string | null
+  clientSurname: string | null
+}
+
 export async function listSales(params: ListParams) {
   const db = getDb()
   const { page = 1, pageSize = 50, search = '', sortBy, sortDir } = params
@@ -170,7 +187,7 @@ export async function listSales(params: ListParams) {
   .leftJoin(salesLeads, eq(quotes.salesLeadId, salesLeads.id))
   .leftJoin(clients, eq(salesLeads.clientId, clients.id))
 
-  let orderClause: any = desc(sales.id)
+  let orderClause = desc(sales.id)
   if (sortBy) {
     if (sortBy === 'clientName') {
       orderClause = sortDir === 'asc' ? asc(clients.name) : desc(clients.name)
@@ -182,34 +199,52 @@ export async function listSales(params: ListParams) {
     }
   }
 
-  let query: any = baseSelect
-  let countQuery: any = db.select({ count: sql<number>`count(*)` }).from(sales)
+  const countQuery = db.select({ count: sql<number>`count(*)` }).from(sales)
+
+  let items: any[] = []
+  let total = 0
 
   if (search.trim().length > 0) {
     const term = `%${search}%`
-    query = baseSelect.where(like(sales.saleNumber, term))
-    countQuery = db.select({ count: sql<number>`count(*)` }).from(sales).where(like(sales.saleNumber, term))
-  }
-  
-  query = query.orderBy(orderClause)
-
-  const rows = query.limit(pageSize).offset(offset).all()
-  const items = rows.map((row: any) => ({
-    ...row,
-    quote: {
-      quoteNumber: row.quoteNumber,
-      salesLead: {
-        leadNumber: row.leadNumber,
-        name: row.leadName,
-        client: {
-          name: row.clientName,
-          surname: row.clientSurname
+    const filteredQuery = baseSelect.where(like(sales.saleNumber, term)).orderBy(orderClause).limit(pageSize).offset(offset)
+    const filteredCount = db.select({ count: sql<number>`count(*)` }).from(sales).where(like(sales.saleNumber, term))
+    
+    const rows = filteredQuery.all() as FlatSaleRow[]
+    items = rows.map((row) => ({
+      ...row,
+      quote: {
+        quoteNumber: row.quoteNumber,
+        salesLead: {
+          leadNumber: row.leadNumber,
+          name: row.leadName,
+          client: {
+            name: row.clientName,
+            surname: row.clientSurname
+          }
         }
       }
-    }
-  }))
-  const totalRes = countQuery.get()
-  const total = Number((totalRes as any)?.count ?? 0)
+    }))
+    const totalRes = filteredCount.get()
+    total = Number(totalRes?.count ?? 0)
+  } else {
+    const rows = baseSelect.orderBy(orderClause).limit(pageSize).offset(offset).all() as FlatSaleRow[]
+    items = rows.map((row) => ({
+      ...row,
+      quote: {
+        quoteNumber: row.quoteNumber,
+        salesLead: {
+          leadNumber: row.leadNumber,
+          name: row.leadName,
+          client: {
+            name: row.clientName,
+            surname: row.clientSurname
+          }
+        }
+      }
+    }))
+    const totalRes = countQuery.get()
+    total = Number(totalRes?.count ?? 0)
+  }
 
   return { items, total, page, pageSize }
 }

@@ -145,7 +145,7 @@ export function ViewProductModal({ isOpen, onClose, onUpdated, productId }: View
               <input 
                 type="checkbox" 
                 checked={form.isActive}
-                onChange={(e) => updateField('isActive', e.target.checked)}
+                onChange={(e) => { updateField('isActive', e.target.checked); }}
                 className="w-4 h-4 rounded border-slate-700 bg-surface-raised text-primary-500 focus:ring-primary-500 focus:ring-offset-slate-900"
               />
             </label>
@@ -156,7 +156,7 @@ export function ViewProductModal({ isOpen, onClose, onUpdated, productId }: View
             <Input
               id="edit-product-name"
               value={form.name}
-              onChange={(e) => updateField('name', e.target.value)}
+              onChange={(e) => { updateField('name', e.target.value); }}
               error={errors.name}
             />
           </div>
@@ -167,7 +167,7 @@ export function ViewProductModal({ isOpen, onClose, onUpdated, productId }: View
               <Input
                 id="edit-product-group"
                 value={form.productGroup}
-                onChange={(e) => updateField('productGroup', e.target.value)}
+                onChange={(e) => { updateField('productGroup', e.target.value); }}
                 error={errors.productGroup}
               />
             </div>
@@ -176,7 +176,7 @@ export function ViewProductModal({ isOpen, onClose, onUpdated, productId }: View
               <Input
                 id="edit-product-family"
                 value={form.productFamily}
-                onChange={(e) => updateField('productFamily', e.target.value)}
+                onChange={(e) => { updateField('productFamily', e.target.value); }}
                 error={errors.productFamily}
               />
             </div>
@@ -187,7 +187,7 @@ export function ViewProductModal({ isOpen, onClose, onUpdated, productId }: View
             <Input
               id="edit-product-color"
               value={form.color}
-              onChange={(e) => updateField('color', e.target.value)}
+              onChange={(e) => { updateField('color', e.target.value); }}
               error={errors.color}
             />
           </div>
@@ -201,7 +201,7 @@ export function ViewProductModal({ isOpen, onClose, onUpdated, productId }: View
                 step="0.01"
                 min="0"
                 value={form.defaultUnitCost}
-                onChange={(e) => updateField('defaultUnitCost', e.target.value)}
+                onChange={(e) => { updateField('defaultUnitCost', e.target.value); }}
                 error={errors.defaultUnitCost}
               />
             </div>
@@ -213,7 +213,7 @@ export function ViewProductModal({ isOpen, onClose, onUpdated, productId }: View
                 step="0.01"
                 min="0"
                 value={form.defaultUnitPrice}
-                onChange={(e) => updateField('defaultUnitPrice', e.target.value)}
+                onChange={(e) => { updateField('defaultUnitPrice', e.target.value); }}
                 error={errors.defaultUnitPrice}
               />
             </div>

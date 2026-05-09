@@ -1,6 +1,6 @@
 import type { Sale, Quote, Product, TaxProfile, Client, SalesLead } from '../../shared/types'
 
-type EnrichedSaleLineItem = {
+interface EnrichedSaleLineItem {
   productId: number
   quantity: number
   unitPrice: number

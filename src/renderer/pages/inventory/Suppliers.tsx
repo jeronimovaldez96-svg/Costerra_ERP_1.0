@@ -67,7 +67,7 @@ export function Suppliers() {
     <PageContainer title="Suppliers">
       <div className="mb-6 flex justify-between items-center no-drag">
         <p className="text-slate-400">Manage your vendor relationships and contact information.</p>
-        <Button onClick={() => setIsCreateModalOpen(true)}>
+        <Button onClick={() => { setIsCreateModalOpen(true); }}>
           <Plus size={16} className="mr-2" />
           Add Supplier
         </Button>
@@ -85,7 +85,7 @@ export function Suppliers() {
             pageIndex={page}
             pageCount={totalPages}
             onPageChange={setPage}
-            onRowClick={(row) => setViewSupplierId(row.id)}
+            onRowClick={(row) => { setViewSupplierId(row.id); }}
             onSearchChange={(val) => { setSearch(val); setPage(1); }}
             onSortChange={(col, dir) => { setSortBy(col); setSortDir(dir); setPage(1); }}
           />
@@ -94,13 +94,13 @@ export function Suppliers() {
 
       <CreateSupplierModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => { setIsCreateModalOpen(false); }}
         onCreated={handleSupplierCreated}
       />
 
       <ViewSupplierModal
         isOpen={viewSupplierId !== null}
-        onClose={() => setViewSupplierId(null)}
+        onClose={() => { setViewSupplierId(null); }}
         onUpdated={handleSupplierCreated}
         supplierId={viewSupplierId}
       />

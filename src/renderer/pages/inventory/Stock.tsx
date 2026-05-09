@@ -91,7 +91,7 @@ export function Stock() {
           <DataTable 
             columns={columns} 
             data={data} 
-            onSearchChange={(val) => setSearch(val)}
+            onSearchChange={(val) => { setSearch(val); }}
             onSortChange={(col, dir) => { setSortBy(col); setSortDir(dir); }}
           />
         )}

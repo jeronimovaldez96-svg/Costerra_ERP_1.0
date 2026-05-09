@@ -52,7 +52,7 @@ describe('Return & Credit Note Reversal System', () => {
 
     // 4. Process Return (Restocks Inventory & Generates Credit Note)
     const processed = await processReturn(ret.id)
-    expect(processed!.status).toBe('PROCESSED')
+    expect(processed.status).toBe('PROCESSED')
 
     // 5. Verify physical restocking logic via exact Return Batches
     const sum2 = await getInventorySummary()

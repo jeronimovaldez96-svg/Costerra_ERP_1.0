@@ -78,7 +78,7 @@ export function Clients() {
     <PageContainer title="Clients">
       <div className="mb-6 flex justify-between items-center no-drag">
         <p className="text-slate-400">Manage your CRM pipeline and customer details.</p>
-        <Button onClick={() => setIsCreateModalOpen(true)}>
+        <Button onClick={() => { setIsCreateModalOpen(true); }}>
           <Plus size={16} className="mr-2" />
           Add Client
         </Button>
@@ -96,7 +96,7 @@ export function Clients() {
             pageIndex={page}
             pageCount={totalPages}
             onPageChange={setPage}
-            onRowClick={(row) => toast.info('Client Details', `View details for ${row.name} ${row.surname}`)}
+            onRowClick={(row) => { toast.info('Client Details', `View details for ${row.name} ${row.surname}`); }}
             onSearchChange={(val) => { setSearch(val); setPage(1); }}
             onSortChange={(col, dir) => { setSortBy(col); setSortDir(dir); setPage(1); }}
           />
@@ -105,7 +105,7 @@ export function Clients() {
 
       <CreateClientModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => { setIsCreateModalOpen(false); }}
         onCreated={handleClientCreated}
       />
     </PageContainer>

@@ -95,7 +95,7 @@ export function Quotes() {
     <PageContainer title="Quotes">
       <div className="mb-6 flex justify-between items-center no-drag">
         <p className="text-slate-400">Manage pricing proposals and send quotes to clients.</p>
-        <Button onClick={() => setIsCreateModalOpen(true)}>
+        <Button onClick={() => { setIsCreateModalOpen(true); }}>
           <Plus size={16} className="mr-2" />
           Create Quote
         </Button>
@@ -113,7 +113,7 @@ export function Quotes() {
             pageIndex={page}
             pageCount={totalPages}
             onPageChange={setPage}
-            onRowClick={(row) => setViewQuoteId(row.id)}
+            onRowClick={(row) => { setViewQuoteId(row.id); }}
             onSearchChange={(val) => { setSearch(val); setPage(1); }}
             onSortChange={(col, dir) => { setSortBy(col); setSortDir(dir); setPage(1); }}
           />
@@ -122,13 +122,13 @@ export function Quotes() {
 
       <CreateQuoteModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => { setIsCreateModalOpen(false); }}
         onCreated={handleQuoteCreated}
       />
 
       <ViewQuoteModal
         isOpen={viewQuoteId !== null}
-        onClose={() => setViewQuoteId(null)}
+        onClose={() => { setViewQuoteId(null); }}
         onUpdated={handleQuoteCreated}
         quoteId={viewQuoteId}
       />

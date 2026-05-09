@@ -128,7 +128,7 @@ export function ViewSupplierModal({ isOpen, onClose, onUpdated, supplierId }: Vi
             <Input
               id="edit-supplier-name"
               value={form.name}
-              onChange={(e) => updateField('name', e.target.value)}
+              onChange={(e) => { updateField('name', e.target.value); }}
               error={errors.name}
             />
           </div>
@@ -138,7 +138,7 @@ export function ViewSupplierModal({ isOpen, onClose, onUpdated, supplierId }: Vi
             <Input
               id="edit-supplier-contact"
               value={form.contactName}
-              onChange={(e) => updateField('contactName', e.target.value)}
+              onChange={(e) => { updateField('contactName', e.target.value); }}
             />
           </div>
 
@@ -148,7 +148,7 @@ export function ViewSupplierModal({ isOpen, onClose, onUpdated, supplierId }: Vi
               <Input
                 id="edit-supplier-phone"
                 value={form.phone}
-                onChange={(e) => updateField('phone', e.target.value)}
+                onChange={(e) => { updateField('phone', e.target.value); }}
               />
             </div>
             <div className="space-y-1.5">
@@ -157,7 +157,7 @@ export function ViewSupplierModal({ isOpen, onClose, onUpdated, supplierId }: Vi
                 id="edit-supplier-email"
                 type="email"
                 value={form.email}
-                onChange={(e) => updateField('email', e.target.value)}
+                onChange={(e) => { updateField('email', e.target.value); }}
                 error={errors.email}
               />
             </div>
@@ -168,7 +168,7 @@ export function ViewSupplierModal({ isOpen, onClose, onUpdated, supplierId }: Vi
             <Textarea
               id="edit-supplier-notes"
               value={form.notes}
-              onChange={(e) => updateField('notes', e.target.value)}
+              onChange={(e) => { updateField('notes', e.target.value); }}
               rows={3}
             />
           </div>

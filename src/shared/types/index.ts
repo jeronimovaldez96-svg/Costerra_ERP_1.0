@@ -125,7 +125,7 @@ export interface SupplierWithHistory extends Supplier {
 
 export interface PurchaseOrderWithItems extends PurchaseOrder {
   supplier: Supplier
-  items: Array<PurchaseOrderItem & { product: Product }>
+  items: (PurchaseOrderItem & { product: Product })[]
 }
 
 export interface ClientWithHistory extends Client {
@@ -139,7 +139,7 @@ export interface SalesLeadWithRelations extends SalesLead {
 
 export interface QuoteWithRelations extends Quote {
   salesLead: SalesLeadWithRelations
-  lineItems: Array<QuoteLineItem & { product: Product }>
+  lineItems: (QuoteLineItem & { product: Product })[]
   sale: Sale | null
   taxProfile: TaxProfileWithComponents | null
 }
@@ -150,13 +150,13 @@ export interface TaxProfileWithComponents extends TaxProfile {
 
 export interface SaleWithRelations extends Sale {
   quote: QuoteWithRelations
-  lineItems: Array<SaleLineItem & { product: Product }>
+  lineItems: (SaleLineItem & { product: Product })[]
   taxProfile: TaxProfileWithComponents | null
 }
 
 export interface ReturnWithRelations extends Return {
   sale: SaleWithRelations
-  lineItems: Array<ReturnLineItem & { saleLineItem: SaleLineItem }>
+  lineItems: (ReturnLineItem & { saleLineItem: SaleLineItem })[]
   creditNote: CreditNote | null
 }
 

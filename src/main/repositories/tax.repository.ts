@@ -6,7 +6,7 @@ import { getDb } from '../database/client'
 import { taxProfiles, taxProfileComponents } from '../../shared/schema/tax'
 import { eq, like, desc, sql } from 'drizzle-orm'
 
-type PaginationParams = {
+interface PaginationParams {
   page?: number | undefined
   pageSize?: number | undefined
   search?: string | undefined

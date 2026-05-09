@@ -112,7 +112,7 @@ export function CreateSupplierModal({ isOpen, onClose, onCreated }: CreateSuppli
             id="supplier-name"
             placeholder="e.g. Maderas del Norte S.A."
             value={form.name}
-            onChange={(e) => updateField('name', e.target.value)}
+            onChange={(e) => { updateField('name', e.target.value); }}
             error={errors.name}
           />
         </div>
@@ -124,7 +124,7 @@ export function CreateSupplierModal({ isOpen, onClose, onCreated }: CreateSuppli
             id="supplier-contact"
             placeholder="e.g. Carlos Mendoza"
             value={form.contactName}
-            onChange={(e) => updateField('contactName', e.target.value)}
+            onChange={(e) => { updateField('contactName', e.target.value); }}
           />
         </div>
 
@@ -136,7 +136,7 @@ export function CreateSupplierModal({ isOpen, onClose, onCreated }: CreateSuppli
               id="supplier-phone"
               placeholder="e.g. +52 55 1234 5678"
               value={form.phone}
-              onChange={(e) => updateField('phone', e.target.value)}
+              onChange={(e) => { updateField('phone', e.target.value); }}
             />
           </div>
           <div className="space-y-1.5">
@@ -146,7 +146,7 @@ export function CreateSupplierModal({ isOpen, onClose, onCreated }: CreateSuppli
               type="email"
               placeholder="e.g. ventas@maderas.mx"
               value={form.email}
-              onChange={(e) => updateField('email', e.target.value)}
+              onChange={(e) => { updateField('email', e.target.value); }}
               error={errors.email}
             />
           </div>
@@ -159,7 +159,7 @@ export function CreateSupplierModal({ isOpen, onClose, onCreated }: CreateSuppli
             id="supplier-notes"
             placeholder="Payment terms, delivery schedules, special conditions..."
             value={form.notes}
-            onChange={(e) => updateField('notes', e.target.value)}
+            onChange={(e) => { updateField('notes', e.target.value); }}
             rows={3}
           />
         </div>

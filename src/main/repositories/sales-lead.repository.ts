@@ -35,6 +35,18 @@ export async function getSalesLead(id: number) {
   return lead
 }
 
+interface FlatSalesLeadRow {
+  id: number
+  leadNumber: string
+  clientId: number
+  name: string
+  status: 'IN_PROGRESS' | 'CLOSED_SALE' | 'CLOSED_NO_SALE'
+  createdAt: string
+  updatedAt: string
+  clientName: string | null
+  clientSurname: string | null
+}
+
 export async function listSalesLeads(params: ListParams) {
   const db = getDb()
   const { page = 1, pageSize = 50, search = '', sortBy, sortDir } = params
@@ -54,7 +66,7 @@ export async function listSalesLeads(params: ListParams) {
   .from(salesLeads)
   .leftJoin(clients, eq(salesLeads.clientId, clients.id))
 
-  let orderClause: any = desc(salesLeads.id)
+  let orderClause = desc(salesLeads.id)
   if (sortBy) {
     if (sortBy === 'clientName') {
       orderClause = sortDir === 'asc' ? asc(clients.name) : desc(clients.name)
@@ -66,27 +78,38 @@ export async function listSalesLeads(params: ListParams) {
     }
   }
 
-  let query: any = baseSelect
-  let countQuery: any = db.select({ count: sql<number>`count(*)` }).from(salesLeads)
+  const countQuery = db.select({ count: sql<number>`count(*)` }).from(salesLeads)
+
+  let items: any[] = []
+  let total = 0
 
   if (search.trim().length > 0) {
     const term = `%${search}%`
-    query = baseSelect.where(like(salesLeads.name, term))
-    countQuery = db.select({ count: sql<number>`count(*)` }).from(salesLeads).where(like(salesLeads.name, term))
+    const filteredQuery = baseSelect.where(like(salesLeads.name, term)).orderBy(orderClause).limit(pageSize).offset(offset)
+    const filteredCount = db.select({ count: sql<number>`count(*)` }).from(salesLeads).where(like(salesLeads.name, term))
+    
+    const rows = filteredQuery.all() as FlatSalesLeadRow[]
+    items = rows.map((row) => ({
+      ...row,
+      client: {
+        name: row.clientName,
+        surname: row.clientSurname
+      }
+    }))
+    const totalRes = filteredCount.get()
+    total = Number(totalRes?.count ?? 0)
+  } else {
+    const rows = baseSelect.orderBy(orderClause).limit(pageSize).offset(offset).all() as FlatSalesLeadRow[]
+    items = rows.map((row) => ({
+      ...row,
+      client: {
+        name: row.clientName,
+        surname: row.clientSurname
+      }
+    }))
+    const totalRes = countQuery.get()
+    total = Number(totalRes?.count ?? 0)
   }
-  
-  query = query.orderBy(orderClause)
-
-  const rows = query.limit(pageSize).offset(offset).all()
-  const items = rows.map((row: any) => ({
-    ...row,
-    client: {
-      name: row.clientName,
-      surname: row.clientSurname
-    }
-  }))
-  const totalRes = countQuery.get()
-  const total = Number((totalRes as any)?.count ?? 0)
 
   return { items, total, page, pageSize }
 }

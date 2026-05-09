@@ -28,7 +28,7 @@ export function receivePurchaseOrderItems(tx: DbTransaction, items: { purchaseOr
  * Aggregates high-level inventory availability (remainingQty - reservedQty) uniquely grouped by Product.
  */
 export function getInventorySummary(
-  search: string = '',
+  search = '',
   sortBy?: string,
   sortDir?: 'asc' | 'desc'
 ): InventorySummary[] {
@@ -92,30 +92,32 @@ export function listInventoryBatchesByProduct(productId: number): InventoryBatch
 }
 
 /**
- * Sweeps batches using strict oldest-first FIFO.
- * Alters reservedQty allowing soft locks on available stock.
+ * Reconciles inventory reservations for a product.
+ * positive quantityDelta: reserves stock (Draft -> Sent)
+ * negative quantityDelta: releases stock (Sent -> Rejected/Expired)
  */
-export function modifyReservations(tx: DbTransaction, productId: number, quantityDelta: number): void {
+export function modifyReservations(tx: DbTransaction, productId: number, quantityDelta: number) {
   if (quantityDelta === 0) return
 
-  // Need to increment reservations
+  // Need to increase reservations (e.g. quote sent)
   if (quantityDelta > 0) {
     let pending = quantityDelta
     
-    // Find batches that actually have available unreserved stock (remainingQty - reservedQty) > 0
-    // Ordered by receivedAt ASC to maintain FIFO valuation.
+    // Ordered ASC (FIFO for reservations)
     const query = sql`
-      SELECT id, (remainingQty - reservedQty) AS available
+      SELECT id, remainingQty, reservedQty
       FROM InventoryBatch
-      WHERE productId = ${productId} AND (remainingQty - reservedQty) > 0
+      WHERE productId = ${productId} AND remainingQty > reservedQty
       ORDER BY receivedAt ASC;
     `
-    const availableBatches = tx.all(query) as { id: number, available: number }[]
+    const batches = tx.all(query) as InventoryBatchRow[]
 
-    for (const batch of availableBatches) {
+    for (const batch of batches) {
       if (pending <= 0) break
-      
-      const toTake = Math.min(pending, batch.available)
+
+      const availableInBatch = batch.remainingQty - batch.reservedQty
+      const toTake = Math.min(pending, availableInBatch)
+
       tx.run(sql`
         UPDATE InventoryBatch
         SET reservedQty = reservedQty + ${toTake}
@@ -125,7 +127,7 @@ export function modifyReservations(tx: DbTransaction, productId: number, quantit
     }
 
     if (pending > 0) {
-      throw new Error(`Insufficient available stock for Product ${productId}. Failed to reserve ${pending} units.`)
+      throw new Error(`Insufficient available stock for Product ${productId.toString()}. Failed to reserve ${pending.toString()} units.`)
     }
   } 
   
@@ -140,7 +142,7 @@ export function modifyReservations(tx: DbTransaction, productId: number, quantit
       WHERE productId = ${productId} AND reservedQty > 0
       ORDER BY receivedAt DESC;
     `
-    const reservedBatches = tx.all(query) as { id: number, reservedQty: number }[]
+    const reservedBatches = tx.all(query) as InventoryBatchRow[]
 
     for (const batch of reservedBatches) {
       if (pendingFree <= 0) break
@@ -155,7 +157,7 @@ export function modifyReservations(tx: DbTransaction, productId: number, quantit
     }
 
     if (pendingFree > 0) {
-      throw new Error(`Integrity Exception: Attempted to release more reservations than currently held for Product ${productId}.`)
+      throw new Error(`Integrity Exception: Attempted to release more reservations than currently held for Product ${productId.toString()}.`)
     }
   }
 }
@@ -177,7 +179,7 @@ export function consumeStockFifo(tx: DbTransaction, productId: number, quantity:
     WHERE productId = ${productId} AND remainingQty > 0
     ORDER BY receivedAt ASC;
   `
-  const batches = tx.all(query) as { id: number; remainingQty: number; unitCost: number }[]
+  const batches = tx.all(query) as InventoryBatchRow[]
 
   for (const batch of batches) {
     if (pending <= 0) break
@@ -197,7 +199,7 @@ export function consumeStockFifo(tx: DbTransaction, productId: number, quantity:
   }
 
   if (pending > 0) {
-    throw new Error(`Insufficient physical stock for Product ${productId}. Short by ${pending} units.`)
+    throw new Error(`Insufficient physical stock for Product ${productId.toString()}. Short by ${pending.toString()} units.`)
   }
 
   // Blended weighted-average cost across consumed batches

@@ -88,7 +88,7 @@ export function Products() {
     <PageContainer title="Products">
       <div className="mb-6 flex justify-between items-center no-drag">
         <p className="text-slate-400">Manage your product catalog, pricing, and status.</p>
-        <Button onClick={() => setIsCreateModalOpen(true)}>
+        <Button onClick={() => { setIsCreateModalOpen(true); }}>
           <Plus size={16} className="mr-2" />
           Add Product
         </Button>
@@ -106,7 +106,7 @@ export function Products() {
             pageIndex={page}
             pageCount={totalPages}
             onPageChange={setPage}
-            onRowClick={(row) => setViewProductId(row.id)}
+            onRowClick={(row) => { setViewProductId(row.id); }}
             onSearchChange={(val) => { setSearch(val); setPage(1); }}
             onSortChange={(col, dir) => { setSortBy(col); setSortDir(dir); setPage(1); }}
           />
@@ -115,13 +115,13 @@ export function Products() {
 
       <CreateProductModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => { setIsCreateModalOpen(false); }}
         onCreated={handleProductCreated}
       />
 
       <ViewProductModal
         isOpen={viewProductId !== null}
-        onClose={() => setViewProductId(null)}
+        onClose={() => { setViewProductId(null); }}
         onUpdated={handleProductCreated}
         productId={viewProductId}
       />

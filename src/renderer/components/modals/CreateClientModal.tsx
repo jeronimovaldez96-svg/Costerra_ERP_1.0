@@ -102,7 +102,7 @@ export function CreateClientModal({ isOpen, onClose, onCreated }: CreateClientMo
               id="client-name"
               placeholder="e.g. John"
               value={form.name}
-              onChange={(e) => updateField('name', e.target.value)}
+              onChange={(e) => { updateField('name', e.target.value); }}
               error={errors.name}
             />
           </div>
@@ -112,7 +112,7 @@ export function CreateClientModal({ isOpen, onClose, onCreated }: CreateClientMo
               id="client-surname"
               placeholder="e.g. Doe"
               value={form.surname}
-              onChange={(e) => updateField('surname', e.target.value)}
+              onChange={(e) => { updateField('surname', e.target.value); }}
               error={errors.surname}
             />
           </div>
@@ -124,7 +124,7 @@ export function CreateClientModal({ isOpen, onClose, onCreated }: CreateClientMo
             id="client-address"
             placeholder="e.g. 123 Main St"
             value={form.address}
-            onChange={(e) => updateField('address', e.target.value)}
+            onChange={(e) => { updateField('address', e.target.value); }}
           />
         </div>
 
@@ -135,7 +135,7 @@ export function CreateClientModal({ isOpen, onClose, onCreated }: CreateClientMo
               id="client-city"
               placeholder="e.g. New York"
               value={form.city}
-              onChange={(e) => updateField('city', e.target.value)}
+              onChange={(e) => { updateField('city', e.target.value); }}
             />
           </div>
           <div className="space-y-1.5">
@@ -144,7 +144,7 @@ export function CreateClientModal({ isOpen, onClose, onCreated }: CreateClientMo
               id="client-zipCode"
               placeholder="e.g. 10001"
               value={form.zipCode}
-              onChange={(e) => updateField('zipCode', e.target.value)}
+              onChange={(e) => { updateField('zipCode', e.target.value); }}
             />
           </div>
         </div>
@@ -156,7 +156,7 @@ export function CreateClientModal({ isOpen, onClose, onCreated }: CreateClientMo
               id="client-phone"
               placeholder="e.g. (555) 123-4567"
               value={form.phone}
-              onChange={(e) => updateField('phone', e.target.value)}
+              onChange={(e) => { updateField('phone', e.target.value); }}
             />
           </div>
           <div className="space-y-1.5">
@@ -166,7 +166,7 @@ export function CreateClientModal({ isOpen, onClose, onCreated }: CreateClientMo
               type="email"
               placeholder="e.g. john@example.com"
               value={form.email}
-              onChange={(e) => updateField('email', e.target.value)}
+              onChange={(e) => { updateField('email', e.target.value); }}
             />
           </div>
         </div>
@@ -177,7 +177,7 @@ export function CreateClientModal({ isOpen, onClose, onCreated }: CreateClientMo
             id="client-notes"
             placeholder="Optional notes or details..."
             value={form.notes}
-            onChange={(e) => updateField('notes', e.target.value)}
+            onChange={(e) => { updateField('notes', e.target.value); }}
             rows={3}
           />
         </div>

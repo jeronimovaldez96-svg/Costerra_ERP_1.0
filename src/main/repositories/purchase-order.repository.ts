@@ -3,7 +3,7 @@
 // Handles atomic DB insertions for POs and locking logic.
 // ────────────────────────────────────────────────────────
 
-import { eq, desc, asc, sql } from 'drizzle-orm'
+import { eq, desc, asc, like, sql } from 'drizzle-orm'
 import { getDb } from '../database/client'
 import { purchaseOrders, purchaseOrderItems, products, suppliers } from '../../shared/schema'
 import type { 
@@ -18,7 +18,18 @@ import type {
 
 type DbTransaction = Parameters<Parameters<ReturnType<typeof getDb>['transaction']>[0]>[0]
 
-export function listPurchaseOrders(params: ListParams): PaginatedResult<PurchaseOrder> {
+interface FlatPORow {
+  id: number
+  poNumber: string
+  supplierId: number
+  description: string
+  status: string
+  createdAt: string
+  updatedAt: string
+  supplierName: string | null
+}
+
+export async function listPurchaseOrders(params: ListParams): Promise<PaginatedResult<PurchaseOrder>> {
   const db = getDb()
   const { page = 1, pageSize = 50, search = '', sortBy, sortDir } = params
   const offset = (page - 1) * pageSize
@@ -26,45 +37,44 @@ export function listPurchaseOrders(params: ListParams): PaginatedResult<Purchase
   // Simplified where logic since SQLite `like` allows text filtering
   let whereClause = undefined
   if (search.trim().length > 0) {
-    const term = `%${search}%`
-    whereClause = sql`${purchaseOrders.poNumber} LIKE ${term} OR ${purchaseOrders.description} LIKE ${term}`
+    whereClause = like(purchaseOrders.poNumber, `%${search}%`)
   }
 
-  let orderClause: any = desc(purchaseOrders.createdAt)
+  let orderClause = desc(purchaseOrders.id)
   if (sortBy) {
     const column = (purchaseOrders as any)[sortBy]
     if (column) {
       orderClause = sortDir === 'asc' ? asc(column) : desc(column)
-    } else if (sortBy === 'supplierName') {
-      orderClause = sortDir === 'asc' ? asc(suppliers.name) : desc(suppliers.name)
     }
   }
 
-  const totalRes = db.select({ count: sql<number>`count(*)` }).from(purchaseOrders).where(whereClause).get()
-  const rows = db
-    .select({
-      id: purchaseOrders.id,
-      poNumber: purchaseOrders.poNumber,
-      supplierId: purchaseOrders.supplierId,
-      description: purchaseOrders.description,
-      status: purchaseOrders.status,
-      createdAt: purchaseOrders.createdAt,
-      updatedAt: purchaseOrders.updatedAt,
-      supplierName: suppliers.name
-    })
-    .from(purchaseOrders)
-    .leftJoin(suppliers, eq(purchaseOrders.supplierId, suppliers.id))
-    .where(whereClause)
-    .orderBy(orderClause)
-    .limit(pageSize)
-    .offset(offset)
-    .all()
+  const [totalRes, rows] = await Promise.all([
+    db.select({ count: sql<number>`count(*)` }).from(purchaseOrders).where(whereClause),
+    db
+      .select({
+        id: purchaseOrders.id,
+        poNumber: purchaseOrders.poNumber,
+        supplierId: purchaseOrders.supplierId,
+        description: purchaseOrders.description,
+        status: purchaseOrders.status,
+        createdAt: purchaseOrders.createdAt,
+        updatedAt: purchaseOrders.updatedAt,
+        supplierName: suppliers.name
+      })
+      .from(purchaseOrders)
+      .leftJoin(suppliers, eq(purchaseOrders.supplierId, suppliers.id))
+      .where(whereClause)
+      .orderBy(orderClause)
+      .limit(pageSize)
+      .offset(offset)
+      .all() as FlatPORow[]
+  ])
 
-  const total = Number((totalRes as any)?.count ?? 0)
-  const items = rows.map((row: any) => ({
+  const total = Number(totalRes[0]?.count ?? 0)
+  const items = rows.map((row: FlatPORow) => ({
     ...row,
     supplier: {
-      name: row.supplierName
+      name: row.supplierName || ''
     }
   }))
 

@@ -20,7 +20,7 @@ export async function listInventoryBatchesByProduct(productId: number): Promise<
 export async function adjustInventoryReservation(productId: number, quantityDelta: number): Promise<void> {
   const db = (await import('../database/client')).getDb()
   
-  return db.transaction((tx) => {
+  db.transaction((tx) => {
     invRepo.modifyReservations(tx, productId, quantityDelta)
-  })
+  });
 }
