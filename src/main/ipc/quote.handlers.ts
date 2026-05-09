@@ -48,7 +48,9 @@ export function registerQuoteHandlers(): void {
     async (quoteId) => quoteService.getQuoteVersions(quoteId)
   )
 
-  // Quote status transitions are routed through a dedicated channel
-  // that maps to QUOTE_SET_TAX_PROFILE for "SENT" (re-using existing channel)
-  // For now, using a custom approach via update payload with status
+  registerRoute(
+    IPC_CHANNELS.QUOTE_SET_TAX_PROFILE, // Re-used as transition channel
+    { schema: transitionQuotePayloadSchema },
+    async (payload) => quoteService.transitionQuote(payload.id, payload.data.status)
+  )
 }

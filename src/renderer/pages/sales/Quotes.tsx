@@ -3,6 +3,7 @@ import { PageContainer } from '../../components/layout/PageContainer'
 import { DataTable } from '../../components/ui/DataTable'
 import { Button } from '../../components/ui/Button'
 import { CreateQuoteModal } from '../../components/modals/CreateQuoteModal'
+import { ViewQuoteModal } from '../../components/modals/ViewQuoteModal'
 import { Plus } from 'lucide-react'
 import { toast } from '../../store/useToastStore'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -56,6 +57,7 @@ export function Quotes() {
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+  const [viewQuoteId, setViewQuoteId] = useState<number | null>(null)
 
   useEffect(() => {
     fetchQuotes(page)
@@ -100,7 +102,7 @@ export function Quotes() {
             pageIndex={page}
             pageCount={totalPages}
             onPageChange={setPage}
-            onRowClick={(row) => toast.info('Quote Details', `View details for ${row.quoteNumber}`)}
+            onRowClick={(row) => setViewQuoteId(row.id)}
           />
         )}
       </div>
@@ -109,6 +111,13 @@ export function Quotes() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onCreated={handleQuoteCreated}
+      />
+
+      <ViewQuoteModal
+        isOpen={viewQuoteId !== null}
+        onClose={() => setViewQuoteId(null)}
+        onUpdated={handleQuoteCreated}
+        quoteId={viewQuoteId}
       />
     </PageContainer>
   )
