@@ -12,7 +12,7 @@ export function registerInventoryHandlers(): void {
   registerRoute(
     IPC_CHANNELS.INVENTORY_SUMMARY,
     { schema: paginationSchema },
-    async (params) => {
+    (params) => {
       return inventoryService.getInventorySummary(params)
     }
   )
@@ -20,7 +20,7 @@ export function registerInventoryHandlers(): void {
   registerRoute(
     IPC_CHANNELS.INVENTORY_BATCHES,
     { schema: z.number().int().min(1) },
-    async (productId) => {
+    (productId) => {
       return inventoryService.listInventoryBatchesByProduct(productId)
     }
   )

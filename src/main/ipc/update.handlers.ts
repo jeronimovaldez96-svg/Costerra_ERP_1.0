@@ -25,7 +25,7 @@ export function registerUpdateHandlers() {
   registerRoute(
     IPC_CHANNELS.UPDATE_INSTALL,
     { schema: z.object({}).optional() },
-    async () => {
+    () => {
       updateService.installUpdate()
       return { success: true }
     }
@@ -35,6 +35,6 @@ export function registerUpdateHandlers() {
   registerRoute(
     IPC_CHANNELS.UPDATE_GET_STATUS,
     { schema: z.object({}).optional() },
-    async () => updateService.getStatus()
+    () => updateService.getStatus()
   )
 }

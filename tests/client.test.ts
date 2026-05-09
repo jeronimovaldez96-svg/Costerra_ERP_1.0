@@ -7,8 +7,8 @@ import {
 } from '../src/main/services/client.service'
 
 describe('Client Service', () => {
-  it('creates a client and generates a clientNumber', async () => {
-    const client = await createClient({
+  it('creates a client and generates a clientNumber', () => {
+    const client = createClient({
       name: 'Walter',
       surname: 'White',
       address: '308 Negra Arroyo Lane',
@@ -23,15 +23,15 @@ describe('Client Service', () => {
     expect(client.name).toBe('Walter')
   })
 
-  it('tracks field history on update', async () => {
-    const client = await createClient({
+  it('tracks field history on update', () => {
+    const client = createClient({
       name: 'Jesse',
       surname: 'Pinkman'
     })
 
-    await updateClient(client.id, { city: 'Anchorage' })
+    updateClient(client.id, { city: 'Anchorage' })
 
-    const fetched = await getClient(client.id)
+    const fetched = getClient(client.id)
     expect(fetched.city).toBe('Anchorage')
     expect(fetched.history).toHaveLength(1)
     expect(fetched.history[0]?.fieldName).toBe('city')
@@ -39,21 +39,21 @@ describe('Client Service', () => {
     expect(fetched.history[0]?.newValue).toBe('Anchorage')
   })
 
-  it('searches dynamically across name and city', async () => {
-    await createClient({ name: 'Saul', surname: 'Goodman', city: 'Omaha' })
-    await createClient({ name: 'Gustavo', surname: 'Fring', city: 'Albuquerque' })
+  it('searches dynamically across name and city', () => {
+    createClient({ name: 'Saul', surname: 'Goodman', city: 'Omaha' })
+    createClient({ name: 'Gustavo', surname: 'Fring', city: 'Albuquerque' })
 
-    const res1 = await listClients({ page: 1, pageSize: 10, search: 'Omaha' })
+    const res1 = listClients({ page: 1, pageSize: 10, search: 'Omaha' })
     expect(res1.total).toBe(1)
     expect(res1.items[0]?.name).toBe('Saul')
 
-    const res2 = await listClients({ page: 1, pageSize: 10, search: 'Fring' })
+    const res2 = listClients({ page: 1, pageSize: 10, search: 'Fring' })
     expect(res2.total).toBe(1)
     expect(res2.items[0]?.name).toBe('Gustavo')
   })
 
-  it('throws errors when client is not found', async () => {
-    await expect(getClient(999)).rejects.toThrow('Client with ID 999 not found')
-    await expect(updateClient(999, { city: 'Oops' })).rejects.toThrow('Client with ID 999 not found')
+  it('throws errors when client is not found', () => {
+    expect(() => getClient(999)).toThrow('Client with ID 999 not found')
+    expect(() => updateClient(999, { city: 'Oops' })).toThrow('Client with ID 999 not found')
   })
 })

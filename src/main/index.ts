@@ -20,8 +20,8 @@ import * as settingsService from './services/settings.service'
  */
 async function autoBackupCheck(): Promise<void> {
   try {
-    const intervalHours = await settingsService.getNumericSetting('BACKUP_INTERVAL_HOURS', 24)
-    const customDir = await settingsService.getSetting('BACKUP_DIRECTORY', '')
+    const intervalHours = settingsService.getNumericSetting('BACKUP_INTERVAL_HOURS', 24)
+    const customDir = settingsService.getSetting('BACKUP_DIRECTORY', '')
     const lastBackup = backupService.getLastBackupLog()
 
     if (!lastBackup) {
@@ -36,10 +36,10 @@ async function autoBackupCheck(): Promise<void> {
     const diffHours = diffMs / (1000 * 60 * 60)
 
     if (diffHours >= intervalHours) {
-      logger.info(`Auto-backup due (last was ${diffHours.toFixed(1)}h ago, interval is ${intervalHours}h).`)
+      logger.info(`Auto-backup due (last was ${diffHours.toFixed(1)}h ago, interval is ${intervalHours.toString()}h).`)
       await performAutoBackup(customDir)
     } else {
-      logger.info(`Auto-backup not due (last was ${diffHours.toFixed(1)}h ago, interval is ${intervalHours}h).`)
+      logger.info(`Auto-backup not due (last was ${diffHours.toFixed(1)}h ago, interval is ${intervalHours.toString()}h).`)
     }
   } catch (err) {
     logger.error('Failed to run auto-backup check', err)
@@ -103,7 +103,7 @@ function createMainWindow(): BrowserWindow {
 
   // Forward renderer console logs to the main process terminal
   mainWindow.webContents.on('console-message', (_event, _level, message, line, sourceId) => {
-    console.log(`[Renderer] ${message} (${sourceId}:${line})`)
+    logger.info(`[Renderer] ${message} (${sourceId}:${line.toString()})`)
   })
 
   // Load the renderer — dev server in development, built file in production

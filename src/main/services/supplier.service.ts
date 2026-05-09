@@ -12,25 +12,22 @@ import type {
   LoosePartial
 } from '../../shared/types'
 
-export async function listSuppliers(params: ListParams): Promise<PaginatedResult<Supplier>> {
+export function listSuppliers(params: ListParams): PaginatedResult<Supplier> {
   const page = params.page ?? 1
   const pageSize = params.pageSize ?? 50
   const search = params.search ?? ''
   return repo.listSuppliers(page, pageSize, search, params.sortBy, params.sortDir)
 }
 
-export async function getSupplier(id: number): Promise<SupplierWithHistory> {
-  const supplier = await repo.getSupplier(id)
-  if (supplier === null) {
-    throw new Error(`Supplier with ID ${id} not found`)
-  }
+export function getSupplier(id: number): SupplierWithHistory | null {
+  const supplier = repo.getSupplier(id)
   return supplier
 }
 
-export async function createSupplier(data: SupplierInsert): Promise<Supplier> {
+export function createSupplier(data: SupplierInsert): Supplier {
   return repo.createSupplier(data)
 }
 
-export async function updateSupplier(id: number, data: LoosePartial<SupplierInsert>): Promise<Supplier> {
+export function updateSupplier(id: number, data: LoosePartial<SupplierInsert>): Supplier {
   return repo.updateSupplier(id, data)
 }

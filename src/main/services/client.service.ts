@@ -12,25 +12,25 @@ import type {
   LoosePartial
 } from '../../shared/types'
 
-export async function listClients(params: ListParams): Promise<PaginatedResult<Client>> {
+export function listClients(params: ListParams): PaginatedResult<Client> {
   const page = params.page ?? 1
   const pageSize = params.pageSize ?? 50
   const search = params.search ?? ''
   return repo.listClients(page, pageSize, search, params.sortBy, params.sortDir)
 }
 
-export async function getClient(id: number): Promise<ClientWithHistory> {
-  const client = await repo.getClient(id)
+export function getClient(id: number): ClientWithHistory {
+  const client = repo.getClient(id)
   if (client === null) {
-    throw new Error(`Client with ID ${id} not found`)
+    throw new Error(`Client with ID ${id.toString()} not found`)
   }
   return client
 }
 
-export async function createClient(data: Omit<ClientInsert, 'clientNumber'>): Promise<Client> {
+export function createClient(data: Omit<ClientInsert, 'clientNumber'>): Client {
   return repo.createClient(data)
 }
 
-export async function updateClient(id: number, data: LoosePartial<ClientInsert>): Promise<Client> {
+export function updateClient(id: number, data: LoosePartial<ClientInsert>): Client {
   return repo.updateClient(id, data)
 }

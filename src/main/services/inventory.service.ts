@@ -3,13 +3,14 @@
 // ────────────────────────────────────────────────────────
 
 import * as invRepo from '../repositories/inventory.repository'
+import { getDb } from '../database/client'
 import type { InventoryBatch, InventorySummary, ListParams } from '../../shared/types'
 
-export async function getInventorySummary(params?: ListParams): Promise<InventorySummary[]> {
+export function getInventorySummary(params?: ListParams): InventorySummary[] {
   return invRepo.getInventorySummary(params?.search, params?.sortBy, params?.sortDir)
 }
 
-export async function listInventoryBatchesByProduct(productId: number): Promise<InventoryBatch[]> {
+export function listInventoryBatchesByProduct(productId: number): InventoryBatch[] {
   return invRepo.listInventoryBatchesByProduct(productId)
 }
 
@@ -17,8 +18,8 @@ export async function listInventoryBatchesByProduct(productId: number): Promise<
  * Adjusts inventory reservations for a product.
  * Primarily used by Quote/Sales pipelines automatically, exposed here for direct orchestration if needed.
  */
-export async function adjustInventoryReservation(productId: number, quantityDelta: number): Promise<void> {
-  const db = (await import('../database/client')).getDb()
+export function adjustInventoryReservation(productId: number, quantityDelta: number): void {
+  const db = getDb()
   
   db.transaction((tx) => {
     invRepo.modifyReservations(tx, productId, quantityDelta)

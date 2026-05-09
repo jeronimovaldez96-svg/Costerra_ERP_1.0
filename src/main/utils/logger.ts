@@ -57,7 +57,7 @@ export const logger = {
   error(message: string, error?: unknown, context?: Record<string, unknown>): void {
     if (shouldLog('error')) {
       const errorMessage =
-        error instanceof Error ? error.message : String(error ?? '')
+        error instanceof Error ? error.message : (error === null || error === undefined ? '' : (typeof error === 'string' ? error : JSON.stringify(error)))
       const fullContext = {
         ...context,
         ...(errorMessage.length > 0 ? { error: errorMessage } : {})

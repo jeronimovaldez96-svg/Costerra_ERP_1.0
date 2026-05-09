@@ -29,7 +29,7 @@ export function registerProductHandlers(): void {
   registerRoute(
     IPC_CHANNELS.PRODUCT_LIST,
     { schema: paginationSchema },
-    async (params) => {
+    (params) => {
       return productService.listProducts(params)
     }
   )
@@ -37,7 +37,7 @@ export function registerProductHandlers(): void {
   registerRoute(
     IPC_CHANNELS.PRODUCT_GET,
     { schema: z.number().int().min(1) },
-    async (id) => {
+    (id) => {
       return productService.getProduct(id)
     }
   )
@@ -45,7 +45,7 @@ export function registerProductHandlers(): void {
   registerRoute(
     IPC_CHANNELS.PRODUCT_CREATE,
     { schema: createProductPayloadSchema },
-    async (payload) => {
+    (payload) => {
       const { sourceImagePath, ...productData } = payload
       return productService.createProduct(productData, sourceImagePath)
     }
@@ -54,7 +54,7 @@ export function registerProductHandlers(): void {
   registerRoute(
     IPC_CHANNELS.PRODUCT_UPDATE,
     { schema: updateProductPayloadSchema },
-    async (payload) => {
+    (payload) => {
       const { sourceImagePath, ...productData } = payload.data
       return productService.updateProduct(payload.id, productData, sourceImagePath)
     }
@@ -63,7 +63,7 @@ export function registerProductHandlers(): void {
   registerRoute(
     IPC_CHANNELS.PRODUCT_TOGGLE_ACTIVE,
     { schema: z.number().int().min(1) },
-    async (id) => {
+    (id) => {
       return productService.toggleProductActive(id)
     }
   )

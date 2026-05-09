@@ -6,14 +6,14 @@ import { getDb } from '../database/client'
 import { salesLeads } from '../../shared/schema/sales-lead'
 import { clients } from '../../shared/schema/client'
 import { quotes } from '../../shared/schema/quote'
-import { eq, desc, asc, like, sql } from 'drizzle-orm'
+import { eq, desc, asc, like, sql, type AnyColumn } from 'drizzle-orm'
 import { generateId } from '../utils/id-generator'
 import type { DbTransaction } from '../database/client'
 import type { ListParams } from '../../shared/types'
 
-export async function createSalesLead(clientId: number, name: string) {
+export function createSalesLead(clientId: number, name: string) {
   const db = getDb()
-  const leadNumber = await generateId('LEAD')
+  const leadNumber = generateId('LEAD')
 
   return db.transaction((tx) => {
     const lead = tx.insert(salesLeads).values({
@@ -23,19 +23,18 @@ export async function createSalesLead(clientId: number, name: string) {
       status: 'IN_PROGRESS'
     }).returning().get()
 
-    if (!lead) throw new Error('Failed to create Sales Lead')
     return lead
   })
 }
 
-export async function getSalesLead(id: number) {
+export function getSalesLead(id: number) {
   const db = getDb()
   const lead = db.select().from(salesLeads).where(eq(salesLeads.id, id)).get()
-  if (!lead) throw new Error(`Sales Lead ${id} not found`)
+  if (lead === undefined) throw new Error(`Sales Lead ${id.toString()} not found`)
   return lead
 }
 
-interface FlatSalesLeadRow {
+export interface FlatSalesLeadRow {
   id: number
   leadNumber: string
   clientId: number
@@ -47,7 +46,7 @@ interface FlatSalesLeadRow {
   clientSurname: string | null
 }
 
-export async function listSalesLeads(params: ListParams) {
+export function listSalesLeads(params: ListParams) {
   const db = getDb()
   const { page = 1, pageSize = 50, search = '', sortBy, sortDir } = params
   const offset = (page - 1) * pageSize
@@ -67,20 +66,20 @@ export async function listSalesLeads(params: ListParams) {
   .leftJoin(clients, eq(salesLeads.clientId, clients.id))
 
   let orderClause = desc(salesLeads.id)
-  if (sortBy) {
+  if (sortBy !== undefined && sortBy !== '') {
     if (sortBy === 'clientName') {
       orderClause = sortDir === 'asc' ? asc(clients.name) : desc(clients.name)
     } else {
       const column = (salesLeads as any)[sortBy]
-      if (column) {
-        orderClause = sortDir === 'asc' ? asc(column) : desc(column)
+      if (column !== undefined && column !== null) {
+        orderClause = sortDir === 'asc' ? asc(column as AnyColumn) : desc(column as AnyColumn)
       }
     }
   }
 
   const countQuery = db.select({ count: sql<number>`count(*)` }).from(salesLeads)
 
-  let items: any[] = []
+  let items: (FlatSalesLeadRow & { client: { name: string | null; surname: string | null } })[] = []
   let total = 0
 
   if (search.trim().length > 0) {
@@ -97,7 +96,7 @@ export async function listSalesLeads(params: ListParams) {
       }
     }))
     const totalRes = filteredCount.get()
-    total = Number(totalRes?.count ?? 0)
+    total = totalRes?.count ?? 0
   } else {
     const rows = baseSelect.orderBy(orderClause).limit(pageSize).offset(offset).all() as FlatSalesLeadRow[]
     items = rows.map((row) => ({
@@ -108,7 +107,7 @@ export async function listSalesLeads(params: ListParams) {
       }
     }))
     const totalRes = countQuery.get()
-    total = Number(totalRes?.count ?? 0)
+    total = totalRes?.count ?? 0
   }
 
   return { items, total, page, pageSize }
@@ -119,7 +118,7 @@ export async function listSalesLeads(params: ListParams) {
 // Low-level helper mapped for the transaction cascades internally used by Sales
 export function modifySalesLeadStatus(tx: DbTransaction, id: number, nextStatus: 'IN_PROGRESS' | 'CLOSED_SALE' | 'CLOSED_NO_SALE') {
   const old = tx.select().from(salesLeads).where(eq(salesLeads.id, id)).get()
-  if (!old) throw new Error(`Lead ${id} missing`)
+  if (old === undefined) throw new Error(`Lead ${id.toString()} missing`)
 
   tx.update(salesLeads).set({
     status: nextStatus,
@@ -131,11 +130,11 @@ export function modifySalesLeadStatus(tx: DbTransaction, id: number, nextStatus:
  * Returns a full lead detail including client info and all associated quotes.
  * Used by the ViewLeadModal to show the complete pipeline for a lead.
  */
-export async function getSalesLeadDetail(id: number) {
+export function getSalesLeadDetail(id: number) {
   const db = getDb()
 
   const lead = db.select().from(salesLeads).where(eq(salesLeads.id, id)).get()
-  if (!lead) throw new Error(`Sales Lead ${id} not found`)
+  if (lead === undefined) throw new Error(`Sales Lead ${id.toString()} not found`)
 
   const client = db.select().from(clients).where(eq(clients.id, lead.clientId)).get()
 

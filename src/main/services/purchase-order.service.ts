@@ -17,29 +17,29 @@ import type {
   LoosePartial
 } from '../../shared/types'
 
-export async function listPurchaseOrders(params: ListParams): Promise<PaginatedResult<PurchaseOrder>> {
+export function listPurchaseOrders(params: ListParams): PaginatedResult<PurchaseOrder> {
   return poRepo.listPurchaseOrders(params)
 }
 
-export async function getPurchaseOrder(id: number): Promise<PurchaseOrderWithItems> {
+export function getPurchaseOrder(id: number): PurchaseOrderWithItems {
   const po = poRepo.getPurchaseOrder(id)
-  if (!po) throw new Error(`Purchase Order ${id} not found`)
+  if (!po) throw new Error(`Purchase Order ${id.toString()} not found`)
   return po
 }
 
-export async function createPurchaseOrder(
+export function createPurchaseOrder(
   data: LoosePartial<Omit<PurchaseOrderInsert, 'id' | 'poNumber' | 'status' | 'createdAt' | 'updatedAt'>>,
   items: Omit<PurchaseOrderItemInsert, 'id' | 'purchaseOrderId'>[]
-): Promise<PurchaseOrder> {
-  const poNumber = await generateId('PO')
+): PurchaseOrder {
+  const poNumber = generateId('PO')
   return poRepo.createPurchaseOrder({ ...data, poNumber }, items)
 }
 
-export async function updatePurchaseOrder(
+export function updatePurchaseOrder(
   id: number,
   data: LoosePartial<PurchaseOrderInsert>,
   items?: Omit<PurchaseOrderItemInsert, 'id' | 'purchaseOrderId'>[]
-): Promise<PurchaseOrder> {
+): PurchaseOrder {
   return poRepo.updatePurchaseOrder(id, data, items)
 }
 
@@ -49,7 +49,7 @@ export async function updatePurchaseOrder(
 import { purchaseOrderItems } from '../../shared/schema'
 import { eq } from 'drizzle-orm'
 
-export async function transitionPurchaseOrder(id: number, nextStatus: 'ORDERED' | 'IN_TRANSIT' | 'DELIVERED' | 'IN_INVENTORY'): Promise<PurchaseOrder> {
+export function transitionPurchaseOrder(id: number, nextStatus: 'ORDERED' | 'IN_TRANSIT' | 'DELIVERED' | 'IN_INVENTORY'): PurchaseOrder {
   const db = getDb()
 
   return db.transaction((tx) => {

@@ -11,25 +11,25 @@ interface PaginationParams {
   search?: string | undefined
 }
 
-export async function createTaxProfile(
+export function createTaxProfile(
   data: { name: string; description?: string | undefined },
   components: { name: string; rate: number }[]
-): Promise<TaxProfileWithComponents> {
+): TaxProfileWithComponents {
   return taxRepo.createTaxProfile(data, components)
 }
 
-export async function getTaxProfile(id: number): Promise<TaxProfileWithComponents> {
+export function getTaxProfile(id: number): TaxProfileWithComponents {
   return taxRepo.getTaxProfile(id)
 }
 
-export async function updateTaxProfile(
+export function updateTaxProfile(
   id: number,
   data: { name?: string | undefined; description?: string | undefined; isActive?: boolean | undefined },
   components?: { name: string; rate: number }[]
-): Promise<TaxProfileWithComponents> {
+): TaxProfileWithComponents {
   return taxRepo.updateTaxProfile(id, data, components)
 }
 
-export async function listTaxProfiles(params: PaginationParams) {
+export function listTaxProfiles(params: PaginationParams) {
   return taxRepo.listTaxProfiles(params)
 }
