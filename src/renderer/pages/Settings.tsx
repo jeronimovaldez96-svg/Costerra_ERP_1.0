@@ -40,15 +40,15 @@ export function Settings() {
   const [updateStatus, setUpdateStatus] = useState<UpdateStatus>({ state: 'idle' })
 
   useEffect(() => {
-    fetchBackups()
-    fetchInterval()
-    fetchDirectory()
+    void fetchBackups()
+    void fetchInterval()
+    void fetchDirectory()
     
     // Initial update status
-    window.api.invoke<UpdateStatus>(IPC_CHANNELS.UPDATE_GET_STATUS).then(setUpdateStatus)
+    void window.api.invoke<UpdateStatus>(IPC_CHANNELS.UPDATE_GET_STATUS).then(setUpdateStatus)
 
     // Listen for update events
-    const unsubscribe = window.api.on('update:status', (status: any) => {
+    const unsubscribe = window.api.on('update:status', (status: UpdateStatus) => {
       setUpdateStatus(status)
     })
 
@@ -60,7 +60,7 @@ export function Settings() {
       const res = await window.api.invoke<BackupLog[]>('backup:list')
       setBackups(res.slice(0, 5)) // Show only last 5
     } catch (error) {
-      console.error('Failed to fetch backups', error)
+      toast.error('Failed to fetch backups', (error as Error).message)
     }
   }
 
@@ -69,7 +69,7 @@ export function Settings() {
       const res = await window.api.invoke<string>('settings:get', { key: 'BACKUP_INTERVAL_HOURS', defaultValue: '24' })
       setBackupInterval(res)
     } catch (error) {
-      console.error('Failed to fetch interval', error)
+      toast.error('Failed to fetch interval', (error as Error).message)
     }
   }
 
@@ -78,7 +78,7 @@ export function Settings() {
       const res = await window.api.invoke<string>('settings:get', { key: 'BACKUP_DIRECTORY', defaultValue: '' })
       setBackupDirectory(res)
     } catch (error) {
-      console.error('Failed to fetch directory', error)
+      toast.error('Failed to fetch directory', (error as Error).message)
     }
   }
 
@@ -99,7 +99,7 @@ export function Settings() {
       const path = await window.api.invoke<string | null>('system:select-directory', {
         title: 'Select Auto-Backup Directory'
       })
-      if (path) {
+      if (path !== null && path !== '') {
         setIsSavingDirectory(true)
         await window.api.invoke('settings:update', { key: 'BACKUP_DIRECTORY', value: path })
         setBackupDirectory(path)
@@ -123,12 +123,12 @@ export function Settings() {
         filters: [{ name: 'Database Files', extensions: ['db'] }]
       })
 
-      if (!filePath) return
+      if (filePath === null || filePath === '') return
 
       setIsBackingUp(true)
       await window.api.invoke('backup:create', { isAutomatic: false, filePath })
       toast.success('Backup Successful', `Manual backup saved to: ${filePath}`)
-      fetchBackups()
+      void fetchBackups()
     } catch (error) {
       toast.error('Backup Failed', (error as Error).message)
     } finally {
@@ -144,7 +144,7 @@ export function Settings() {
         filters: [{ name: 'Database Files', extensions: ['db'] }]
       })
 
-      if (!filePath) return
+      if (filePath === null || filePath === '') return
 
       if (window.confirm('Are you sure you want to IMPORT and RESTORE this database? This will completely overwrite your current data.')) {
         setIsRestoring(true)
@@ -180,7 +180,7 @@ export function Settings() {
     setIsExporting(true)
     try {
       const res = await window.api.invoke<{ filePath: string }>('export:xlsx', { entity: 'sales' })
-      if (res?.filePath) {
+      if (res.filePath !== '') {
         toast.success('Export Complete', `File saved to ${res.filePath}`)
       } else {
         toast.info('Export Cancelled', 'No file was selected.')
@@ -209,9 +209,9 @@ export function Settings() {
   }
 
   // Update Handlers
-  const handleCheckUpdate = () => window.api.invoke(IPC_CHANNELS.UPDATE_CHECK)
-  const handleDownloadUpdate = () => window.api.invoke(IPC_CHANNELS.UPDATE_DOWNLOAD)
-  const handleInstallUpdate = () => window.api.invoke(IPC_CHANNELS.UPDATE_INSTALL)
+  const handleCheckUpdate = () => { void window.api.invoke(IPC_CHANNELS.UPDATE_CHECK) }
+  const handleDownloadUpdate = () => { void window.api.invoke(IPC_CHANNELS.UPDATE_DOWNLOAD) }
+  const handleInstallUpdate = () => { void window.api.invoke(IPC_CHANNELS.UPDATE_INSTALL) }
 
   return (
     <PageContainer title="Settings">
@@ -228,11 +228,11 @@ export function Settings() {
               <div className="flex flex-col gap-2">
                 <h3 className="font-medium text-slate-200 text-sm uppercase tracking-wider">Manual Operations</h3>
                 <div className="flex flex-wrap gap-3 mt-1">
-                  <Button onClick={handleBackup} isLoading={isBackingUp} size="sm">
+                  <Button onClick={() => { void handleBackup(); }} isLoading={isBackingUp} size="sm">
                     <Database size={14} className="mr-2" />
                     Create Backup (Save As...)
                   </Button>
-                  <Button variant="secondary" onClick={handleImportBackup} isLoading={isImporting || isRestoring} size="sm">
+                  <Button variant="secondary" onClick={() => { void handleImportBackup(); }} isLoading={isImporting || isRestoring} size="sm">
                     <Upload size={14} className="mr-2" />
                     Restore from File
                   </Button>

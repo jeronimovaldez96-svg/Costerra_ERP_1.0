@@ -2,7 +2,7 @@
 // Costerra ERP v2 — Create Quote Modal
 // ────────────────────────────────────────────────────────
 
-import { useState, useCallback, useEffect, type FormEvent } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { Modal } from '../ui/Modal'
 import { Input } from '../ui/Input'
 import { Textarea } from '../ui/Textarea'
@@ -126,11 +126,12 @@ export function CreateQuoteModal({ isOpen, onClose, onCreated }: CreateQuoteModa
     setLineItems((prev) =>
       prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
     )
-    if (errors.rows?.[index]?.[field]) {
+    if (errors.rows?.[index]?.[field] !== undefined) {
       setErrors((prev) => {
         const newRows = { ...prev.rows }
-        if (newRows[index]) {
-          newRows[index] = { ...newRows[index], [field]: undefined }
+        const row = newRows[index]
+        if (row !== undefined) {
+          newRows[index] = { ...row, [field]: undefined }
         }
         return { ...prev, rows: newRows }
       })
@@ -141,7 +142,7 @@ export function CreateQuoteModal({ isOpen, onClose, onCreated }: CreateQuoteModa
     updateLineItem(index, 'productId', productIdStr)
     const product = products.find((p) => p.id === parseInt(productIdStr, 10))
     setLineItems((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, unitPrice: product?.defaultUnitPrice || 0 } : item))
+      prev.map((item, i) => (i === index ? { ...item, unitPrice: product?.defaultUnitPrice ?? 0 } : item))
     )
   }
 
@@ -149,23 +150,20 @@ export function CreateQuoteModal({ isOpen, onClose, onCreated }: CreateQuoteModa
   const validate = (): boolean => {
     const newErrors: FormErrors = {}
 
-    if (!salesLeadId) newErrors.salesLeadId = 'Sales lead is required'
+    if (salesLeadId === '') newErrors.salesLeadId = 'Sales lead is required'
 
     const rowErrors: FormErrors['rows'] = {}
-    let hasRowError = false
 
     lineItems.forEach((item, i) => {
       const rowErr: Partial<Record<'productId' | 'quantity', string>> = {}
 
       if (!item.productId) {
         rowErr.productId = 'Required'
-        hasRowError = true
       }
 
       const qty = parseInt(item.quantity, 10)
       if (isNaN(qty) || qty < 1) {
         rowErr.quantity = '≥ 1'
-        hasRowError = true
       }
 
       if (Object.keys(rowErr).length > 0) {
@@ -173,7 +171,7 @@ export function CreateQuoteModal({ isOpen, onClose, onCreated }: CreateQuoteModa
       }
     })
 
-    if (hasRowError) newErrors.rows = rowErrors
+    if (Object.keys(rowErrors).length > 0) newErrors.rows = rowErrors
     if (lineItems.length === 0) newErrors.lineItems = 'At least one line item is required'
 
     setErrors(newErrors)
@@ -181,7 +179,7 @@ export function CreateQuoteModal({ isOpen, onClose, onCreated }: CreateQuoteModa
   }
 
   // ─── Submit ──────────────────────────────────────────
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validate()) return
 

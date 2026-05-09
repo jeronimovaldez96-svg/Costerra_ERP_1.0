@@ -48,7 +48,6 @@ export function transitionQuote(id: number, nextStatus: 'SENT' | 'REJECTED' | 'S
 
   return db.transaction((tx) => {
     const oldQuote = quoteRepo.getQuote(id)
-    if (!oldQuote) throw new Error(`Quote ${id.toString()} not found`)
 
     if (nextStatus === 'SENT') {
       // 1. Create version snapshot

@@ -3,7 +3,7 @@
 // Handles atomic DB insertions for POs and locking logic.
 // ────────────────────────────────────────────────────────
 
-import { eq, desc, asc, like, or, sql, type AnyColumn } from 'drizzle-orm'
+import { eq, desc, asc, like, or, sql, getTableColumns } from 'drizzle-orm'
 import { getDb } from '../database/client'
 import { purchaseOrders, purchaseOrderItems, products, suppliers } from '../../shared/schema'
 import type { 
@@ -47,9 +47,10 @@ export function listPurchaseOrders(params: ListParams): PaginatedResult<Purchase
 
   let orderClause = desc(purchaseOrders.id)
   if (sortBy !== undefined && sortBy !== '') {
-    const column = (purchaseOrders as any)[sortBy]
-    if (column !== undefined && column !== null) {
-      orderClause = sortDir === 'asc' ? asc(column as AnyColumn) : desc(column as AnyColumn)
+    const columns = getTableColumns(purchaseOrders)
+    const column = columns[sortBy as keyof typeof columns]
+    if (column !== undefined) {
+      orderClause = sortDir === 'asc' ? asc(column) : desc(column)
     }
   }
 

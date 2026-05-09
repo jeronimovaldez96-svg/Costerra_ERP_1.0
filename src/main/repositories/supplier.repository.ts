@@ -3,7 +3,7 @@
 // Drizzle queries for the Supplier entity.
 // ────────────────────────────────────────────────────────
 
-import { eq, desc, asc, like, or, sql, type AnyColumn } from 'drizzle-orm'
+import { eq, desc, asc, like, or, sql, getTableColumns } from 'drizzle-orm'
 import { getDb } from '../database/client'
 import { suppliers, supplierHistory } from '../../shared/schema'
 import type { Supplier, SupplierInsert, SupplierWithHistory, PaginatedResult, LoosePartial } from '../../shared/types'
@@ -27,9 +27,10 @@ export function listSuppliers(
 
   let orderClause = desc(suppliers.createdAt)
   if (sortBy !== undefined && sortBy !== '') {
-    const column = (suppliers as any)[sortBy]
-    if (column !== undefined && column !== null) {
-      orderClause = sortDir === 'asc' ? asc(column as AnyColumn) : desc(column as AnyColumn)
+    const columns = getTableColumns(suppliers)
+    const column = columns[sortBy as keyof typeof columns]
+    if (column !== undefined) {
+      orderClause = sortDir === 'asc' ? asc(column) : desc(column)
     }
   }
 

@@ -77,7 +77,7 @@ export function Invoices() {
   }, [])
 
   useEffect(() => {
-    fetchSales(page, search, sortBy, sortDir)
+    void fetchSales(page, search, sortBy, sortDir)
   }, [page, search, sortBy, sortDir, fetchSales])
 
   return (

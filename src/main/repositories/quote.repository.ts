@@ -9,7 +9,7 @@ import { salesLeads } from '../../shared/schema/sales-lead'
 import { clients } from '../../shared/schema/client'
 import { products } from '../../shared/schema/product'
 import { taxProfiles, taxProfileComponents } from '../../shared/schema/tax'
-import { eq, desc, asc, sql, type AnyColumn, like } from 'drizzle-orm'
+import { eq, desc, asc, sql, getTableColumns, like } from 'drizzle-orm'
 import { generateId } from '../utils/id-generator'
 import type { ListParams } from '../../shared/types'
 
@@ -68,7 +68,7 @@ function getQuoteById(txOrDb: DbTransaction | ReturnType<typeof getDb>, id: numb
   let taxProfile = null
   if (quote.taxProfileId !== null) {
     const profile = txOrDb.select().from(taxProfiles).where(eq(taxProfiles.id, quote.taxProfileId)).get()
-    if (profile) {
+    if (profile !== undefined) {
       const components = txOrDb.select().from(taxProfileComponents).where(eq(taxProfileComponents.taxProfileId, profile.id)).all()
       taxProfile = { ...profile, components }
     }
@@ -127,9 +127,10 @@ export function listQuotes(params: ListParams) {
     if (sortBy === 'clientName') {
       orderClause = sortDir === 'asc' ? asc(clients.name) : desc(clients.name)
     } else {
-      const column = (quotes as any)[sortBy]
-      if (column !== undefined && column !== null) {
-        orderClause = sortDir === 'asc' ? asc(column as AnyColumn) : desc(column as AnyColumn)
+      const columns = getTableColumns(quotes)
+      const column = columns[sortBy as keyof typeof columns]
+      if (column !== undefined) {
+        orderClause = sortDir === 'asc' ? asc(column) : desc(column)
       }
     }
   }

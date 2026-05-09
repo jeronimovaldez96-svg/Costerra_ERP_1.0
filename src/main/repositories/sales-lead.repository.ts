@@ -6,7 +6,7 @@ import { getDb } from '../database/client'
 import { salesLeads } from '../../shared/schema/sales-lead'
 import { clients } from '../../shared/schema/client'
 import { quotes } from '../../shared/schema/quote'
-import { eq, desc, asc, like, sql, type AnyColumn } from 'drizzle-orm'
+import { eq, desc, asc, like, sql, getTableColumns } from 'drizzle-orm'
 import { generateId } from '../utils/id-generator'
 import type { DbTransaction } from '../database/client'
 import type { ListParams } from '../../shared/types'
@@ -70,9 +70,10 @@ export function listSalesLeads(params: ListParams) {
     if (sortBy === 'clientName') {
       orderClause = sortDir === 'asc' ? asc(clients.name) : desc(clients.name)
     } else {
-      const column = (salesLeads as any)[sortBy]
-      if (column !== undefined && column !== null) {
-        orderClause = sortDir === 'asc' ? asc(column as AnyColumn) : desc(column as AnyColumn)
+      const columns = getTableColumns(salesLeads)
+      const column = columns[sortBy as keyof typeof columns]
+      if (column !== undefined) {
+        orderClause = sortDir === 'asc' ? asc(column) : desc(column)
       }
     }
   }

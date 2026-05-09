@@ -48,8 +48,8 @@ const columns: ColumnDef<SalesLead>[] = [
     cell: ({ row }) => {
       const status = row.original.status
       return (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${statusColors[status] || 'bg-slate-500/10 text-slate-400 border-slate-500/20'}`}>
-          {statusLabels[status] || status.replace('_', ' ')}
+        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${(statusColors[status] ?? 'bg-slate-500/10 text-slate-400 border-slate-500/20')}`}>
+          {statusLabels[status] ?? status.replace('_', ' ')}
         </span>
       )
     }
@@ -89,11 +89,11 @@ export function Leads() {
   }, [])
 
   useEffect(() => {
-    fetchLeads(page, search, sortBy, sortDir)
+    void fetchLeads(page, search, sortBy, sortDir)
   }, [page, search, sortBy, sortDir, fetchLeads])
 
   const handleLeadCreated = useCallback(() => {
-    fetchLeads(page, search, sortBy, sortDir)
+    void fetchLeads(page, search, sortBy, sortDir)
   }, [page, search, sortBy, sortDir, fetchLeads])
 
   return (

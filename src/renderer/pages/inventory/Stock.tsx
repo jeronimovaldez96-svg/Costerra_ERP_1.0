@@ -38,12 +38,12 @@ const columns: ColumnDef<InventorySummary>[] = [
   { 
     accessorKey: 'avgUnitCost', 
     header: 'Avg Cost',
-    cell: ({ row }) => `$${(row.original.avgUnitCost ?? 0).toFixed(2)}`
+    cell: ({ row }) => `$${row.original.avgUnitCost.toFixed(2)}`
   },
   { 
     accessorKey: 'totalStockValue', 
     header: 'Total Value',
-    cell: ({ row }) => <span className="font-semibold text-white">${(row.original.totalStockValue ?? 0).toFixed(2)}</span>
+    cell: ({ row }) => <span className="font-semibold text-white">${row.original.totalStockValue.toFixed(2)}</span>
   }
 ]
 
@@ -73,7 +73,7 @@ export function Stock() {
   }, [])
 
   useEffect(() => {
-    fetchStock(search, sortBy, sortDir)
+    void fetchStock(search, sortBy, sortDir)
   }, [search, sortBy, sortDir, fetchStock])
 
   return (

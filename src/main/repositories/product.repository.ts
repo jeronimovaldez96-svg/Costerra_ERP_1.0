@@ -3,7 +3,7 @@
 // Drizzle queries for the Product entity.
 // ────────────────────────────────────────────────────────
 
-import { eq, desc, asc, like, or, sql, type AnyColumn } from 'drizzle-orm'
+import { eq, desc, asc, like, or, sql, getTableColumns } from 'drizzle-orm'
 import { getDb } from '../database/client'
 import { products, productHistory } from '../../shared/schema'
 import type { Product, ProductInsert, ProductWithHistory, PaginatedResult, LoosePartial } from '../../shared/types'
@@ -34,9 +34,10 @@ export function listProducts(
   // Build order by clause
   let orderClause = desc(products.createdAt)
   if (sortBy !== undefined && sortBy !== '') {
-    const column = (products as any)[sortBy]
-    if (column !== undefined && column !== null) {
-      orderClause = sortDir === 'asc' ? asc(column as AnyColumn) : desc(column as AnyColumn)
+    const columns = getTableColumns(products)
+    const column = columns[sortBy as keyof typeof columns]
+    if (column !== undefined) {
+      orderClause = sortDir === 'asc' ? asc(column) : desc(column)
     }
   }
 

@@ -4,7 +4,7 @@
 // then submit to po:create. PO number is auto-generated.
 // ────────────────────────────────────────────────────────
 
-import { useState, useCallback, useEffect, type FormEvent } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { Modal } from '../ui/Modal'
 import { Input } from '../ui/Input'
 import { Textarea } from '../ui/Textarea'
@@ -118,11 +118,12 @@ export function CreatePurchaseOrderModal({ isOpen, onClose, onCreated }: CreateP
       prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
     )
     // Clear row-level error on change
-    if (errors.rows?.[index]?.[field]) {
+    if (errors.rows?.[index]?.[field] !== undefined) {
       setErrors((prev) => {
         const newRows = { ...prev.rows }
-        if (newRows[index]) {
-          newRows[index] = { ...newRows[index], [field]: undefined }
+        const row = newRows[index]
+        if (row !== undefined) {
+          newRows[index] = { ...row, [field]: undefined }
         }
         return { ...prev, rows: newRows }
       })
@@ -145,29 +146,25 @@ export function CreatePurchaseOrderModal({ isOpen, onClose, onCreated }: CreateP
   const validate = (): boolean => {
     const newErrors: FormErrors = {}
 
-    if (!supplierId) newErrors.supplierId = 'Supplier is required'
+    if (supplierId === '') newErrors.supplierId = 'Supplier is required'
 
     const rowErrors: FormErrors['rows'] = {}
-    let hasRowError = false
 
     lineItems.forEach((item, i) => {
       const rowErr: Partial<Record<'productId' | 'quantity' | 'unitCost', string>> = {}
 
       if (!item.productId) {
         rowErr.productId = 'Required'
-        hasRowError = true
       }
 
       const qty = parseInt(item.quantity, 10)
       if (isNaN(qty) || qty < 1) {
         rowErr.quantity = '≥ 1'
-        hasRowError = true
       }
 
       const cost = parseFloat(item.unitCost)
       if (isNaN(cost) || cost < 0) {
         rowErr.unitCost = '≥ 0'
-        hasRowError = true
       }
 
       if (Object.keys(rowErr).length > 0) {
@@ -175,7 +172,7 @@ export function CreatePurchaseOrderModal({ isOpen, onClose, onCreated }: CreateP
       }
     })
 
-    if (hasRowError) newErrors.rows = rowErrors
+    if (Object.keys(rowErrors).length > 0) newErrors.rows = rowErrors
     if (lineItems.length === 0) newErrors.lineItems = 'At least one line item is required'
 
     setErrors(newErrors)
@@ -183,7 +180,7 @@ export function CreatePurchaseOrderModal({ isOpen, onClose, onCreated }: CreateP
   }
 
   // ─── Submit ──────────────────────────────────────────
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validate()) return
 
@@ -219,7 +216,7 @@ export function CreatePurchaseOrderModal({ isOpen, onClose, onCreated }: CreateP
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Create Purchase Order" className="max-w-2xl">
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={(e) => { void handleSubmit(e); }} className="space-y-5">
         {/* Header */}
         <div className="flex items-center gap-3 pb-2 border-b border-white/5">
           <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400">
