@@ -16,12 +16,14 @@ import { registerSaleHandlers } from './sale.handlers'
 import { registerPdfHandlers } from './pdf.handlers'
 import { registerReturnHandlers } from './return.handlers'
 import { registerSystemHandlers } from './system.handlers'
+import { registerDashboardHandlers } from './dashboard.handlers'
 
 /**
  * Registers all IPC handlers for every module.
  * Each module's handler file calls `registerRoute` for its channels.
  */
 export function registerAllIpcHandlers(): void {
+  registerDashboardHandlers()
   registerProductHandlers()
   registerSupplierHandlers()
   registerClientHandlers()

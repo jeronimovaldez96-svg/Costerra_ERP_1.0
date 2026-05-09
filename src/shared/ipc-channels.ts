@@ -4,6 +4,9 @@
 // ────────────────────────────────────────────────────────
 
 export const IPC_CHANNELS = {
+  // ─── Dashboard ─────────────────────────────────────
+  DASHBOARD_METRICS: 'dashboard:metrics',
+
   // ─── Product ───────────────────────────────────────
   PRODUCT_LIST: 'product:list',
   PRODUCT_GET: 'product:get',
