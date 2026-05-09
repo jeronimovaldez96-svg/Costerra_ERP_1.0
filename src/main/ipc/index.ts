@@ -17,6 +17,7 @@ import { registerPdfHandlers } from './pdf.handlers'
 import { registerReturnHandlers } from './return.handlers'
 import { registerSystemHandlers } from './system.handlers'
 import { registerDashboardHandlers } from './dashboard.handlers'
+import { registerUpdateHandlers } from './update.handlers'
 
 /**
  * Registers all IPC handlers for every module.
@@ -36,4 +37,5 @@ export function registerAllIpcHandlers(): void {
   registerPdfHandlers()
   registerReturnHandlers()
   registerSystemHandlers()
+  registerUpdateHandlers()
 }

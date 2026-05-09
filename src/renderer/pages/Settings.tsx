@@ -3,7 +3,7 @@ import { PageContainer } from '../components/layout/PageContainer'
 import { GlassCard } from '../components/layout/GlassCard'
 import { Button } from '../components/ui/Button'
 import { toast } from '../store/useToastStore'
-import { Download, Database, RefreshCcw, Upload, History, Clock } from 'lucide-react'
+import { Download, Database, RefreshCcw, Upload, History, Clock, ArrowUpCircle, ShieldCheck, AlertCircle } from 'lucide-react'
 
 interface BackupLog {
   filename: string
@@ -12,6 +12,15 @@ interface BackupLog {
   isAutomatic: boolean
   createdAt: string
 }
+
+type UpdateStatus = 
+  | { state: 'idle' }
+  | { state: 'checking' }
+  | { state: 'available'; version: string }
+  | { state: 'not-available' }
+  | { state: 'downloading'; percent: number }
+  | { state: 'ready'; version: string }
+  | { state: 'error'; message: string }
 
 export function Settings() {
   const [isBackingUp, setIsBackingUp] = useState(false)
@@ -26,10 +35,23 @@ export function Settings() {
   const [isSavingInterval, setIsSavingInterval] = useState(false)
   const [isSavingDirectory, setIsSavingDirectory] = useState(false)
 
+  // Update System State
+  const [updateStatus, setUpdateStatus] = useState<UpdateStatus>({ state: 'idle' })
+
   useEffect(() => {
     fetchBackups()
     fetchInterval()
     fetchDirectory()
+    
+    // Initial update status
+    window.api.invoke<UpdateStatus>('update:get-status').then(setUpdateStatus)
+
+    // Listen for update events
+    const unsubscribe = window.api.on('update:status', (status: any) => {
+      setUpdateStatus(status)
+    })
+
+    return () => unsubscribe()
   }, [])
 
   const fetchBackups = async () => {
@@ -185,10 +207,16 @@ export function Settings() {
     }
   }
 
+  // Update Handlers
+  const handleCheckUpdate = () => window.api.invoke('update:check')
+  const handleDownloadUpdate = () => window.api.invoke('update:download')
+  const handleInstallUpdate = () => window.api.invoke('update:install')
+
   return (
     <PageContainer title="Settings">
       <div className="space-y-6 max-w-4xl">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Backup Card */}
           <GlassCard className="h-full">
             <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
               <Database size={20} className="text-primary-400" />
@@ -249,43 +277,138 @@ export function Settings() {
             </div>
           </GlassCard>
 
+          {/* Update Card */}
           <GlassCard className="h-full">
-            <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-              <History size={20} className="text-primary-400" />
-              Recent Backups
+            <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
+              <ArrowUpCircle size={20} className="text-primary-400" />
+              Application Update
             </h2>
-            
-            <div className="space-y-3">
-              {backups.length === 0 ? (
-                <div className="text-center py-8 text-slate-500 text-sm">
-                  No local backups found.
-                </div>
-              ) : (
-                backups.map((b) => (
-                  <div key={b.createdAt} className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
-                    <div className="min-w-0">
-                      <p className="text-sm font-medium text-slate-200 truncate">{b.filename}</p>
-                      <p className="text-xs text-slate-500">
-                        {new Date(b.createdAt).toLocaleString()} • {(b.sizeBytes / 1024 / 1024).toFixed(1)} MB
-                        {b.isAutomatic && <span className="ml-2 text-primary-400/80 font-semibold uppercase text-[10px]">Auto</span>}
-                      </p>
+
+            <div className="space-y-6">
+              <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary-500/20 text-primary-400">
+                      <ShieldCheck size={20} />
                     </div>
-                    <Button 
-                      variant="secondary" 
-                      size="sm" 
-                      onClick={() => handleRestoreFromHistory(b.filePath)}
-                      disabled={isRestoring}
-                      className="ml-4 shrink-0"
-                    >
-                      Restore
+                    <div>
+                      <p className="text-sm font-medium text-white">Current Version</p>
+                      <p className="text-xs text-slate-400">Costerra ERP v1.0.0</p>
+                    </div>
+                  </div>
+                  {updateStatus.state === 'idle' && (
+                    <Button variant="secondary" size="sm" onClick={handleCheckUpdate}>
+                      Check for Updates
+                    </Button>
+                  )}
+                </div>
+
+                {/* Status Driven UI */}
+                {updateStatus.state === 'checking' && (
+                  <div className="flex items-center gap-2 text-slate-400 text-sm animate-pulse">
+                    <RefreshCcw size={14} className="animate-spin" />
+                    Checking GitHub for the latest release...
+                  </div>
+                )}
+
+                {updateStatus.state === 'available' && (
+                  <div className="space-y-3">
+                    <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm flex items-center gap-2">
+                      <ArrowUpCircle size={16} />
+                      New version available: {updateStatus.version}
+                    </div>
+                    <Button className="w-full" onClick={handleDownloadUpdate}>
+                      Download & Install Now
                     </Button>
                   </div>
-                ))
-              )}
+                )}
+
+                {updateStatus.state === 'not-available' && (
+                  <div className="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm flex items-center gap-2">
+                    <ShieldCheck size={16} />
+                    You are running the latest version!
+                  </div>
+                )}
+
+                {updateStatus.state === 'downloading' && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs text-slate-400">
+                      <span>Downloading...</span>
+                      <span>{Math.round(updateStatus.percent)}%</span>
+                    </div>
+                    <div className="w-full bg-slate-800 rounded-full h-1.5">
+                      <div 
+                        className="bg-primary-500 h-1.5 rounded-full transition-all duration-300" 
+                        style={{ width: `${updateStatus.percent}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {updateStatus.state === 'ready' && (
+                  <div className="space-y-3">
+                    <div className="p-3 rounded-lg bg-primary-500/20 border border-primary-500/30 text-white text-sm">
+                      Update {updateStatus.version} is ready to install!
+                    </div>
+                    <Button className="w-full bg-primary-600 hover:bg-primary-500" onClick={handleInstallUpdate}>
+                      Restart to Apply Update
+                    </Button>
+                  </div>
+                )}
+
+                {updateStatus.state === 'error' && (
+                  <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-start gap-2">
+                    <AlertCircle size={16} className="shrink-0 mt-0.5" />
+                    <p>{updateStatus.message}</p>
+                  </div>
+                )}
+              </div>
+              
+              <p className="text-xs text-slate-500 italic">
+                Updates are fetched from the official GitHub repository. Always ensure you have a stable internet connection.
+              </p>
             </div>
           </GlassCard>
         </div>
 
+        {/* Recent Backups Card (Moved to full width row) */}
+        <GlassCard>
+          <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+            <History size={20} className="text-primary-400" />
+            Recent Backups
+          </h2>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {backups.length === 0 ? (
+              <div className="col-span-full text-center py-8 text-slate-500 text-sm">
+                No local backups found.
+              </div>
+            ) : (
+              backups.map((b) => (
+                <div key={b.createdAt} className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-slate-200 truncate">{b.filename}</p>
+                    <p className="text-xs text-slate-500">
+                      {new Date(b.createdAt).toLocaleString()} • {(b.sizeBytes / 1024 / 1024).toFixed(1)} MB
+                      {b.isAutomatic && <span className="ml-2 text-primary-400/80 font-semibold uppercase text-[10px]">Auto</span>}
+                    </p>
+                  </div>
+                  <Button 
+                    variant="secondary" 
+                    size="sm" 
+                    onClick={() => handleRestoreFromHistory(b.filePath)}
+                    disabled={isRestoring}
+                    className="ml-4 shrink-0"
+                  >
+                    Restore
+                  </Button>
+                </div>
+              ))
+            )}
+          </div>
+        </GlassCard>
+
+        {/* Data Management Card */}
         <GlassCard>
           <h2 className="text-xl font-semibold text-white mb-6 flex items-center gap-2">
             <Download size={20} className="text-emerald-400" />
