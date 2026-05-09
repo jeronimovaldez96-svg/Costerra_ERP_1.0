@@ -10,7 +10,7 @@ import { salesLeads } from '../../shared/schema/sales-lead'
 import { clients } from '../../shared/schema/client'
 import { taxProfileComponents } from '../../shared/schema/tax'
 import { products } from '../../shared/schema/product'
-import { eq, desc, asc, sql, type AnyColumn, like } from 'drizzle-orm'
+import { eq, desc, asc, sql, getTableColumns, like } from 'drizzle-orm'
 import type { ListParams } from '../../shared/types'
 import { generateId } from '../utils/id-generator'
 import { getQuoteLineItems, transitionQuoteStatus } from './quote.repository'
@@ -191,9 +191,10 @@ export function listSales(params: ListParams) {
     if (sortBy === 'clientName') {
       orderClause = sortDir === 'asc' ? asc(clients.name) : desc(clients.name)
     } else {
-      const column = (sales as any)[sortBy]
-      if (column !== undefined && column !== null) {
-        orderClause = sortDir === 'asc' ? asc(column as AnyColumn) : desc(column as AnyColumn)
+      const columns = getTableColumns(sales)
+      const column = columns[sortBy as keyof typeof columns]
+      if (column !== undefined) {
+        orderClause = sortDir === 'asc' ? asc(column) : desc(column)
       }
     }
   }

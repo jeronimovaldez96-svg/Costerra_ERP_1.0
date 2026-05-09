@@ -20,8 +20,8 @@ const api = {
   invoke: async <T = unknown>(channel: IpcChannel, ...args: unknown[]): Promise<T> => {
     const response = (await ipcRenderer.invoke(channel, ...args)) as IpcResponse<T>
 
-    if (!response.success) {
-      throw new Error(response.error || `IPC error on channel ${channel}`)
+    if (response.success === false) {
+      throw new Error(response.error ?? `IPC error on channel ${channel}`)
     }
 
     return response.data as T

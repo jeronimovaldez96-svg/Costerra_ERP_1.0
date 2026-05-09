@@ -3,7 +3,7 @@
 // Collects product catalog data and sends to product:create.
 // ────────────────────────────────────────────────────────
 
-import { useState, useCallback, type FormEvent } from 'react'
+import React, { useState, useCallback } from 'react'
 import { Modal } from '../ui/Modal'
 import { Input } from '../ui/Input'
 import { Button } from '../ui/Button'
@@ -52,7 +52,7 @@ export function CreateProductModal({ isOpen, onClose, onCreated }: CreateProduct
   const updateField = (field: keyof FormState, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }))
     // Clear field-level error on change
-    if (errors[field]) {
+    if (errors[field] !== undefined) {
       setErrors((prev) => ({ ...prev, [field]: undefined }))
     }
   }
@@ -75,7 +75,7 @@ export function CreateProductModal({ isOpen, onClose, onCreated }: CreateProduct
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validate()) return
 
@@ -103,7 +103,7 @@ export function CreateProductModal({ isOpen, onClose, onCreated }: CreateProduct
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Add New Product">
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={(e) => { void handleSubmit(e); }} className="space-y-5">
         {/* Header icon */}
         <div className="flex items-center gap-3 pb-2 border-b border-white/5">
           <div className="p-2 rounded-lg bg-primary-500/10 text-primary-400">

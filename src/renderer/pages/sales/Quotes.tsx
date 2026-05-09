@@ -84,11 +84,11 @@ export function Quotes() {
   }, [])
 
   useEffect(() => {
-    fetchQuotes(page, search, sortBy, sortDir)
+    void fetchQuotes(page, search, sortBy, sortDir)
   }, [page, search, sortBy, sortDir, fetchQuotes])
 
   const handleQuoteCreated = useCallback(() => {
-    fetchQuotes(page, search, sortBy, sortDir)
+    void fetchQuotes(page, search, sortBy, sortDir)
   }, [page, search, sortBy, sortDir, fetchQuotes])
 
   return (

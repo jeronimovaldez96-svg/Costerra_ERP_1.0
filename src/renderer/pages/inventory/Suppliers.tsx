@@ -56,11 +56,11 @@ export function Suppliers() {
   }, [])
 
   useEffect(() => {
-    fetchSuppliers(page, search, sortBy, sortDir)
+    void fetchSuppliers(page, search, sortBy, sortDir)
   }, [page, search, sortBy, sortDir, fetchSuppliers])
 
   const handleSupplierCreated = useCallback(() => {
-    fetchSuppliers(page, search, sortBy, sortDir)
+    void fetchSuppliers(page, search, sortBy, sortDir)
   }, [page, search, sortBy, sortDir, fetchSuppliers])
 
   return (

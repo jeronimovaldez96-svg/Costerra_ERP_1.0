@@ -105,16 +105,16 @@ export function DataTable<TData, TValue>({
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
-                  const isSortable = Boolean(onSortChange) && header.column.id
+                  const isSortable = onSortChange !== undefined && Boolean(header.column.id)
                   const isActiveSort = sortConfig?.id === header.column.id
                   return (
                     <th 
                       key={header.id} 
                       className={cn(
                         "px-6 py-4 font-medium whitespace-nowrap select-none",
-                        isSortable && "cursor-pointer hover:text-slate-300 transition-colors group"
+                        isSortable ? "cursor-pointer hover:text-slate-300 transition-colors group" : ""
                       )}
-                      onClick={() => isSortable && handleSort(header.column.id)}
+                      onClick={() => { if (isSortable) handleSort(header.column.id); }}
                     >
                       {header.isPlaceholder ? null : (
                         <div className="flex items-center gap-2">
@@ -122,7 +122,7 @@ export function DataTable<TData, TValue>({
                             header.column.columnDef.header,
                             header.getContext()
                           )}
-                          {isSortable && (
+                          {isSortable ? (
                             <span className="text-slate-500">
                               {isActiveSort ? (
                                 sortConfig.desc ? <ArrowDown size={14} className="text-primary-400" /> : <ArrowUp size={14} className="text-primary-400" />
@@ -130,7 +130,7 @@ export function DataTable<TData, TValue>({
                                 <ArrowUpDown size={14} className="opacity-0 group-hover:opacity-50 transition-opacity" />
                               )}
                             </span>
-                          )}
+                          ) : null}
                         </div>
                       )}
                     </th>
@@ -140,7 +140,7 @@ export function DataTable<TData, TValue>({
             ))}
           </thead>
           <tbody>
-            {table.getRowModel().rows?.length ? (
+            {table.getRowModel().rows.length > 0 ? (
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}

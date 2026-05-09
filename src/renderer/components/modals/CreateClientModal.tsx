@@ -2,7 +2,7 @@
 // Costerra ERP v2 — Create Client Modal
 // ────────────────────────────────────────────────────────
 
-import { useState, type FormEvent } from 'react'
+import React, { useState } from 'react'
 import { Modal } from '../ui/Modal'
 import { Input } from '../ui/Input'
 import { Textarea } from '../ui/Textarea'
@@ -50,7 +50,7 @@ export function CreateClientModal({ isOpen, onClose, onCreated }: CreateClientMo
 
   const updateField = (field: keyof FormState, value: string) => {
     setForm(prev => ({ ...prev, [field]: value }))
-    if (errors[field]) {
+    if (errors[field] !== undefined) {
       setErrors(prev => ({ ...prev, [field]: undefined }))
     }
   }
@@ -65,7 +65,7 @@ export function CreateClientModal({ isOpen, onClose, onCreated }: CreateClientMo
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validate()) return
 
@@ -94,7 +94,7 @@ export function CreateClientModal({ isOpen, onClose, onCreated }: CreateClientMo
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title="Add New Client">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={(e) => { void handleSubmit(e); }} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
             <label htmlFor="client-name" className="text-sm font-medium text-slate-300">First Name *</label>

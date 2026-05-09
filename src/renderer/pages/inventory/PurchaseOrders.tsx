@@ -81,11 +81,11 @@ export function PurchaseOrders() {
   }, [])
 
   useEffect(() => {
-    fetchPOs(page, search, sortBy, sortDir)
+    void fetchPOs(page, search, sortBy, sortDir)
   }, [page, search, sortBy, sortDir, fetchPOs])
 
   const handlePOCreated = useCallback(() => {
-    fetchPOs(page, search, sortBy, sortDir)
+    void fetchPOs(page, search, sortBy, sortDir)
   }, [page, search, sortBy, sortDir, fetchPOs])
 
   return (

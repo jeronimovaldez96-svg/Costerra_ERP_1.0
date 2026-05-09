@@ -77,11 +77,11 @@ export function Products() {
   }, [])
 
   useEffect(() => {
-    fetchProducts(page, search, sortBy, sortDir)
+    void fetchProducts(page, search, sortBy, sortDir)
   }, [page, search, sortBy, sortDir, fetchProducts])
 
   const handleProductCreated = useCallback(() => {
-    fetchProducts(page, search, sortBy, sortDir)
+    void fetchProducts(page, search, sortBy, sortDir)
   }, [page, search, sortBy, sortDir, fetchProducts])
 
   return (

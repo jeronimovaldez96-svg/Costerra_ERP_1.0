@@ -21,7 +21,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
             'border-slate-700/50 backdrop-blur-md transition-colors appearance-none',
             'focus:outline-none focus:border-border-glow focus:ring-1 focus:ring-border-glow',
             'disabled:cursor-not-allowed disabled:opacity-50',
-            error && 'border-red-500 focus:border-red-500 focus:ring-red-500',
+            error !== undefined && 'border-red-500 focus:border-red-500 focus:ring-red-500',
             className
           )}
           {...props}
@@ -42,7 +42,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           </svg>
         </div>
 
-        {error && (
+        {error !== undefined && (
           <span className="absolute -bottom-5 left-1 text-xs text-red-500">
             {error}
           </span>

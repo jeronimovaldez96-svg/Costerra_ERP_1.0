@@ -61,8 +61,8 @@ describe('Inventory Reservation System', () => {
 
     let batches = listInventoryBatchesByProduct(productId)
     // Map order by id ASC (id matches insertion order)
-    expect(batches[0]!.reservedQty).toBe(50) // Oldest batch totally consumed
-    expect(batches[1]!.reservedQty).toBe(30) // New batch partially consumed
+    expect(batches[0]?.reservedQty).toBe(50) // Oldest batch totally consumed
+    expect(batches[1]?.reservedQty).toBe(30) // New batch partially consumed
 
     // 4. Blocks reserving more stock than available
     expect(() => adjustInventoryReservation(productId, 100))
@@ -76,8 +76,8 @@ describe('Inventory Reservation System', () => {
     adjustInventoryReservation(productId, -20)
 
     batches = listInventoryBatchesByProduct(productId)
-    expect(batches[0]!.reservedQty).toBe(50) // Still maxed
-    expect(batches[1]!.reservedQty).toBe(10) // 30 - 20 = 10
+    expect(batches[0]?.reservedQty).toBe(50) // Still maxed
+    expect(batches[1]?.reservedQty).toBe(10) // 30 - 20 = 10
 
     // 6. Prevents releasing unheld stock
     expect(() => adjustInventoryReservation(productId, -100))
@@ -94,7 +94,7 @@ describe('Inventory Reservation System', () => {
     const db = getDb()
 
     expect(() => {
-      db.transaction((tx: any) => {
+      db.transaction((tx) => {
          consumeStockFifo(tx, product4.id, 50)
       })
     }).toThrow(/Insufficient physical stock/)

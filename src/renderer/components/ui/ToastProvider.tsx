@@ -35,7 +35,7 @@ function ToastItem({ toast }: { toast: Toast }) {
         <div className="shrink-0 pt-0.5">{toastIcons[toast.type]}</div>
         <div className="flex-1 space-y-1">
           <p className="text-sm font-medium">{toast.title}</p>
-          {toast.description && (
+          {toast.description !== undefined && toast.description !== '' && (
             <p className="text-sm opacity-80">{toast.description}</p>
           )}
         </div>

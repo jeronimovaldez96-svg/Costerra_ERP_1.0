@@ -17,12 +17,12 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             'focus:outline-none focus:border-border-glow focus:ring-1 focus:ring-border-glow',
             'placeholder:text-slate-500',
             'disabled:cursor-not-allowed disabled:opacity-50',
-            error && 'border-red-500 focus:border-red-500 focus:ring-red-500',
+            error !== undefined && 'border-red-500 focus:border-red-500 focus:ring-red-500',
             className
           )}
           {...props}
         />
-        {error && (
+        {error !== undefined && (
           <span className="absolute -bottom-5 left-1 text-xs text-red-500">
             {error}
           </span>

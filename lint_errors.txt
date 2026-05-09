@@ -1,0 +1,596 @@
+
+> costerra-erp@1.0.0 lint
+> eslint . --max-warnings 0
+
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/coverage/block-navigation.js
+  0:0  error  Parsing error: /Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/coverage/block-navigation.js was not found by the project service. Consider either including it in the tsconfig.json or including it in allowDefaultProject
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/coverage/prettify.js
+  0:0  error  Parsing error: /Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/coverage/prettify.js was not found by the project service. Consider either including it in the tsconfig.json or including it in allowDefaultProject
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/coverage/sorter.js
+  0:0  error  Parsing error: /Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/coverage/sorter.js was not found by the project service. Consider either including it in the tsconfig.json or including it in allowDefaultProject
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/e2e/navigation.spec.ts
+  0:0  error  Parsing error: /Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/e2e/navigation.spec.ts was not found by the project service. Consider either including it in the tsconfig.json or including it in allowDefaultProject
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/main/repositories/client.repository.ts
+  38:11  error  Unsafe assignment of an `any` value              @typescript-eslint/no-unsafe-assignment
+  38:32  error  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  38:37  error  Unsafe member access [sortBy] on an `any` value  @typescript-eslint/no-unsafe-member-access
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/main/repositories/product.repository.ts
+  37:11  error  Unsafe assignment of an `any` value              @typescript-eslint/no-unsafe-assignment
+  37:33  error  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  37:38  error  Unsafe member access [sortBy] on an `any` value  @typescript-eslint/no-unsafe-member-access
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/main/repositories/purchase-order.repository.ts
+  50:11  error  Unsafe assignment of an `any` value              @typescript-eslint/no-unsafe-assignment
+  50:39  error  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  50:44  error  Unsafe member access [sortBy] on an `any` value  @typescript-eslint/no-unsafe-member-access
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/main/repositories/quote.repository.ts
+  130:13  error  Unsafe assignment of an `any` value              @typescript-eslint/no-unsafe-assignment
+  130:33  error  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  130:38  error  Unsafe member access [sortBy] on an `any` value  @typescript-eslint/no-unsafe-member-access
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/main/repositories/sale.repository.ts
+  194:13  error  Unsafe assignment of an `any` value              @typescript-eslint/no-unsafe-assignment
+  194:32  error  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  194:37  error  Unsafe member access [sortBy] on an `any` value  @typescript-eslint/no-unsafe-member-access
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/main/repositories/sales-lead.repository.ts
+  73:13  error  Unsafe assignment of an `any` value              @typescript-eslint/no-unsafe-assignment
+  73:37  error  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  73:42  error  Unsafe member access [sortBy] on an `any` value  @typescript-eslint/no-unsafe-member-access
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/main/repositories/supplier.repository.ts
+  30:11  error  Unsafe assignment of an `any` value              @typescript-eslint/no-unsafe-assignment
+  30:34  error  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  30:39  error  Unsafe member access [sortBy] on an `any` value  @typescript-eslint/no-unsafe-member-access
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/main/services/quote.service.ts
+  51:9   error  Unnecessary conditional, value is always falsy                        @typescript-eslint/no-unnecessary-condition
+  51:10  error  Unexpected object value in conditional. The condition is always true  @typescript-eslint/strict-boolean-expressions
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/preload/index.ts
+  24:23  error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly          @typescript-eslint/strict-boolean-expressions
+  24:38  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/layout/PageContainer.tsx
+  8:10  error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/modals/CreateClientModal.tsx
+  53:9   error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                                                                        @typescript-eslint/strict-boolean-expressions
+  68:34  error  `FormEvent` is deprecated. FormEvent doesn't actually exist.
+You probably meant to use {@link ChangeEvent}, {@link InputEvent}, {@link SubmitEvent}, or just {@link SyntheticEvent} instead
+depending on the event type  @typescript-eslint/no-deprecated
+  97:22  error  Promise-returning function provided to attribute where a void return was expected                                                                                                                                        @typescript-eslint/no-misused-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/modals/CreateLeadModal.tsx
+  34:7   error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator                                                       @typescript-eslint/no-floating-promises
+  62:34  error  `FormEvent` is deprecated. FormEvent doesn't actually exist.
+You probably meant to use {@link ChangeEvent}, {@link InputEvent}, {@link SubmitEvent}, or just {@link SyntheticEvent} instead
+depending on the event type  @typescript-eslint/no-deprecated
+  94:22  error  Promise-returning function provided to attribute where a void return was expected                                                                                                                                        @typescript-eslint/no-misused-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/modals/CreateProductModal.tsx
+   55:9   error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                                                                        @typescript-eslint/strict-boolean-expressions
+   78:34  error  `FormEvent` is deprecated. FormEvent doesn't actually exist.
+You probably meant to use {@link ChangeEvent}, {@link InputEvent}, {@link SubmitEvent}, or just {@link SyntheticEvent} instead
+depending on the event type  @typescript-eslint/no-deprecated
+  106:22  error  Promise-returning function provided to attribute where a void return was expected                                                                                                                                        @typescript-eslint/no-misused-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/modals/CreatePurchaseOrderModal.tsx
+  121:9   error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                                                                        @typescript-eslint/strict-boolean-expressions
+  178:9   error  Unnecessary conditional, value is always falsy                                                                                                                                                                           @typescript-eslint/no-unnecessary-condition
+  186:34  error  `FormEvent` is deprecated. FormEvent doesn't actually exist.
+You probably meant to use {@link ChangeEvent}, {@link InputEvent}, {@link SubmitEvent}, or just {@link SyntheticEvent} instead
+depending on the event type  @typescript-eslint/no-deprecated
+  222:22  error  Promise-returning function provided to attribute where a void return was expected                                                                                                                                        @typescript-eslint/no-misused-promises
+  241:19  error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                                                                        @typescript-eslint/strict-boolean-expressions
+  277:12  error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                                                                        @typescript-eslint/strict-boolean-expressions
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/modals/CreateQuoteModal.tsx
+  129:9   error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                                                                        @typescript-eslint/strict-boolean-expressions
+  144:66  error  Unexpected nullable number value in conditional. Please handle the nullish/zero/NaN cases explicitly                                                                                                                     @typescript-eslint/strict-boolean-expressions
+  144:92  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                                                                                                @typescript-eslint/prefer-nullish-coalescing
+  176:9   error  Unnecessary conditional, value is always falsy                                                                                                                                                                           @typescript-eslint/no-unnecessary-condition
+  184:34  error  `FormEvent` is deprecated. FormEvent doesn't actually exist.
+You probably meant to use {@link ChangeEvent}, {@link InputEvent}, {@link SubmitEvent}, or just {@link SyntheticEvent} instead
+depending on the event type  @typescript-eslint/no-deprecated
+  219:22  error  Promise-returning function provided to attribute where a void return was expected                                                                                                                                        @typescript-eslint/no-misused-promises
+  239:21  error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                                                                        @typescript-eslint/strict-boolean-expressions
+  292:12  error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                                                                        @typescript-eslint/strict-boolean-expressions
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/modals/CreateSupplierModal.tsx
+  53:9   error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                                                                        @typescript-eslint/strict-boolean-expressions
+  72:34  error  `FormEvent` is deprecated. FormEvent doesn't actually exist.
+You probably meant to use {@link ChangeEvent}, {@link InputEvent}, {@link SubmitEvent}, or just {@link SyntheticEvent} instead
+depending on the event type  @typescript-eslint/no-deprecated
+  99:22  error  Promise-returning function provided to attribute where a void return was expected                                                                                                                                        @typescript-eslint/no-misused-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/modals/ViewInvoiceModal.tsx
+   20:10   error  Unsafe array destructuring of a tuple element with an `any` value                                                                                                   @typescript-eslint/no-unsafe-assignment
+   20:36   error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+   20:36   error  'any' overrides all other types in this union type                                                                                                                  @typescript-eslint/no-redundant-type-constituents
+   25:19   error  Unexpected nullable number value in conditional. Please handle the nullish/zero/NaN cases explicitly                                                                @typescript-eslint/strict-boolean-expressions
+   26:7    error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+   36:13   error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   36:44   error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+   47:10   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+   50:97   error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   50:110  error  Unsafe member access .id on an `any` value                                                                                                                          @typescript-eslint/no-unsafe-member-access
+   53:33   error  Invalid type "any" of template literal expression                                                                                                                   @typescript-eslint/restrict-template-expressions
+   53:38   error  Unsafe member access .saleNumber on an `any` value                                                                                                                  @typescript-eslint/no-unsafe-member-access
+   55:11   error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                   @typescript-eslint/strict-boolean-expressions
+   73:22   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+   86:72   error  Unsafe member access .saleNumber on an `any` value                                                                                                                  @typescript-eslint/no-unsafe-member-access
+   88:29   error  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`                                                                              @typescript-eslint/no-unsafe-argument
+   88:34   error  Unsafe member access .saleDate on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+   94:65   error  Unsafe argument of type `any` assigned to a parameter of type `number`                                                                                              @typescript-eslint/no-unsafe-argument
+   94:70   error  Unsafe member access .profitMargin on an `any` value                                                                                                                @typescript-eslint/no-unsafe-member-access
+   95:18   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+   95:23   error  Unsafe member access .profitMargin on an `any` value                                                                                                                @typescript-eslint/no-unsafe-member-access
+  116:20   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  116:25   error  Unsafe member access .lineItems on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  116:47   error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+  117:30   error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  117:35   error  Unsafe member access .id on an `any` value                                                                                                                          @typescript-eslint/no-unsafe-member-access
+  119:31   error  Unsafe member access .product on an `any` value                                                                                                                     @typescript-eslint/no-unsafe-member-access
+  120:78   error  Unsafe member access .product on an `any` value                                                                                                                     @typescript-eslint/no-unsafe-member-access
+  122:81   error  Unsafe member access .quantity on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+  123:77   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  123:82   error  Unsafe member access .unitPrice on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  124:77   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  124:82   error  Unsafe member access .blendedUnitCost on an `any` value                                                                                                             @typescript-eslint/no-unsafe-member-access
+  125:77   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  125:82   error  Unsafe member access .lineRevenue on an `any` value                                                                                                                 @typescript-eslint/no-unsafe-member-access
+  126:79   error  Unsafe member access .lineProfit on an `any` value                                                                                                                  @typescript-eslint/no-unsafe-member-access
+  127:27   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  127:32   error  Unsafe member access .lineProfit on an `any` value                                                                                                                  @typescript-eslint/no-unsafe-member-access
+  131:22   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  131:27   error  Unsafe member access .lineItems on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  131:45   error  Unsafe member access .lineItems on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  145:50   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  145:55   error  Unsafe member access .totalRevenue on an `any` value                                                                                                                @typescript-eslint/no-unsafe-member-access
+  149:50   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  149:55   error  Unsafe member access .totalCost on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  151:19   error  Unsafe member access .taxAmount on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  154:52   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  154:57   error  Unsafe member access .taxAmount on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  159:37   error  Unsafe member access .profitAmount on an `any` value                                                                                                                @typescript-eslint/no-unsafe-member-access
+  160:19   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  160:24   error  Unsafe member access .profitAmount on an `any` value                                                                                                                @typescript-eslint/no-unsafe-member-access
+  169:23   error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/modals/ViewLeadModal.tsx
+   46:10   error  Unsafe array destructuring of a tuple element with an `any` value                                                                                                   @typescript-eslint/no-unsafe-assignment
+   46:36   error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+   46:36   error  'any' overrides all other types in this union type                                                                                                                  @typescript-eslint/no-redundant-type-constituents
+   51:19   error  Unexpected nullable number value in conditional. Please handle the nullish/zero/NaN cases explicitly                                                                @typescript-eslint/strict-boolean-expressions
+   52:7    error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+   62:13   error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   62:44   error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+   73:10   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+   77:9    error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   77:18   error  Unsafe member access .id on an `any` value                                                                                                                          @typescript-eslint/no-unsafe-member-access
+   82:7    error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+   91:10   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+   95:9    error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   95:18   error  Unsafe member access .id on an `any` value                                                                                                                          @typescript-eslint/no-unsafe-member-access
+  100:7    error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  108:26   error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  108:60   error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  112:22   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  125:72   error  Unsafe member access .leadNumber on an `any` value                                                                                                                  @typescript-eslint/no-unsafe-member-access
+  126:61   error  Unsafe member access .name on an `any` value                                                                                                                        @typescript-eslint/no-unsafe-member-access
+  131:87   error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                   @typescript-eslint/strict-boolean-expressions
+  131:100  error  Computed name [lead.status] resolves to an `any` value                                                                                                              @typescript-eslint/no-unsafe-member-access
+  131:105  error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  131:113  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                                           @typescript-eslint/prefer-nullish-coalescing
+  132:18   error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                   @typescript-eslint/strict-boolean-expressions
+  132:31   error  Computed name [lead.status] resolves to an `any` value                                                                                                              @typescript-eslint/no-unsafe-member-access
+  132:36   error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  132:44   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                                           @typescript-eslint/prefer-nullish-coalescing
+  132:52   error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  142:18   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  142:23   error  Unsafe member access .client on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  142:35   error  Invalid type "any" of template literal expression                                                                                                                   @typescript-eslint/restrict-template-expressions
+  142:40   error  Unsafe member access .client on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  142:55   error  Invalid type "any" of template literal expression                                                                                                                   @typescript-eslint/restrict-template-expressions
+  142:60   error  Unsafe member access .client on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  147:63   error  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`                                                                              @typescript-eslint/no-unsafe-argument
+  147:68   error  Unsafe member access .createdAt on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  151:63   error  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`                                                                              @typescript-eslint/no-unsafe-argument
+  151:68   error  Unsafe member access .updatedAt on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  159:24   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  159:29   error  Unsafe member access .quotes on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  159:44   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                                           @typescript-eslint/prefer-nullish-coalescing
+  171:20   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  171:25   error  Unsafe member access .quotes on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  171:41   error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+  172:30   error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  172:32   error  Unsafe member access .id on an `any` value                                                                                                                          @typescript-eslint/no-unsafe-member-access
+  173:79   error  Unsafe member access .quoteNumber on an `any` value                                                                                                                 @typescript-eslint/no-unsafe-member-access
+  175:95   error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                   @typescript-eslint/strict-boolean-expressions
+  175:113  error  Computed name [q.status] resolves to an `any` value                                                                                                                 @typescript-eslint/no-unsafe-member-access
+  175:115  error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  175:123  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                                           @typescript-eslint/prefer-nullish-coalescing
+  176:28   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  176:30   error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  180:35   error  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`                                                                              @typescript-eslint/no-unsafe-argument
+  180:37   error  Unsafe member access .createdAt on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  184:22   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  184:27   error  Unsafe member access .quotes on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  184:42   error  Unsafe member access .quotes on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  202:29   error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+  213:29   error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/modals/ViewProductModal.tsx
+   37:19  error  Unexpected nullable number value in conditional. Please handle the nullish/zero/NaN cases explicitly                                                                                                                     @typescript-eslint/strict-boolean-expressions
+   38:7   error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator                                                       @typescript-eslint/no-floating-promises
+   50:13  error  Unsafe assignment of an `any` value                                                                                                                                                                                      @typescript-eslint/no-unsafe-assignment
+   50:47  error  Unexpected any. Specify a different type                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   51:20  error  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<string>`                                                                                                                                   @typescript-eslint/no-unsafe-argument
+   51:28  error  Unsafe member access .skuNumber on an `any` value                                                                                                                                                                        @typescript-eslint/no-unsafe-member-access
+   53:9   error  Unsafe assignment of an `any` value                                                                                                                                                                                      @typescript-eslint/no-unsafe-assignment
+   53:23  error  Unsafe member access .name on an `any` value                                                                                                                                                                             @typescript-eslint/no-unsafe-member-access
+   54:9   error  Unsafe assignment of an `any` value                                                                                                                                                                                      @typescript-eslint/no-unsafe-assignment
+   54:31  error  Unsafe member access .productGroup on an `any` value                                                                                                                                                                     @typescript-eslint/no-unsafe-member-access
+   55:9   error  Unsafe assignment of an `any` value                                                                                                                                                                                      @typescript-eslint/no-unsafe-assignment
+   55:32  error  Unsafe member access .productFamily on an `any` value                                                                                                                                                                    @typescript-eslint/no-unsafe-member-access
+   56:9   error  Unsafe assignment of an `any` value                                                                                                                                                                                      @typescript-eslint/no-unsafe-assignment
+   56:24  error  Unsafe member access .color on an `any` value                                                                                                                                                                            @typescript-eslint/no-unsafe-member-access
+   57:9   error  Unsafe assignment of an `any` value                                                                                                                                                                                      @typescript-eslint/no-unsafe-assignment
+   57:26  error  Unsafe call of an `any` typed value                                                                                                                                                                                      @typescript-eslint/no-unsafe-call
+   57:34  error  Unsafe member access .defaultUnitCost on an `any` value                                                                                                                                                                  @typescript-eslint/no-unsafe-member-access
+   58:9   error  Unsafe assignment of an `any` value                                                                                                                                                                                      @typescript-eslint/no-unsafe-assignment
+   58:27  error  Unsafe call of an `any` typed value                                                                                                                                                                                      @typescript-eslint/no-unsafe-call
+   58:35  error  Unsafe member access .defaultUnitPrice on an `any` value                                                                                                                                                                 @typescript-eslint/no-unsafe-member-access
+   59:9   error  Unsafe assignment of an `any` value                                                                                                                                                                                      @typescript-eslint/no-unsafe-assignment
+   59:27  error  Unsafe member access .isActive on an `any` value                                                                                                                                                                         @typescript-eslint/no-unsafe-member-access
+   71:9   error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                                                                        @typescript-eslint/strict-boolean-expressions
+   95:34  error  `FormEvent` is deprecated. FormEvent doesn't actually exist.
+You probably meant to use {@link ChangeEvent}, {@link InputEvent}, {@link SubmitEvent}, or just {@link SyntheticEvent} instead
+depending on the event type  @typescript-eslint/no-deprecated
+   97:34  error  Unexpected nullable number value in conditional. Please handle the nullish/zero/NaN cases explicitly                                                                                                                     @typescript-eslint/strict-boolean-expressions
+  131:24  error  Promise-returning function provided to attribute where a void return was expected                                                                                                                                        @typescript-eslint/no-misused-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/modals/ViewPurchaseOrderModal.tsx
+   30:10   error  Unsafe array destructuring of a tuple element with an `any` value                                                                                                   @typescript-eslint/no-unsafe-assignment
+   30:32   error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+   30:32   error  'any' overrides all other types in this union type                                                                                                                  @typescript-eslint/no-redundant-type-constituents
+   36:19   error  Unexpected nullable number value in conditional. Please handle the nullish/zero/NaN cases explicitly                                                                @typescript-eslint/strict-boolean-expressions
+   37:7    error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+   48:13   error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   48:44   error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+   50:21   error  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<string>`                                                                              @typescript-eslint/no-unsafe-argument
+   50:26   error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   60:10   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+   60:34   error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   65:9    error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   65:16   error  Unsafe member access .id on an `any` value                                                                                                                          @typescript-eslint/no-unsafe-member-access
+   68:45   error  Invalid type "any" of template literal expression                                                                                                                   @typescript-eslint/restrict-template-expressions
+   68:48   error  Unsafe member access .poNumber on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+   70:7    error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+   79:10   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+   79:14   error  Unsafe member access .items on an `any` value                                                                                                                       @typescript-eslint/no-unsafe-member-access
+   80:5    error  Unsafe return of a value of type `any`                                                                                                                              @typescript-eslint/no-unsafe-return
+   80:12   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+   80:15   error  Unsafe member access .items on an `any` value                                                                                                                       @typescript-eslint/no-unsafe-member-access
+   80:48   error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+   80:68   error  Unsafe member access .quantity on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+   80:84   error  Unsafe member access .unitCost on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+   85:63   error  Unsafe argument of type `any` assigned to a parameter of type `string`                                                                                              @typescript-eslint/no-unsafe-argument
+   85:63   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+   85:67   error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   85:74   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                                           @typescript-eslint/prefer-nullish-coalescing
+   90:22   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  102:70   error  Unsafe member access .poNumber on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+  103:102  error  Unsafe member access .supplier on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+  108:103  error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  109:18   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  109:21   error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  117:54   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  117:57   error  Unsafe member access .description on an `any` value                                                                                                                 @typescript-eslint/no-unsafe-member-access
+  117:69   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                                           @typescript-eslint/prefer-nullish-coalescing
+  121:63   error  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`                                                                              @typescript-eslint/no-unsafe-argument
+  121:66   error  Unsafe member access .createdAt on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  138:20   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  138:23   error  Unsafe member access .items on an `any` value                                                                                                                       @typescript-eslint/no-unsafe-member-access
+  138:41   error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+  139:30   error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  139:35   error  Unsafe member access .id on an `any` value                                                                                                                          @typescript-eslint/no-unsafe-member-access
+  140:70   error  Unsafe member access .product on an `any` value                                                                                                                     @typescript-eslint/no-unsafe-member-access
+  140:138  error  Unsafe member access .product on an `any` value                                                                                                                     @typescript-eslint/no-unsafe-member-access
+  141:81   error  Unsafe member access .quantity on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+  142:77   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  142:82   error  Unsafe member access .unitCost on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+  143:91   error  Unsafe member access .quantity on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+  143:107  error  Unsafe member access .unitCost on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+  146:22   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  146:25   error  Unsafe member access .items on an `any` value                                                                                                                       @typescript-eslint/no-unsafe-member-access
+  146:37   error  Unsafe member access .items on an `any` value                                                                                                                       @typescript-eslint/no-unsafe-member-access
+  155:87   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  155:104  error  Unsafe member access .toFixed on an `any` value                                                                                                                     @typescript-eslint/no-unsafe-member-access
+  167:30   error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  177:25   error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+  178:45   error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  178:58   error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/modals/ViewQuoteModal.tsx
+   37:10   error  Unsafe array destructuring of a tuple element with an `any` value                                                                                                   @typescript-eslint/no-unsafe-assignment
+   37:38   error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+   37:38   error  'any' overrides all other types in this union type                                                                                                                  @typescript-eslint/no-redundant-type-constituents
+   44:19   error  Unexpected nullable number value in conditional. Please handle the nullish/zero/NaN cases explicitly                                                                @typescript-eslint/strict-boolean-expressions
+   45:7    error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+   55:13   error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   55:44   error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+   67:10   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+   70:98   error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   70:113  error  Unsafe member access .id on an `any` value                                                                                                                          @typescript-eslint/no-unsafe-member-access
+   73:31   error  Invalid type "any" of template literal expression                                                                                                                   @typescript-eslint/restrict-template-expressions
+   73:37   error  Unsafe member access .quoteNumber on an `any` value                                                                                                                 @typescript-eslint/no-unsafe-member-access
+   76:11   error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                   @typescript-eslint/strict-boolean-expressions
+   88:10   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+   92:9    error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+   92:19   error  Unsafe member access .id on an `any` value                                                                                                                          @typescript-eslint/no-unsafe-member-access
+   97:7    error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  107:10   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  110:49   error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  110:64   error  Unsafe member access .id on an `any` value                                                                                                                          @typescript-eslint/no-unsafe-member-access
+  111:47   error  Invalid type "any" of template literal expression                                                                                                                   @typescript-eslint/restrict-template-expressions
+  111:53   error  Unsafe member access .quoteNumber on an `any` value                                                                                                                 @typescript-eslint/no-unsafe-member-access
+  113:7    error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  122:9    error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  122:20   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  122:27   error  Unsafe member access .lineItems on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  122:65   error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+  122:73   error  Unsafe return of a value of type `any`                                                                                                                              @typescript-eslint/no-unsafe-return
+  122:80   error  Invalid operand for a '+' operation. Operands must each be a number or string. Got `any`                                                                            @typescript-eslint/restrict-plus-operands
+  122:80   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  122:85   error  Unsafe member access .lineTotal on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  122:95   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                                           @typescript-eslint/prefer-nullish-coalescing
+  124:9    error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  125:10   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  125:17   error  Unsafe member access .taxProfile on an `any` value                                                                                                                  @typescript-eslint/no-unsafe-member-access
+  126:5    error  Unsafe return of a value of type `any`                                                                                                                              @typescript-eslint/no-unsafe-return
+  126:12   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  126:18   error  Unsafe member access .taxProfile on an `any` value                                                                                                                  @typescript-eslint/no-unsafe-member-access
+  127:27   error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+  127:58   error  Unsafe member access .rate on an `any` value                                                                                                                        @typescript-eslint/no-unsafe-member-access
+  132:9    error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  132:22   error  Invalid operand for a '+' operation. Operands must each be a number or string. Got `any`                                                                            @typescript-eslint/restrict-plus-operands
+  132:33   error  Invalid operand for a '+' operation. Operands must each be a number or string. Got `any`                                                                            @typescript-eslint/restrict-plus-operands
+  135:64   error  Unsafe argument of type `any` assigned to a parameter of type `string`                                                                                              @typescript-eslint/no-unsafe-argument
+  135:71   error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  139:22   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  152:73   error  Unsafe member access .quoteNumber on an `any` value                                                                                                                 @typescript-eslint/no-unsafe-member-access
+  154:37   error  Unsafe argument of type `any` assigned to a parameter of type `string | number | Date`                                                                              @typescript-eslint/no-unsafe-argument
+  154:43   error  Unsafe member access .createdAt on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  160:87   error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                   @typescript-eslint/strict-boolean-expressions
+  160:100  error  Computed name [quote.status] resolves to an `any` value                                                                                                             @typescript-eslint/no-unsafe-member-access
+  160:106  error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  160:114  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                                           @typescript-eslint/prefer-nullish-coalescing
+  161:18   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  161:24   error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  170:60   error  Unsafe member access .salesLeadId on an `any` value                                                                                                                 @typescript-eslint/no-unsafe-member-access
+  174:54   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  174:60   error  Unsafe member access .taxProfile on an `any` value                                                                                                                  @typescript-eslint/no-unsafe-member-access
+  174:77   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                                           @typescript-eslint/prefer-nullish-coalescing
+  178:63   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  178:69   error  Unsafe member access .notes on an `any` value                                                                                                                       @typescript-eslint/no-unsafe-member-access
+  178:75   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                                           @typescript-eslint/prefer-nullish-coalescing
+  196:20   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  196:26   error  Unsafe member access .lineItems on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  196:48   error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+  197:30   error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  197:35   error  Unsafe member access .id on an `any` value                                                                                                                          @typescript-eslint/no-unsafe-member-access
+  199:31   error  Unsafe member access .product on an `any` value                                                                                                                     @typescript-eslint/no-unsafe-member-access
+  200:78   error  Unsafe member access .product on an `any` value                                                                                                                     @typescript-eslint/no-unsafe-member-access
+  202:81   error  Unsafe member access .quantity on an `any` value                                                                                                                    @typescript-eslint/no-unsafe-member-access
+  203:77   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  203:82   error  Unsafe member access .unitPrice on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  204:85   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  204:90   error  Unsafe member access .lineTotal on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  207:22   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  207:28   error  Unsafe member access .lineItems on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  207:47   error  Unsafe member access .lineItems on an `any` value                                                                                                                   @typescript-eslint/no-unsafe-member-access
+  221:50   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  221:59   error  Unsafe member access .toFixed on an `any` value                                                                                                                     @typescript-eslint/no-unsafe-member-access
+  223:14   error  Unexpected any value in conditional. An explicit comparison or type conversion is required                                                                          @typescript-eslint/strict-boolean-expressions
+  223:20   error  Unsafe member access .taxProfile on an `any` value                                                                                                                  @typescript-eslint/no-unsafe-member-access
+  225:18   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  225:24   error  Unsafe member access .taxProfile on an `any` value                                                                                                                  @typescript-eslint/no-unsafe-member-access
+  225:57   error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+  226:29   error  Unsafe assignment of an `any` value                                                                                                                                 @typescript-eslint/no-unsafe-assignment
+  226:34   error  Unsafe member access .id on an `any` value                                                                                                                          @typescript-eslint/no-unsafe-member-access
+  227:60   error  Unsafe member access .name on an `any` value                                                                                                                        @typescript-eslint/no-unsafe-member-access
+  227:74   error  Unsafe member access .rate on an `any` value                                                                                                                        @typescript-eslint/no-unsafe-member-access
+  228:73   error  Unsafe member access .rate on an `any` value                                                                                                                        @typescript-eslint/no-unsafe-member-access
+  235:52   error  Unsafe call of an `any` typed value                                                                                                                                 @typescript-eslint/no-unsafe-call
+  235:63   error  Unsafe member access .toFixed on an `any` value                                                                                                                     @typescript-eslint/no-unsafe-member-access
+  245:25   error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+  254:22   error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  256:27   error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+  266:22   error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  268:27   error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+  279:22   error  Unsafe member access .status on an `any` value                                                                                                                      @typescript-eslint/no-unsafe-member-access
+  282:27   error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/modals/ViewSupplierModal.tsx
+   35:19  error  Unexpected nullable number value in conditional. Please handle the nullish/zero/NaN cases explicitly                                                                                                                     @typescript-eslint/strict-boolean-expressions
+   36:7   error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator                                                       @typescript-eslint/no-floating-promises
+   47:13  error  Unsafe assignment of an `any` value                                                                                                                                                                                      @typescript-eslint/no-unsafe-assignment
+   47:48  error  Unexpected any. Specify a different type                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+   49:9   error  Unsafe assignment of an `any` value                                                                                                                                                                                      @typescript-eslint/no-unsafe-assignment
+   49:24  error  Unsafe member access .name on an `any` value                                                                                                                                                                             @typescript-eslint/no-unsafe-member-access
+   50:9   error  Unsafe assignment of an `any` value                                                                                                                                                                                      @typescript-eslint/no-unsafe-assignment
+   50:31  error  Unsafe member access .contactName on an `any` value                                                                                                                                                                      @typescript-eslint/no-unsafe-member-access
+   51:9   error  Unsafe assignment of an `any` value                                                                                                                                                                                      @typescript-eslint/no-unsafe-assignment
+   51:25  error  Unsafe member access .phone on an `any` value                                                                                                                                                                            @typescript-eslint/no-unsafe-member-access
+   52:9   error  Unsafe assignment of an `any` value                                                                                                                                                                                      @typescript-eslint/no-unsafe-assignment
+   52:25  error  Unsafe member access .email on an `any` value                                                                                                                                                                            @typescript-eslint/no-unsafe-member-access
+   53:9   error  Unsafe assignment of an `any` value                                                                                                                                                                                      @typescript-eslint/no-unsafe-assignment
+   53:25  error  Unsafe member access .notes on an `any` value                                                                                                                                                                            @typescript-eslint/no-unsafe-member-access
+   65:9   error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                                                                        @typescript-eslint/strict-boolean-expressions
+   84:34  error  `FormEvent` is deprecated. FormEvent doesn't actually exist.
+You probably meant to use {@link ChangeEvent}, {@link InputEvent}, {@link SubmitEvent}, or just {@link SyntheticEvent} instead
+depending on the event type  @typescript-eslint/no-deprecated
+   86:34  error  Unexpected nullable number value in conditional. Please handle the nullish/zero/NaN cases explicitly                                                                                                                     @typescript-eslint/strict-boolean-expressions
+  118:24  error  Promise-returning function provided to attribute where a void return was expected                                                                                                                                        @typescript-eslint/no-misused-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/ui/Button.tsx
+  32:21  error  Unexpected nullable boolean value in conditional. Please handle the nullish case explicitly                @typescript-eslint/strict-boolean-expressions
+  32:34  error  Unexpected nullable boolean value in conditional. Please handle the nullish case explicitly                @typescript-eslint/strict-boolean-expressions
+  39:19  error  Unexpected nullable boolean value in conditional. Please handle the nullish case explicitly                @typescript-eslint/strict-boolean-expressions
+  39:28  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+  42:10  error  Unexpected nullable boolean value in conditional. Please handle the nullish case explicitly                @typescript-eslint/strict-boolean-expressions
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/ui/DataTable.tsx
+  115:25  error  Unexpected value in conditional. A boolean expression is required                                                   @typescript-eslint/strict-boolean-expressions
+  117:38  error  Unexpected value in conditional. A boolean expression is required                                                   @typescript-eslint/strict-boolean-expressions
+  117:52  error  Returning a void expression from an arrow function shorthand is forbidden. Please add braces to the arrow function  @typescript-eslint/no-confusing-void-expression
+  125:28  error  Unexpected value in conditional. A boolean expression is required                                                   @typescript-eslint/strict-boolean-expressions
+  143:38  error  Unnecessary optional chain on a non-nullish value                                                                   @typescript-eslint/no-unnecessary-condition
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/ui/ErrorBoundary.tsx
+  26:5   error  Unexpected console statement                                                                               no-console
+  48:18  error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly          @typescript-eslint/strict-boolean-expressions
+  48:44  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator  @typescript-eslint/prefer-nullish-coalescing
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/ui/Input.tsx
+  20:13  error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+  25:10  error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/ui/Select.tsx
+  24:13  error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+  45:10  error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/ui/Textarea.tsx
+  20:13  error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+  25:10  error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/components/ui/ToastProvider.tsx
+  38:12  error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly  @typescript-eslint/strict-boolean-expressions
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/pages/Dashboard.tsx
+  18:15  error  Unsafe assignment of an `any` value                                                                                                                                                @typescript-eslint/no-unsafe-assignment
+  18:46  error  Unexpected any. Specify a different type                                                                                                                                           @typescript-eslint/no-explicit-any
+  19:20  error  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<{ totalRevenue: number; grossMargin: number; totalStockValue: number; totalActiveLeads: number; }>`  @typescript-eslint/no-unsafe-argument
+  24:5   error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator                 @typescript-eslint/no-floating-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/pages/Settings.tsx
+   43:5   error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+   44:5   error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+   45:5   error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+   48:5   error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+   51:65  error  Unexpected any. Specify a different type                                                                                                                            @typescript-eslint/no-explicit-any
+   52:23  error  Unsafe argument of type `any` assigned to a parameter of type `SetStateAction<UpdateStatus>`                                                                        @typescript-eslint/no-unsafe-argument
+   63:7   error  Unexpected console statement                                                                                                                                        no-console
+   72:7   error  Unexpected console statement                                                                                                                                        no-console
+   81:7   error  Unexpected console statement                                                                                                                                        no-console
+  102:11  error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                   @typescript-eslint/strict-boolean-expressions
+  126:12  error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                   @typescript-eslint/strict-boolean-expressions
+  131:7   error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  147:12  error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                   @typescript-eslint/strict-boolean-expressions
+  183:14  error  Unnecessary optional chain on a non-nullish value                                                                                                                   @typescript-eslint/no-unnecessary-condition
+  231:35  error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+  235:55  error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+  258:57  error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+  270:57  error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+  301:67  error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+  321:56  error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+  343:44  error  Invalid type "number" of template literal expression                                                                                                                @typescript-eslint/restrict-template-expressions
+  354:92  error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+  400:29  error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+  425:51  error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+  436:48  error  Promise-returning function provided to attribute where a void return was expected                                                                                   @typescript-eslint/no-misused-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/pages/inventory/Products.tsx
+  80:5  error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  84:5  error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/pages/inventory/PurchaseOrders.tsx
+  84:5  error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  88:5  error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/pages/inventory/Stock.tsx
+  41:29  error  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined                                                                  @typescript-eslint/no-unnecessary-condition
+  46:70  error  Unnecessary conditional, expected left-hand side of `??` operator to be possibly null or undefined                                                                  @typescript-eslint/no-unnecessary-condition
+  76:5   error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/pages/inventory/Suppliers.tsx
+  59:5  error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  63:5  error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/pages/sales/Clients.tsx
+  70:5  error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  74:5  error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/pages/sales/Invoices.tsx
+  80:5  error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/pages/sales/Leads.tsx
+  51:79   error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                   @typescript-eslint/strict-boolean-expressions
+  51:100  error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                                           @typescript-eslint/prefer-nullish-coalescing
+  52:12   error  Unexpected nullable string value in conditional. Please handle the nullish/empty cases explicitly                                                                   @typescript-eslint/strict-boolean-expressions
+  52:33   error  Prefer using nullish coalescing operator (`??`) instead of a logical or (`||`), as it is a safer operator                                                           @typescript-eslint/prefer-nullish-coalescing
+  92:5    error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  96:5    error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/renderer/pages/sales/Quotes.tsx
+  87:5  error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+  91:5  error  Promises must be awaited, end with a call to .catch, end with a call to .then with a rejection handler or be explicitly marked as ignored with the `void` operator  @typescript-eslint/no-floating-promises
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/tests/inventory.test.ts
+  64:12  error  Forbidden non-null assertion                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-non-null-assertion
+  65:12  error  Forbidden non-null assertion                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-non-null-assertion
+  68:18  error  Returning a void expression from an arrow function shorthand is forbidden. Please add braces to the arrow function                                                                                                                                                                                                                                @typescript-eslint/no-confusing-void-expression
+  79:12  error  Forbidden non-null assertion                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-non-null-assertion
+  80:12  error  Forbidden non-null assertion                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-non-null-assertion
+  83:18  error  Returning a void expression from an arrow function shorthand is forbidden. Please add braces to the arrow function                                                                                                                                                                                                                                @typescript-eslint/no-confusing-void-expression
+  97:27  error  Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-explicit-any
+  98:27  error  Unsafe argument of type `any` assigned to a parameter of type `SQLiteTransaction<"sync", RunResult, typeof import("/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/shared/schema/index"), ExtractTablesWithRelations<typeof import("/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/src/shared/schema/index")>>`  @typescript-eslint/no-unsafe-argument
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/tests/purchase-order.test.ts
+   68:12  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  107:12  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/tests/return.test.ts
+  43:12  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  49:25  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  64:12  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  69:12  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  80:12  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  81:12  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  85:25  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/tests/sales-pipeline.test.ts
+   79:12  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+   80:12  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+   90:12  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  173:12  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  174:12  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  266:12  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  276:12  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  280:12  error  Forbidden non-null assertion                                                                               @typescript-eslint/no-non-null-assertion
+  301:44  error  Unsafe argument of type `any` assigned to a parameter of type `"SENT" | "REJECTED" | "SOLD" | "NOT_SOLD"`  @typescript-eslint/no-unsafe-argument
+  301:54  error  Unexpected any. Specify a different type                                                                   @typescript-eslint/no-explicit-any
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/tests/supplier.test.ts
+  23:12  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  24:12  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  36:12  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  38:12  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  39:12  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+/Users/jeronimo/Documents/Google AntiGravity/Costerra_ERP_1.0/tests/tax.test.ts
+  17:12  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+  18:12  error  Forbidden non-null assertion  @typescript-eslint/no-non-null-assertion
+
+✖ 474 problems (474 errors, 0 warnings)
+  2 errors and 0 warnings potentially fixable with the `--fix` option.
+

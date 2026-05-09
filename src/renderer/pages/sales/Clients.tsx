@@ -67,11 +67,11 @@ export function Clients() {
   }, [])
 
   useEffect(() => {
-    fetchClients(page, search, sortBy, sortDir)
+    void fetchClients(page, search, sortBy, sortDir)
   }, [page, search, sortBy, sortDir, fetchClients])
 
   const handleClientCreated = useCallback(() => {
-    fetchClients(page, search, sortBy, sortDir)
+    void fetchClients(page, search, sortBy, sortDir)
   }, [page, search, sortBy, sortDir, fetchClients])
 
   return (
