@@ -36,7 +36,7 @@ const columns: ColumnDef<Sale>[] = [
     accessorKey: 'profitMargin', 
     header: 'Margin',
     cell: ({ row }) => {
-      const margin = row.original.profitMargin * 100
+      const margin = row.original.profitMargin
       let color = 'text-slate-400'
       if (margin > 30) color = 'text-emerald-400'
       else if (margin < 10) color = 'text-amber-400'

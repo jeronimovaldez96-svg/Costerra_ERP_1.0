@@ -6,6 +6,8 @@
 import { getDb, type DbTransaction } from '../database/client'
 import { sales, saleLineItems } from '../../shared/schema/sale'
 import { quotes } from '../../shared/schema/quote'
+import { salesLeads } from '../../shared/schema/sales-lead'
+import { clients } from '../../shared/schema/client'
 import { taxProfiles, taxProfileComponents } from '../../shared/schema/tax'
 import { products } from '../../shared/schema/product'
 import { eq, desc, sql } from 'drizzle-orm'
@@ -150,7 +152,33 @@ export async function listSales(params: { page?: number; pageSize?: number }) {
   const { page = 1, pageSize = 50 } = params
   const offset = (page - 1) * pageSize
 
-  const items = db.select().from(sales).orderBy(desc(sales.id)).limit(pageSize).offset(offset).all()
+  const baseSelect = db.select({
+    id: sales.id,
+    saleNumber: sales.saleNumber,
+    quoteId: sales.quoteId,
+    totalRevenue: sales.totalRevenue,
+    taxAmount: sales.taxAmount,
+    totalCost: sales.totalCost,
+    profitAmount: sales.profitAmount,
+    profitMargin: sales.profitMargin,
+    saleDate: sales.saleDate,
+    quote: {
+      quoteNumber: quotes.quoteNumber,
+      salesLead: {
+        leadNumber: salesLeads.leadNumber,
+        client: {
+          name: clients.name,
+          surname: clients.surname
+        }
+      }
+    }
+  })
+  .from(sales)
+  .leftJoin(quotes, eq(sales.quoteId, quotes.id))
+  .leftJoin(salesLeads, eq(quotes.salesLeadId, salesLeads.id))
+  .leftJoin(clients, eq(salesLeads.clientId, clients.id))
+
+  const items = baseSelect.orderBy(desc(sales.id)).limit(pageSize).offset(offset).all()
   const totalRes = db.select({ count: sql<number>`count(*)` }).from(sales).get()
   const total = totalRes ? Number(totalRes.count) : 0
 
