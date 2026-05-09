@@ -28,13 +28,13 @@ export async function createReturn(
 
     // 2. Validate Line Items and calculate total literal refund based exactly on original sale prices.
     let totalRefund = 0
-    const processedItems: Array<{
+    const processedItems: {
       saleLineItemId: number
       quantityReturned: number
       unitRefund: number
       lineRefund: number
       restockDisposition: 'RESTOCK' | 'DEFECTIVE'
-    }> = []
+    }[] = []
 
     for (const item of items) {
       const saleLine = tx.select().from(saleLineItems).where(eq(saleLineItems.id, item.saleLineItemId)).get()

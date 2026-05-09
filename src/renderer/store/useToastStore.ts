@@ -31,17 +31,17 @@ export const useToastStore = create<ToastState>((set) => ({
     }
   },
   removeToast: (id) =>
-    set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) }))
+    { set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) })); }
 }))
 
 // Convenience methods for easy importing without hooking
 export const toast = {
   success: (title: string, description?: string, duration?: number) =>
-    useToastStore.getState().addToast({ type: 'success', title, description, duration }),
+    { useToastStore.getState().addToast({ type: 'success', title, description, duration }); },
   error: (title: string, description?: string, duration?: number) =>
-    useToastStore.getState().addToast({ type: 'error', title, description, duration }),
+    { useToastStore.getState().addToast({ type: 'error', title, description, duration }); },
   info: (title: string, description?: string, duration?: number) =>
-    useToastStore.getState().addToast({ type: 'info', title, description, duration }),
+    { useToastStore.getState().addToast({ type: 'info', title, description, duration }); },
   warning: (title: string, description?: string, duration?: number) =>
-    useToastStore.getState().addToast({ type: 'warning', title, description, duration })
+    { useToastStore.getState().addToast({ type: 'warning', title, description, duration }); }
 }

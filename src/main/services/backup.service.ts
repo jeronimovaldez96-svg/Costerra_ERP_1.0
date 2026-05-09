@@ -112,13 +112,13 @@ export async function restoreBackup(backupFilePath: string): Promise<void> {
 /**
  * Lists all available backup files with metadata.
  */
-export function listBackups(): Array<{
+export function listBackups(): {
   filename: string
   filePath: string
   sizeBytes: number
   isAutomatic: boolean
   createdAt: string
-}> {
+}[] {
   const db = getDb()
   const logs = db.select().from(backupLogs).orderBy(desc(backupLogs.createdAt)).all()
 

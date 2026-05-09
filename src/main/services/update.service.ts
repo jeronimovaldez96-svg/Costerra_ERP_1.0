@@ -37,7 +37,7 @@ class UpdateService {
     autoUpdater.on('update-not-available', () => {
       this.setStatus({ state: 'not-available' })
       // Reset to idle after a few seconds
-      setTimeout(() => this.setStatus({ state: 'idle' }), 5000)
+      setTimeout(() => { this.setStatus({ state: 'idle' }); }, 5000)
     })
 
     autoUpdater.on('download-progress', (progress: { percent: number }) => {

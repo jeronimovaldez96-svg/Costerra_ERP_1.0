@@ -118,7 +118,7 @@ export function CreatePurchaseOrderModal({ isOpen, onClose, onCreated }: CreateP
       prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
     )
     // Clear row-level error on change
-    if (errors.rows?.[index]?.[field as 'productId' | 'quantity' | 'unitCost']) {
+    if (errors.rows?.[index]?.[field]) {
       setErrors((prev) => {
         const newRows = { ...prev.rows }
         if (newRows[index]) {
@@ -259,7 +259,7 @@ export function CreatePurchaseOrderModal({ isOpen, onClose, onCreated }: CreateP
             id="po-description"
             placeholder="Optional notes about this purchase order..."
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => { setDescription(e.target.value); }}
             rows={2}
           />
         </div>
@@ -292,7 +292,7 @@ export function CreatePurchaseOrderModal({ isOpen, onClose, onCreated }: CreateP
               <div key={item.key} className="grid grid-cols-[1fr_80px_100px_36px] gap-2 items-start">
                 <Select
                   value={item.productId}
-                  onChange={(e) => handleProductChange(index, e.target.value)}
+                  onChange={(e) => { handleProductChange(index, e.target.value); }}
                   disabled={isLoadingDropdowns}
                   error={errors.rows?.[index]?.productId}
                 >
@@ -309,7 +309,7 @@ export function CreatePurchaseOrderModal({ isOpen, onClose, onCreated }: CreateP
                   min="1"
                   step="1"
                   value={item.quantity}
-                  onChange={(e) => updateLineItem(index, 'quantity', e.target.value)}
+                  onChange={(e) => { updateLineItem(index, 'quantity', e.target.value); }}
                   error={errors.rows?.[index]?.quantity}
                 />
 
@@ -318,13 +318,13 @@ export function CreatePurchaseOrderModal({ isOpen, onClose, onCreated }: CreateP
                   min="0"
                   step="0.01"
                   value={item.unitCost}
-                  onChange={(e) => updateLineItem(index, 'unitCost', e.target.value)}
+                  onChange={(e) => { updateLineItem(index, 'unitCost', e.target.value); }}
                   error={errors.rows?.[index]?.unitCost}
                 />
 
                 <button
                   type="button"
-                  onClick={() => removeLineItem(index)}
+                  onClick={() => { removeLineItem(index); }}
                   disabled={lineItems.length <= 1}
                   className="flex items-center justify-center h-10 w-9 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >

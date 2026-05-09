@@ -254,7 +254,7 @@ export function CreateQuoteModal({ isOpen, onClose, onCreated }: CreateQuoteModa
             <Select
               id="quote-tax"
               value={taxProfileId}
-              onChange={(e) => setTaxProfileId(e.target.value)}
+              onChange={(e) => { setTaxProfileId(e.target.value); }}
               disabled={isLoadingDropdowns}
             >
               <option value="">No Tax Applied</option>
@@ -274,7 +274,7 @@ export function CreateQuoteModal({ isOpen, onClose, onCreated }: CreateQuoteModa
             id="quote-notes"
             placeholder="Terms and conditions or notes for the client..."
             value={notes}
-            onChange={(e) => setNotes(e.target.value)}
+            onChange={(e) => { setNotes(e.target.value); }}
             rows={2}
           />
         </div>
@@ -307,7 +307,7 @@ export function CreateQuoteModal({ isOpen, onClose, onCreated }: CreateQuoteModa
               <div key={item.key} className="grid grid-cols-[1fr_100px_100px_36px] gap-2 items-start">
                 <Select
                   value={item.productId}
-                  onChange={(e) => handleProductChange(index, e.target.value)}
+                  onChange={(e) => { handleProductChange(index, e.target.value); }}
                   disabled={isLoadingDropdowns}
                   error={errors.rows?.[index]?.productId}
                 >
@@ -324,7 +324,7 @@ export function CreateQuoteModal({ isOpen, onClose, onCreated }: CreateQuoteModa
                   min="1"
                   step="1"
                   value={item.quantity}
-                  onChange={(e) => updateLineItem(index, 'quantity', e.target.value)}
+                  onChange={(e) => { updateLineItem(index, 'quantity', e.target.value); }}
                   error={errors.rows?.[index]?.quantity}
                 />
 
@@ -334,7 +334,7 @@ export function CreateQuoteModal({ isOpen, onClose, onCreated }: CreateQuoteModa
 
                 <button
                   type="button"
-                  onClick={() => removeLineItem(index)}
+                  onClick={() => { removeLineItem(index); }}
                   disabled={lineItems.length <= 1}
                   className="flex items-center justify-center h-10 w-9 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >

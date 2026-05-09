@@ -224,7 +224,7 @@ describe('Sales Pipeline End-to-End', () => {
       color: 'Green', defaultUnitCost: 10, defaultUnitPrice: 25
     })
     
-    const po = await createPurchaseOrder({ supplierId: supplier.id }, [{ productId: productList.id, quantity: 50, unitCost: 10 }] as any)
+    const po = await createPurchaseOrder({ supplierId: supplier.id }, [{ productId: productList.id, quantity: 50, unitCost: 10 }])
     await transitionPurchaseOrder(po.id, 'IN_TRANSIT')
     await transitionPurchaseOrder(po.id, 'DELIVERED')
 

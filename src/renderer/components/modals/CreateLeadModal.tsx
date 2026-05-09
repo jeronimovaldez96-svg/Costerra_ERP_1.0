@@ -103,7 +103,7 @@ export function CreateLeadModal({ isOpen, onClose, onCreated }: CreateLeadModalP
           <Select
             id="lead-client"
             value={clientId}
-            onChange={(e) => setClientId(e.target.value)}
+            onChange={(e) => { setClientId(e.target.value); }}
             disabled={isLoadingClients}
           >
             <option value="">Select a client...</option>
@@ -121,7 +121,7 @@ export function CreateLeadModal({ isOpen, onClose, onCreated }: CreateLeadModalP
             id="lead-name"
             placeholder="e.g. Acme Corp Web App Renewal"
             value={leadName}
-            onChange={(e) => setLeadName(e.target.value)}
+            onChange={(e) => { setLeadName(e.target.value); }}
           />
         </div>
 

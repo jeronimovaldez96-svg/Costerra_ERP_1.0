@@ -40,7 +40,7 @@ function ToastItem({ toast }: { toast: Toast }) {
           )}
         </div>
         <button
-          onClick={() => removeToast(toast.id)}
+          onClick={() => { removeToast(toast.id); }}
           className="shrink-0 rounded-full p-1 opacity-50 transition-opacity hover:bg-white/10 hover:opacity-100"
         >
           <X size={16} />

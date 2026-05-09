@@ -76,7 +76,7 @@ export function ViewPurchaseOrderModal({ isOpen, onClose, onUpdated, poId }: Vie
   }
 
   const calculateTotal = () => {
-    if (!po || !po.items) return 0
+    if (!po?.items) return 0
     return po.items.reduce((sum: number, item: any) => sum + (item.quantity * item.unitCost), 0)
   }
 
@@ -163,7 +163,7 @@ export function ViewPurchaseOrderModal({ isOpen, onClose, onUpdated, poId }: Vie
             <div className="flex items-center gap-3">
               <Select
                 value={nextStatus}
-                onChange={(e) => setNextStatus(e.target.value)}
+                onChange={(e) => { setNextStatus(e.target.value); }}
                 disabled={po.status === 'IN_INVENTORY'}
                 className="w-48"
               >

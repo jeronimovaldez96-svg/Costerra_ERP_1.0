@@ -98,7 +98,7 @@ export function Invoices() {
             pageIndex={page}
             pageCount={totalPages}
             onPageChange={setPage}
-            onRowClick={(row) => setViewSaleId(row.id)}
+            onRowClick={(row) => { setViewSaleId(row.id); }}
             onSearchChange={(val) => { setSearch(val); setPage(1); }}
             onSortChange={(col, dir) => { setSortBy(col); setSortDir(dir); setPage(1); }}
           />
@@ -107,7 +107,7 @@ export function Invoices() {
 
       <ViewInvoiceModal
         isOpen={viewSaleId !== null}
-        onClose={() => setViewSaleId(null)}
+        onClose={() => { setViewSaleId(null); }}
         saleId={viewSaleId}
       />
     </PageContainer>

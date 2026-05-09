@@ -92,7 +92,7 @@ export function PurchaseOrders() {
     <PageContainer title="Purchase Orders">
       <div className="mb-6 flex justify-between items-center no-drag">
         <p className="text-slate-400">Track inbound inventory shipments.</p>
-        <Button onClick={() => setIsCreateModalOpen(true)}>
+        <Button onClick={() => { setIsCreateModalOpen(true); }}>
           <Plus size={16} className="mr-2" />
           Create PO
         </Button>
@@ -110,7 +110,7 @@ export function PurchaseOrders() {
             pageIndex={page}
             pageCount={totalPages}
             onPageChange={setPage}
-            onRowClick={(row) => setViewPoId(row.id)}
+            onRowClick={(row) => { setViewPoId(row.id); }}
             onSearchChange={(val) => { setSearch(val); setPage(1); }}
             onSortChange={(col, dir) => { setSortBy(col); setSortDir(dir); setPage(1); }}
           />
@@ -119,13 +119,13 @@ export function PurchaseOrders() {
 
       <CreatePurchaseOrderModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => { setIsCreateModalOpen(false); }}
         onCreated={handlePOCreated}
       />
 
       <ViewPurchaseOrderModal
         isOpen={viewPoId !== null}
-        onClose={() => setViewPoId(null)}
+        onClose={() => { setViewPoId(null); }}
         onUpdated={handlePOCreated}
         poId={viewPoId}
       />

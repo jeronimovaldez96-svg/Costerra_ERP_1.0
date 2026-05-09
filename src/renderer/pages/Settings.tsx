@@ -52,7 +52,7 @@ export function Settings() {
       setUpdateStatus(status)
     })
 
-    return () => unsubscribe()
+    return () => { unsubscribe(); }
   }, [])
 
   const fetchBackups = async () => {
@@ -150,7 +150,7 @@ export function Settings() {
         setIsRestoring(true)
         await window.api.invoke('backup:restore', { backupFilePath: filePath })
         toast.success('Import Successful', 'Database has been restored from the selected file. Reloading...')
-        setTimeout(() => window.location.reload(), 2000)
+        setTimeout(() => { window.location.reload(); }, 2000)
       }
     } catch (error) {
       toast.error('Import Failed', (error as Error).message)
@@ -169,7 +169,7 @@ export function Settings() {
     try {
       await window.api.invoke('backup:restore', { backupFilePath: filePath })
       toast.success('Restore Successful', 'Database has been rolled back. Reloading...')
-      setTimeout(() => window.location.reload(), 2000)
+      setTimeout(() => { window.location.reload(); }, 2000)
     } catch (error) {
       toast.error('Restore Failed', (error as Error).message)
       setIsRestoring(false)
@@ -201,7 +201,7 @@ export function Settings() {
     try {
       await window.api.invoke(IPC_CHANNELS.DATABASE_RESET, { confirmed: true })
       toast.success('Reset Complete', 'Database has been wiped and re-initialized.')
-      setTimeout(() => window.location.reload(), 2000)
+      setTimeout(() => { window.location.reload(); }, 2000)
     } catch (error) {
       toast.error('Reset Failed', (error as Error).message)
       setIsResetting(false)
@@ -250,7 +250,7 @@ export function Settings() {
                       <input 
                         type="number"
                         value={backupInterval}
-                        onChange={(e) => setBackupInterval(e.target.value)}
+                        onChange={(e) => { setBackupInterval(e.target.value); }}
                         className="w-full bg-slate-900/50 border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500/50 pr-8"
                       />
                       <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 font-medium">h</span>

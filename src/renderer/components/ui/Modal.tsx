@@ -36,7 +36,7 @@ export function Modal({
       if (e.key === 'Escape') onClose()
     }
     if (isOpen) window.addEventListener('keydown', handleEsc)
-    return () => window.removeEventListener('keydown', handleEsc)
+    return () => { window.removeEventListener('keydown', handleEsc); }
   }, [isOpen, onClose])
 
   return (

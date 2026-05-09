@@ -100,7 +100,7 @@ export function Leads() {
     <PageContainer title="Sales Leads">
       <div className="mb-6 flex justify-between items-center no-drag">
         <p className="text-slate-400">Track active opportunities and lead conversions.</p>
-        <Button onClick={() => setIsCreateModalOpen(true)}>
+        <Button onClick={() => { setIsCreateModalOpen(true); }}>
           <Plus size={16} className="mr-2" />
           Create Lead
         </Button>
@@ -118,7 +118,7 @@ export function Leads() {
             pageIndex={page}
             pageCount={totalPages}
             onPageChange={setPage}
-            onRowClick={(row) => setViewLeadId(row.id)}
+            onRowClick={(row) => { setViewLeadId(row.id); }}
             onSearchChange={(val) => { setSearch(val); setPage(1); }}
             onSortChange={(col, dir) => { setSortBy(col); setSortDir(dir); setPage(1); }}
           />
@@ -127,13 +127,13 @@ export function Leads() {
 
       <CreateLeadModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => { setIsCreateModalOpen(false); }}
         onCreated={handleLeadCreated}
       />
 
       <ViewLeadModal
         isOpen={viewLeadId !== null}
-        onClose={() => setViewLeadId(null)}
+        onClose={() => { setViewLeadId(null); }}
         onUpdated={handleLeadCreated}
         leadId={viewLeadId}
       />

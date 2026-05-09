@@ -5,7 +5,7 @@
 import * as taxRepo from '../repositories/tax.repository'
 import type { TaxProfileWithComponents } from '../repositories/tax.repository'
 
-type PaginationParams = {
+interface PaginationParams {
   page?: number | undefined
   pageSize?: number | undefined
   search?: string | undefined

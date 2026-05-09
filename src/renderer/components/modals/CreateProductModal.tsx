@@ -119,7 +119,7 @@ export function CreateProductModal({ isOpen, onClose, onCreated }: CreateProduct
             id="product-name"
             placeholder="e.g. Premium Oak Panel"
             value={form.name}
-            onChange={(e) => updateField('name', e.target.value)}
+            onChange={(e) => { updateField('name', e.target.value); }}
             error={errors.name}
           />
         </div>
@@ -132,7 +132,7 @@ export function CreateProductModal({ isOpen, onClose, onCreated }: CreateProduct
               id="product-group"
               placeholder="e.g. Panels"
               value={form.productGroup}
-              onChange={(e) => updateField('productGroup', e.target.value)}
+              onChange={(e) => { updateField('productGroup', e.target.value); }}
               error={errors.productGroup}
             />
           </div>
@@ -142,7 +142,7 @@ export function CreateProductModal({ isOpen, onClose, onCreated }: CreateProduct
               id="product-family"
               placeholder="e.g. Wood"
               value={form.productFamily}
-              onChange={(e) => updateField('productFamily', e.target.value)}
+              onChange={(e) => { updateField('productFamily', e.target.value); }}
               error={errors.productFamily}
             />
           </div>
@@ -155,7 +155,7 @@ export function CreateProductModal({ isOpen, onClose, onCreated }: CreateProduct
             id="product-color"
             placeholder="e.g. Natural Oak"
             value={form.color}
-            onChange={(e) => updateField('color', e.target.value)}
+            onChange={(e) => { updateField('color', e.target.value); }}
             error={errors.color}
           />
         </div>
@@ -171,7 +171,7 @@ export function CreateProductModal({ isOpen, onClose, onCreated }: CreateProduct
               min="0"
               placeholder="0.00"
               value={form.defaultUnitCost}
-              onChange={(e) => updateField('defaultUnitCost', e.target.value)}
+              onChange={(e) => { updateField('defaultUnitCost', e.target.value); }}
               error={errors.defaultUnitCost}
             />
           </div>
@@ -184,7 +184,7 @@ export function CreateProductModal({ isOpen, onClose, onCreated }: CreateProduct
               min="0"
               placeholder="0.00"
               value={form.defaultUnitPrice}
-              onChange={(e) => updateField('defaultUnitPrice', e.target.value)}
+              onChange={(e) => { updateField('defaultUnitPrice', e.target.value); }}
               error={errors.defaultUnitPrice}
             />
           </div>

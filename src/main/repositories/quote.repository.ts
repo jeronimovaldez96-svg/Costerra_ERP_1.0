@@ -87,6 +87,20 @@ export async function getQuote(id: number) {
   return getQuoteById(db, id)
 }
 
+interface FlatQuoteRow {
+  id: number
+  quoteNumber: string
+  salesLeadId: number
+  taxProfileId: number | null
+  notes: string
+  status: string
+  createdAt: string
+  updatedAt: string
+  leadNumber: string | null
+  clientName: string | null
+  clientSurname: string | null
+}
+
 export async function listQuotes(params: ListParams) {
   const db = getDb()
   const { page = 1, pageSize = 50, search = '', sortBy, sortDir } = params
@@ -109,7 +123,7 @@ export async function listQuotes(params: ListParams) {
   .leftJoin(salesLeads, eq(quotes.salesLeadId, salesLeads.id))
   .leftJoin(clients, eq(salesLeads.clientId, clients.id))
 
-  let orderClause: any = desc(quotes.id)
+  let orderClause = desc(quotes.id)
   if (sortBy) {
     if (sortBy === 'clientName') {
       orderClause = sortDir === 'asc' ? asc(clients.name) : desc(clients.name)
@@ -121,30 +135,44 @@ export async function listQuotes(params: ListParams) {
     }
   }
 
-  let query: any = baseSelect
-  let countQuery: any = db.select({ count: sql<number>`count(*)` }).from(quotes)
+  const countQuery = db.select({ count: sql<number>`count(*)` }).from(quotes)
+
+  let items: any[] = []
+  let total = 0
 
   if (search.trim().length > 0) {
     const term = `%${search}%`
-    query = baseSelect.where(like(quotes.quoteNumber, term))
-    countQuery = db.select({ count: sql<number>`count(*)` }).from(quotes).where(like(quotes.quoteNumber, term))
-  }
-  
-  query = query.orderBy(orderClause)
-
-  const rows = query.limit(pageSize).offset(offset).all()
-  const items = rows.map((row: any) => ({
-    ...row,
-    salesLead: {
-      leadNumber: row.leadNumber,
-      client: {
-        name: row.clientName,
-        surname: row.clientSurname
+    const filteredQuery = baseSelect.where(like(quotes.quoteNumber, term)).orderBy(orderClause).limit(pageSize).offset(offset)
+    const filteredCount = db.select({ count: sql<number>`count(*)` }).from(quotes).where(like(quotes.quoteNumber, term))
+    
+    const rows = filteredQuery.all() as FlatQuoteRow[]
+    items = rows.map((row) => ({
+      ...row,
+      salesLead: {
+        leadNumber: row.leadNumber,
+        client: {
+          name: row.clientName,
+          surname: row.clientSurname
+        }
       }
-    }
-  }))
-  const totalRes = countQuery.get()
-  const total = Number((totalRes as any)?.count ?? 0)
+    }))
+    const totalRes = filteredCount.get()
+    total = Number(totalRes?.count ?? 0)
+  } else {
+    const rows = baseSelect.orderBy(orderClause).limit(pageSize).offset(offset).all() as FlatQuoteRow[]
+    items = rows.map((row) => ({
+      ...row,
+      salesLead: {
+        leadNumber: row.leadNumber,
+        client: {
+          name: row.clientName,
+          surname: row.clientSurname
+        }
+      }
+    }))
+    const totalRes = countQuery.get()
+    total = Number(totalRes?.count ?? 0)
+  }
 
   return { items, total, page, pageSize }
 }
