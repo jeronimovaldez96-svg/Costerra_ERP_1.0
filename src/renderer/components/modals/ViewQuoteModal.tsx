@@ -12,7 +12,6 @@ import { Button } from '../ui/Button'
 import { toast } from '../../store/useToastStore'
 import {
   FileText,
-  Printer,
   Send,
   CheckCircle,
   XCircle,

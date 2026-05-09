@@ -11,7 +11,8 @@ import type {
   ProductInsert,
   ProductWithHistory,
   PaginatedResult,
-  ListParams
+  ListParams,
+  LoosePartial
 } from '../../shared/types'
 
 export async function listProducts(params: ListParams): Promise<PaginatedResult<Product>> {
@@ -52,7 +53,7 @@ export async function createProduct(
 
 export async function updateProduct(
   id: number,
-  data: Partial<ProductInsert>,
+  data: LoosePartial<ProductInsert>,
   sourceImagePath?: string
 ): Promise<Product> {
   const existing = await getProduct(id)

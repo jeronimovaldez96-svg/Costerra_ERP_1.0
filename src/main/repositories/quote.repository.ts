@@ -11,11 +11,12 @@ import { products } from '../../shared/schema/product'
 import { taxProfiles, taxProfileComponents } from '../../shared/schema/tax'
 import { eq, desc, asc, like, sql } from 'drizzle-orm'
 import { generateId } from '../utils/id-generator'
+import type { ListParams } from '../../shared/types'
 
 // ─── Create ──────────────────────────────────────────────
 
 export async function createQuote(
-  data: { salesLeadId: number; taxProfileId?: number | null; notes?: string },
+  data: { salesLeadId: number; taxProfileId?: number | null | undefined; notes?: string | undefined },
   lineItems: { productId: number; quantity: number }[]
 ) {
   const db = getDb()
@@ -86,7 +87,7 @@ export async function getQuote(id: number) {
   return getQuoteById(db, id)
 }
 
-export async function listQuotes(params: { page?: number; pageSize?: number; search?: string; sortBy?: string; sortDir?: 'asc' | 'desc' }) {
+export async function listQuotes(params: ListParams) {
   const db = getDb()
   const { page = 1, pageSize = 50, search = '', sortBy, sortDir } = params
   const offset = (page - 1) * pageSize
@@ -100,13 +101,9 @@ export async function listQuotes(params: { page?: number; pageSize?: number; sea
     status: quotes.status,
     createdAt: quotes.createdAt,
     updatedAt: quotes.updatedAt,
-    salesLead: {
-      leadNumber: salesLeads.leadNumber,
-      client: {
-        name: clients.name,
-        surname: clients.surname
-      }
-    }
+    leadNumber: salesLeads.leadNumber,
+    clientName: clients.name,
+    clientSurname: clients.surname
   })
   .from(quotes)
   .leftJoin(salesLeads, eq(quotes.salesLeadId, salesLeads.id))
@@ -135,9 +132,19 @@ export async function listQuotes(params: { page?: number; pageSize?: number; sea
   
   query = query.orderBy(orderClause)
 
-  const items = query.limit(pageSize).offset(offset).all()
+  const rows = query.limit(pageSize).offset(offset).all()
+  const items = rows.map((row: any) => ({
+    ...row,
+    salesLead: {
+      leadNumber: row.leadNumber,
+      client: {
+        name: row.clientName,
+        surname: row.clientSurname
+      }
+    }
+  }))
   const totalRes = countQuery.get()
-  const total = totalRes ? Number(totalRes.count) : 0
+  const total = Number((totalRes as any)?.count ?? 0)
 
   return { items, total, page, pageSize }
 }
@@ -146,7 +153,7 @@ export async function listQuotes(params: { page?: number; pageSize?: number; sea
 
 export async function updateQuote(
   id: number,
-  data: { taxProfileId?: number | null; notes?: string },
+  data: { taxProfileId?: number | null | undefined; notes?: string | undefined },
   lineItems?: { productId: number; quantity: number }[]
 ) {
   const db = getDb()
@@ -158,8 +165,8 @@ export async function updateQuote(
 
     // Update quote metadata
     const updateData: Record<string, unknown> = { updatedAt: sql`(datetime('now'))` }
-    if (data.taxProfileId !== undefined) updateData.taxProfileId = data.taxProfileId
-    if (data.notes !== undefined) updateData.notes = data.notes
+    if (data.taxProfileId !== undefined) updateData['taxProfileId'] = data.taxProfileId
+    if (data.notes !== undefined) updateData['notes'] = data.notes
 
     tx.update(quotes).set(updateData).where(eq(quotes.id, id)).run()
 

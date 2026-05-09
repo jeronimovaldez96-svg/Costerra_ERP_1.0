@@ -99,8 +99,8 @@ export function registerSystemHandlers(): void {
 
       const result = await dialog.showSaveDialog(window, {
         title: options?.title || 'Save File',
-        defaultPath: options?.defaultPath,
-        filters: options?.filters || [{ name: 'Database Files', extensions: ['db'] }]
+        filters: options?.filters || [{ name: 'Database Files', extensions: ['db'] }],
+        ...(options?.defaultPath ? { defaultPath: options.defaultPath } : {})
       })
 
       return result.canceled ? null : result.filePath

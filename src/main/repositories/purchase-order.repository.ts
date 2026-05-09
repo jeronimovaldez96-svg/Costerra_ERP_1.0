@@ -11,19 +11,16 @@ import type {
   PurchaseOrderWithItems, 
   PurchaseOrderInsert, 
   PurchaseOrderItemInsert,
-  PaginatedResult 
+  PaginatedResult,
+  LoosePartial,
+  ListParams
 } from '../../shared/types'
 
 type DbTransaction = Parameters<Parameters<ReturnType<typeof getDb>['transaction']>[0]>[0]
 
-export function listPurchaseOrders(
-  page: number,
-  pageSize: number,
-  search: string,
-  sortBy?: string,
-  sortDir?: 'asc' | 'desc'
-): PaginatedResult<PurchaseOrder> {
+export function listPurchaseOrders(params: ListParams): PaginatedResult<PurchaseOrder> {
   const db = getDb()
+  const { page = 1, pageSize = 50, search = '', sortBy, sortDir } = params
   const offset = (page - 1) * pageSize
 
   // Simplified where logic since SQLite `like` allows text filtering
@@ -33,7 +30,7 @@ export function listPurchaseOrders(
     whereClause = sql`${purchaseOrders.poNumber} LIKE ${term} OR ${purchaseOrders.description} LIKE ${term}`
   }
 
-  let orderClause = desc(purchaseOrders.createdAt)
+  let orderClause: any = desc(purchaseOrders.createdAt)
   if (sortBy) {
     const column = (purchaseOrders as any)[sortBy]
     if (column) {
@@ -44,7 +41,7 @@ export function listPurchaseOrders(
   }
 
   const totalRes = db.select({ count: sql<number>`count(*)` }).from(purchaseOrders).where(whereClause).get()
-  const items = db
+  const rows = db
     .select({
       id: purchaseOrders.id,
       poNumber: purchaseOrders.poNumber,
@@ -53,9 +50,7 @@ export function listPurchaseOrders(
       status: purchaseOrders.status,
       createdAt: purchaseOrders.createdAt,
       updatedAt: purchaseOrders.updatedAt,
-      supplier: {
-        name: suppliers.name
-      }
+      supplierName: suppliers.name
     })
     .from(purchaseOrders)
     .leftJoin(suppliers, eq(purchaseOrders.supplierId, suppliers.id))
@@ -65,12 +60,20 @@ export function listPurchaseOrders(
     .offset(offset)
     .all()
 
+  const total = Number((totalRes as any)?.count ?? 0)
+  const items = rows.map((row: any) => ({
+    ...row,
+    supplier: {
+      name: row.supplierName
+    }
+  }))
+
   return {
     items,
-    total: totalRes?.count ?? 0,
+    total,
     page,
     pageSize,
-    totalPages: Math.ceil((totalRes?.count ?? 0) / pageSize)
+    totalPages: Math.ceil(total / pageSize)
   }
 }
 
@@ -99,13 +102,13 @@ export function getPurchaseOrder(id: number): PurchaseOrderWithItems | null {
 }
 
 export function createPurchaseOrder(
-  poData: Omit<PurchaseOrderInsert, 'id'>, 
+  poData: LoosePartial<Omit<PurchaseOrderInsert, 'id'>>, 
   itemsData: Omit<PurchaseOrderItemInsert, 'id' | 'purchaseOrderId'>[]
 ): PurchaseOrder {
   const db = getDb()
 
   return db.transaction((tx) => {
-    const po = tx.insert(purchaseOrders).values(poData).returning().get()
+    const po = tx.insert(purchaseOrders).values(poData as any).returning().get()
     if (!po) throw new Error('Failed to create purchase order')
 
     if (itemsData.length > 0) {
@@ -120,7 +123,7 @@ export function createPurchaseOrder(
 
 export function updatePurchaseOrder(
   id: number,
-  poData: Partial<PurchaseOrderInsert>,
+  poData: LoosePartial<PurchaseOrderInsert>,
   itemsData?: Omit<PurchaseOrderItemInsert, 'id' | 'purchaseOrderId'>[]
 ): PurchaseOrder {
   const db = getDb()

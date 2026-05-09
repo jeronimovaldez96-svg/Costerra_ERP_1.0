@@ -6,7 +6,7 @@
 import { eq, desc, asc, like, or, sql } from 'drizzle-orm'
 import { getDb } from '../database/client'
 import { clients, clientHistory } from '../../shared/schema'
-import type { Client, ClientInsert, ClientWithHistory, PaginatedResult } from '../../shared/types'
+import type { Client, ClientInsert, ClientWithHistory, PaginatedResult, LoosePartial } from '../../shared/types'
 import { logEntityChanges } from './audit.repository'
 import { generateId } from '../utils/id-generator'
 
@@ -88,7 +88,7 @@ export async function createClient(data: Omit<ClientInsert, 'clientNumber'>): Pr
   return created
 }
 
-export async function updateClient(id: number, data: Partial<ClientInsert>): Promise<Client> {
+export async function updateClient(id: number, data: LoosePartial<ClientInsert>): Promise<Client> {
   const db = getDb()
 
   return db.transaction((tx) => {

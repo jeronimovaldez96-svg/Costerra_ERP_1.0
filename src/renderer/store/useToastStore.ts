@@ -5,9 +5,9 @@ export type ToastType = 'success' | 'error' | 'info' | 'warning'
 export interface Toast {
   id: string
   title: string
-  description?: string
+  description?: string | undefined
   type: ToastType
-  duration?: number
+  duration?: number | undefined
 }
 
 interface ToastState {

@@ -102,7 +102,7 @@ function createMainWindow(): BrowserWindow {
   })
 
   // Forward renderer console logs to the main process terminal
-  mainWindow.webContents.on('console-message', (event, level, message, line, sourceId) => {
+  mainWindow.webContents.on('console-message', (_event, _level, message, line, sourceId) => {
     console.log(`[Renderer] ${message} (${sourceId}:${line})`)
   })
 

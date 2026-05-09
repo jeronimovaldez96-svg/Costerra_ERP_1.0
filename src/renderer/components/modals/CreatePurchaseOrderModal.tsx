@@ -41,9 +41,9 @@ interface LineItem {
 }
 
 interface FormErrors {
-  supplierId?: string
-  lineItems?: string
-  rows?: Record<number, Partial<Record<'productId' | 'quantity' | 'unitCost', string>>>
+  supplierId?: string | undefined
+  lineItems?: string | undefined
+  rows?: Record<number, Partial<Record<'productId' | 'quantity' | 'unitCost', string>>> | undefined
 }
 
 const createEmptyLine = (): LineItem => ({

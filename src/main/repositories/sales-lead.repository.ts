@@ -9,6 +9,7 @@ import { quotes } from '../../shared/schema/quote'
 import { eq, desc, asc, like, sql } from 'drizzle-orm'
 import { generateId } from '../utils/id-generator'
 import type { DbTransaction } from '../database/client'
+import type { ListParams } from '../../shared/types'
 
 export async function createSalesLead(clientId: number, name: string) {
   const db = getDb()
@@ -34,7 +35,7 @@ export async function getSalesLead(id: number) {
   return lead
 }
 
-export async function listSalesLeads(params: { page?: number; pageSize?: number; search?: string; sortBy?: string; sortDir?: 'asc' | 'desc' }) {
+export async function listSalesLeads(params: ListParams) {
   const db = getDb()
   const { page = 1, pageSize = 50, search = '', sortBy, sortDir } = params
   const offset = (page - 1) * pageSize
@@ -47,10 +48,8 @@ export async function listSalesLeads(params: { page?: number; pageSize?: number;
     status: salesLeads.status,
     createdAt: salesLeads.createdAt,
     updatedAt: salesLeads.updatedAt,
-    client: {
-      name: clients.name,
-      surname: clients.surname
-    }
+    clientName: clients.name,
+    clientSurname: clients.surname
   })
   .from(salesLeads)
   .leftJoin(clients, eq(salesLeads.clientId, clients.id))
@@ -78,9 +77,16 @@ export async function listSalesLeads(params: { page?: number; pageSize?: number;
   
   query = query.orderBy(orderClause)
 
-  const items = query.limit(pageSize).offset(offset).all()
+  const rows = query.limit(pageSize).offset(offset).all()
+  const items = rows.map((row: any) => ({
+    ...row,
+    client: {
+      name: row.clientName,
+      surname: row.clientSurname
+    }
+  }))
   const totalRes = countQuery.get()
-  const total = totalRes ? Number(totalRes.count) : 0
+  const total = Number((totalRes as any)?.count ?? 0)
 
   return { items, total, page, pageSize }
 }

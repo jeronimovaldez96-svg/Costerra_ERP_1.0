@@ -33,7 +33,7 @@ export function registerUpdateHandlers() {
 
   // Allow renderer to request current status on mount
   registerRoute(
-    'update:get-status',
+    IPC_CHANNELS.UPDATE_GET_STATUS,
     { schema: z.object({}).optional() },
     async () => updateService.getStatus()
   )

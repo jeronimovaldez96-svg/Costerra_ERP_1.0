@@ -13,14 +13,12 @@ import type {
   PurchaseOrderInsert,
   PurchaseOrderItemInsert,
   PaginatedResult,
-  ListParams
+  ListParams,
+  LoosePartial
 } from '../../shared/types'
 
 export async function listPurchaseOrders(params: ListParams): Promise<PaginatedResult<PurchaseOrder>> {
-  const page = params.page ?? 1
-  const pageSize = params.pageSize ?? 50
-  const search = params.search ?? ''
-  return poRepo.listPurchaseOrders(page, pageSize, search, params.sortBy, params.sortDir)
+  return poRepo.listPurchaseOrders(params)
 }
 
 export async function getPurchaseOrder(id: number): Promise<PurchaseOrderWithItems> {
@@ -30,7 +28,7 @@ export async function getPurchaseOrder(id: number): Promise<PurchaseOrderWithIte
 }
 
 export async function createPurchaseOrder(
-  data: Omit<PurchaseOrderInsert, 'id' | 'poNumber' | 'status' | 'createdAt' | 'updatedAt'>,
+  data: LoosePartial<Omit<PurchaseOrderInsert, 'id' | 'poNumber' | 'status' | 'createdAt' | 'updatedAt'>>,
   items: Omit<PurchaseOrderItemInsert, 'id' | 'purchaseOrderId'>[]
 ): Promise<PurchaseOrder> {
   const poNumber = await generateId('PO')
@@ -39,7 +37,7 @@ export async function createPurchaseOrder(
 
 export async function updatePurchaseOrder(
   id: number,
-  data: Partial<PurchaseOrderInsert>,
+  data: LoosePartial<PurchaseOrderInsert>,
   items?: Omit<PurchaseOrderItemInsert, 'id' | 'purchaseOrderId'>[]
 ): Promise<PurchaseOrder> {
   return poRepo.updatePurchaseOrder(id, data, items)

@@ -5,12 +5,11 @@
 import { getDb } from '../database/client'
 import { taxProfiles, taxProfileComponents } from '../../shared/schema/tax'
 import { eq, like, desc, sql } from 'drizzle-orm'
-import { generateId } from '../utils/id-generator'
 
 type PaginationParams = {
-  page?: number
-  pageSize?: number
-  search?: string
+  page?: number | undefined
+  pageSize?: number | undefined
+  search?: string | undefined
 }
 
 export type TaxProfileWithComponents = typeof taxProfiles.$inferSelect & {
@@ -21,7 +20,7 @@ export type TaxProfileWithComponents = typeof taxProfiles.$inferSelect & {
  * Creates a global Tax Profile alongside its nested structural components natively.
  */
 export async function createTaxProfile(
-  data: { name: string; description?: string },
+  data: { name: string; description?: string | undefined },
   components: { name: string; rate: number }[]
 ): Promise<TaxProfileWithComponents> {
   const db = getDb()
@@ -71,7 +70,7 @@ export async function getTaxProfile(id: number): Promise<TaxProfileWithComponent
  */
 export async function updateTaxProfile(
   id: number,
-  data: { name?: string; description?: string; isActive?: boolean },
+  data: { name?: string | undefined; description?: string | undefined; isActive?: boolean | undefined },
   components?: { name: string; rate: number }[]
 ): Promise<TaxProfileWithComponents> {
   const db = getDb()

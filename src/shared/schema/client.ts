@@ -17,6 +17,7 @@ export const clients = sqliteTable('Client', {
   city: text('city').notNull().default(''),
   zipCode: text('zipCode').notNull().default(''),
   phone: text('phone').notNull().default(''),
+  email: text('email').notNull().default(''),
   notes: text('notes').notNull().default(''),
   createdAt: text('createdAt')
     .notNull()

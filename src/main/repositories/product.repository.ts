@@ -6,7 +6,7 @@
 import { eq, desc, asc, like, or, sql } from 'drizzle-orm'
 import { getDb } from '../database/client'
 import { products, productHistory } from '../../shared/schema'
-import type { Product, ProductInsert, ProductWithHistory, PaginatedResult } from '../../shared/types'
+import type { Product, ProductInsert, ProductWithHistory, PaginatedResult, LoosePartial } from '../../shared/types'
 import { logEntityChanges } from './audit.repository'
 
 export async function listProducts(
@@ -91,7 +91,7 @@ export async function createProduct(data: ProductInsert): Promise<Product> {
   return created
 }
 
-export async function updateProduct(id: number, data: Partial<ProductInsert>): Promise<Product> {
+export async function updateProduct(id: number, data: LoosePartial<ProductInsert>): Promise<Product> {
   const db = getDb()
 
   return db.transaction((tx) => {

@@ -3,14 +3,15 @@
 // Atomic sale execution with FIFO cost resolution.
 // ────────────────────────────────────────────────────────
 
-import { getDb, type DbTransaction } from '../database/client'
+import { getDb } from '../database/client'
 import { sales, saleLineItems } from '../../shared/schema/sale'
 import { quotes } from '../../shared/schema/quote'
 import { salesLeads } from '../../shared/schema/sales-lead'
 import { clients } from '../../shared/schema/client'
-import { taxProfiles, taxProfileComponents } from '../../shared/schema/tax'
+import { taxProfileComponents } from '../../shared/schema/tax'
 import { products } from '../../shared/schema/product'
 import { eq, desc, asc, like, sql } from 'drizzle-orm'
+import type { ListParams } from '../../shared/types'
 import { generateId } from '../utils/id-generator'
 import { getQuoteLineItems, transitionQuoteStatus } from './quote.repository'
 import { consumeStockFifo } from './inventory.repository'
@@ -44,7 +45,7 @@ export async function executeSale(quoteId: number) {
     let effectiveTaxRate = 0
     if (quote.taxProfileId) {
       const components = tx.select().from(taxProfileComponents)
-        .where(eq(taxProfileComponents.taxProfileId, quote.taxProfileId)).all()
+        .where(eq(taxProfileComponents.taxProfileId, quote.taxProfileId!)).all()
       effectiveTaxRate = components.reduce((sum, c) => sum + c.rate, 0) / 100 // Convert % to decimal
     }
 
@@ -147,7 +148,7 @@ export async function getSale(id: number) {
   return { ...sale, lineItems: enrichedItems }
 }
 
-export async function listSales(params: { page?: number; pageSize?: number; search?: string; sortBy?: string; sortDir?: 'asc' | 'desc' }) {
+export async function listSales(params: ListParams) {
   const db = getDb()
   const { page = 1, pageSize = 50, search = '', sortBy, sortDir } = params
   const offset = (page - 1) * pageSize
@@ -162,16 +163,11 @@ export async function listSales(params: { page?: number; pageSize?: number; sear
     profitAmount: sales.profitAmount,
     profitMargin: sales.profitMargin,
     saleDate: sales.saleDate,
-    quote: {
-      quoteNumber: quotes.quoteNumber,
-      salesLead: {
-        leadNumber: salesLeads.leadNumber,
-        client: {
-          name: clients.name,
-          surname: clients.surname
-        }
-      }
-    }
+    quoteNumber: quotes.quoteNumber,
+    leadNumber: salesLeads.leadNumber,
+    leadName: salesLeads.name,
+    clientName: clients.name,
+    clientSurname: clients.surname
   })
   .from(sales)
   .leftJoin(quotes, eq(sales.quoteId, quotes.id))
@@ -201,9 +197,23 @@ export async function listSales(params: { page?: number; pageSize?: number; sear
   
   query = query.orderBy(orderClause)
 
-  const items = query.limit(pageSize).offset(offset).all()
+  const rows = query.limit(pageSize).offset(offset).all()
+  const items = rows.map((row: any) => ({
+    ...row,
+    quote: {
+      quoteNumber: row.quoteNumber,
+      salesLead: {
+        leadNumber: row.leadNumber,
+        name: row.leadName,
+        client: {
+          name: row.clientName,
+          surname: row.clientSurname
+        }
+      }
+    }
+  }))
   const totalRes = countQuery.get()
-  const total = totalRes ? Number(totalRes.count) : 0
+  const total = Number((totalRes as any)?.count ?? 0)
 
   return { items, total, page, pageSize }
 }

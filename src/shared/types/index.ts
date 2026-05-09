@@ -30,6 +30,10 @@ import type {
 } from '../schema'
 
 // ─── Generic ─────────────────────────────────────────
+/** Utility to allow undefined in optional properties, satisfying exactOptionalPropertyTypes */
+export type LoosePartial<T> = {
+  [P in keyof T]?: T[P] | undefined;
+}
 
 /** Standard IPC response wrapper */
 export interface IpcResponse<T = unknown> {
@@ -40,12 +44,12 @@ export interface IpcResponse<T = unknown> {
 
 /** Pagination params for list queries */
 export interface ListParams {
-  page?: number
-  pageSize?: number
-  search?: string
-  sortBy?: string
-  sortDir?: 'asc' | 'desc'
-  filters?: Record<string, string | number | boolean>
+  page?: number | undefined
+  pageSize?: number | undefined
+  search?: string | undefined
+  sortBy?: string | undefined
+  sortDir?: 'asc' | 'desc' | undefined
+  filters?: Record<string, string | number | boolean> | undefined
 }
 
 /** Paginated list result */

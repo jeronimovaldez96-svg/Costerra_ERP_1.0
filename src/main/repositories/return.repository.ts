@@ -3,11 +3,11 @@
 // Finalized sale unraveling ledger logic.
 // ────────────────────────────────────────────────────────
 
-import { getDb, type DbTransaction } from '../database/client'
+import { getDb } from '../database/client'
 import { returns, returnLineItems, creditNotes } from '../../shared/schema/return'
 import { sales, saleLineItems } from '../../shared/schema/sale'
 import { inventoryBatches } from '../../shared/schema/inventory'
-import { eq, desc, sql } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { generateId } from '../utils/id-generator'
 
 /**
@@ -16,7 +16,7 @@ import { generateId } from '../utils/id-generator'
 export async function createReturn(
   saleId: number,
   reason: string,
-  items: { saleLineItemId: number, quantityReturned: number, restockDisposition: 'RESTOCK' | 'DEFECTIVE' }[]
+  items: { saleLineItemId: number, quantityReturned: number, restockDisposition?: 'RESTOCK' | 'DEFECTIVE' | undefined }[]
 ) {
   const db = getDb()
   const returnNumber = await generateId('RETURN')
@@ -52,7 +52,8 @@ export async function createReturn(
       processedItems.push({
         ...item,
         unitRefund,
-        lineRefund
+        lineRefund,
+        restockDisposition: item.restockDisposition ?? 'RESTOCK'
       })
     }
 

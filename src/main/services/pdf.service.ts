@@ -26,7 +26,7 @@ async function generatePdfBufferFromHtml(htmlContent: string): Promise<Buffer> {
       try {
         const pdfBuffer = await win.webContents.printToPDF({
           printBackground: true,
-          marginType: 0, // CSS handles padding
+          margins: { marginType: 'none' }, // CSS handles padding
           pageSize: 'A4'
         })
         win.destroy()

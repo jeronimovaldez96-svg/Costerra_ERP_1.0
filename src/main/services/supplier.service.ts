@@ -8,7 +8,8 @@ import type {
   SupplierInsert,
   SupplierWithHistory,
   PaginatedResult,
-  ListParams
+  ListParams,
+  LoosePartial
 } from '../../shared/types'
 
 export async function listSuppliers(params: ListParams): Promise<PaginatedResult<Supplier>> {
@@ -30,6 +31,6 @@ export async function createSupplier(data: SupplierInsert): Promise<Supplier> {
   return repo.createSupplier(data)
 }
 
-export async function updateSupplier(id: number, data: Partial<SupplierInsert>): Promise<Supplier> {
+export async function updateSupplier(id: number, data: LoosePartial<SupplierInsert>): Promise<Supplier> {
   return repo.updateSupplier(id, data)
 }

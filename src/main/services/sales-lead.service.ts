@@ -8,6 +8,7 @@ import * as quoteRepo from '../repositories/quote.repository'
 import { quotes } from '../../shared/schema/quote'
 import { salesLeads } from '../../shared/schema/sales-lead'
 import { eq } from 'drizzle-orm'
+import type { ListParams } from '../../shared/types'
 
 export async function createSalesLead(clientId: number, name: string) {
   return leadRepo.createSalesLead(clientId, name)
@@ -21,9 +22,9 @@ export async function getSalesLeadDetail(id: number) {
   return leadRepo.getSalesLeadDetail(id)
 }
 
-export async function listSalesLeads(params: { page?: number; pageSize?: number; search?: string; sortBy?: string; sortDir?: 'asc' | 'desc' }) {
-  return leadRepo.listSalesLeads(params)
-}
+export async function listSalesLeads(params: ListParams) {
+   return leadRepo.listSalesLeads(params)
+ }
 
 export async function updateSalesLeadStatus(id: number, status: 'IN_PROGRESS' | 'CLOSED_SALE' | 'CLOSED_NO_SALE') {
   const db = getDb()

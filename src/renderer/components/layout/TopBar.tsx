@@ -24,7 +24,7 @@ export function TopBar() {
               <>
                 <span className="text-slate-600">/</span>
                 <span className="capitalize text-slate-200 font-medium">
-                  {pathnames[1].replace('-', ' ')}
+                  {pathnames[1]?.replace('-', ' ')}
                 </span>
               </>
             )}

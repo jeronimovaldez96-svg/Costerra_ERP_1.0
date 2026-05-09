@@ -5,7 +5,7 @@
 
 import { eq, sql } from 'drizzle-orm'
 import { getDb, type DbTransaction } from '../database/client'
-import { inventoryBatches, products } from '../../shared/schema'
+import { inventoryBatches } from '../../shared/schema'
 import type { InventoryBatch, InventorySummary } from '../../shared/types'
 
 /**

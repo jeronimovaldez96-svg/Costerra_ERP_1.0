@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { IPC_CHANNELS } from '../../shared/ipc-channels'
 import { PageContainer } from '../components/layout/PageContainer'
 import { GlassCard } from '../components/layout/GlassCard'
 import { Button } from '../components/ui/Button'
@@ -44,7 +45,7 @@ export function Settings() {
     fetchDirectory()
     
     // Initial update status
-    window.api.invoke<UpdateStatus>('update:get-status').then(setUpdateStatus)
+    window.api.invoke<UpdateStatus>(IPC_CHANNELS.UPDATE_GET_STATUS).then(setUpdateStatus)
 
     // Listen for update events
     const unsubscribe = window.api.on('update:status', (status: any) => {
@@ -198,7 +199,7 @@ export function Settings() {
     
     setIsResetting(true)
     try {
-      await window.api.invoke('database:reset', { confirmed: true })
+      await window.api.invoke(IPC_CHANNELS.DATABASE_RESET, { confirmed: true })
       toast.success('Reset Complete', 'Database has been wiped and re-initialized.')
       setTimeout(() => window.location.reload(), 2000)
     } catch (error) {
@@ -208,9 +209,9 @@ export function Settings() {
   }
 
   // Update Handlers
-  const handleCheckUpdate = () => window.api.invoke('update:check')
-  const handleDownloadUpdate = () => window.api.invoke('update:download')
-  const handleInstallUpdate = () => window.api.invoke('update:install')
+  const handleCheckUpdate = () => window.api.invoke(IPC_CHANNELS.UPDATE_CHECK)
+  const handleDownloadUpdate = () => window.api.invoke(IPC_CHANNELS.UPDATE_DOWNLOAD)
+  const handleInstallUpdate = () => window.api.invoke(IPC_CHANNELS.UPDATE_INSTALL)
 
   return (
     <PageContainer title="Settings">

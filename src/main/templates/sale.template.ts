@@ -262,7 +262,7 @@ export function generateSaleHtml({ sale, lineItems, quote, taxProfile, client, l
             <h2>INVOICE</h2>
             <div class="sale-num">#${sale.saleNumber}</div>
             <p style="margin: 4px 0 0; color: var(--color-text-muted); font-size: 0.875rem;">
-              Date: ${formatDate(sale.createdAt)}
+              Date: ${formatDate(sale.saleDate)}
             </p>
           </div>
         </div>

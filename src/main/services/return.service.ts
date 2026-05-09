@@ -8,7 +8,7 @@ import * as returnRepo from '../repositories/return.repository'
 export async function createReturn(
   saleId: number,
   reason: string,
-  items: { saleLineItemId: number, quantityReturned: number, restockDisposition: 'RESTOCK' | 'DEFECTIVE' }[]
+  items: { saleLineItemId: number, quantityReturned: number, restockDisposition?: 'RESTOCK' | 'DEFECTIVE' | undefined }[]
 ) {
   return returnRepo.createReturn(saleId, reason, items)
 }

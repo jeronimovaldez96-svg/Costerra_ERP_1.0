@@ -7,7 +7,7 @@
 
 import { app } from 'electron'
 import { join } from 'path'
-import { existsSync, mkdirSync, statSync, readdirSync, unlinkSync, copyFileSync } from 'fs'
+import { existsSync, mkdirSync, statSync, unlinkSync, copyFileSync } from 'fs'
 import { getDb, getRawSqlite, getDatabasePath, closeDatabase, initDatabase } from '../database/client'
 import { backupLogs } from '../../shared/schema/backup'
 import { desc, sql } from 'drizzle-orm'

@@ -5,9 +5,10 @@
 
 import { getDb } from '../database/client'
 import * as quoteRepo from '../repositories/quote.repository'
+import type { ListParams } from '../../shared/types'
 
 export async function createQuote(
-  data: { salesLeadId: number; taxProfileId?: number | null; notes?: string },
+  data: { salesLeadId: number; taxProfileId?: number | null | undefined; notes?: string | undefined },
   lineItems: { productId: number; quantity: number }[]
 ) {
   return quoteRepo.createQuote(data, lineItems)
@@ -17,13 +18,13 @@ export async function getQuote(id: number) {
   return quoteRepo.getQuote(id)
 }
 
-export async function listQuotes(params: { page?: number; pageSize?: number; search?: string; sortBy?: string; sortDir?: 'asc' | 'desc' }) {
+export async function listQuotes(params: ListParams) {
   return quoteRepo.listQuotes(params)
 }
 
 export async function updateQuote(
   id: number,
-  data: { taxProfileId?: number | null; notes?: string },
+  data: { taxProfileId?: number | null | undefined; notes?: string | undefined },
   lineItems?: { productId: number; quantity: number }[]
 ) {
   return quoteRepo.updateQuote(id, data, lineItems)

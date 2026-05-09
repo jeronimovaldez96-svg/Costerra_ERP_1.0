@@ -8,7 +8,8 @@ import type {
   ClientInsert,
   ClientWithHistory,
   PaginatedResult,
-  ListParams
+  ListParams,
+  LoosePartial
 } from '../../shared/types'
 
 export async function listClients(params: ListParams): Promise<PaginatedResult<Client>> {
@@ -30,6 +31,6 @@ export async function createClient(data: Omit<ClientInsert, 'clientNumber'>): Pr
   return repo.createClient(data)
 }
 
-export async function updateClient(id: number, data: Partial<ClientInsert>): Promise<Client> {
+export async function updateClient(id: number, data: LoosePartial<ClientInsert>): Promise<Client> {
   return repo.updateClient(id, data)
 }
