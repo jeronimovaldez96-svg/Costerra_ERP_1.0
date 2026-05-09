@@ -28,7 +28,8 @@ export async function listClients(
       like(clients.surname, term),
       like(clients.clientNumber, term),
       like(clients.phone, term),
-      like(clients.city, term)
+      like(clients.city, term),
+      like(clients.email, term)
     )
   }
 

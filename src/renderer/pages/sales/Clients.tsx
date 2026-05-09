@@ -14,6 +14,7 @@ interface Client {
   surname: string
   city: string
   phone: string
+  email: string
   createdAt: string
 }
 
@@ -25,6 +26,7 @@ const columns: ColumnDef<Client>[] = [
     cell: ({ row }) => <span className="font-medium text-white">{row.original.name} {row.original.surname}</span>
   },
   { accessorKey: 'city', header: 'City' },
+  { accessorKey: 'email', header: 'Email' },
   { accessorKey: 'phone', header: 'Phone' },
   { 
     accessorKey: 'createdAt', 

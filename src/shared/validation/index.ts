@@ -48,6 +48,7 @@ export const clientCreateSchema = z.object({
   city: z.string().optional().default(''),
   zipCode: z.string().optional().default(''),
   phone: z.string().optional().default(''),
+  email: z.string().email('Invalid email address').or(z.literal('')).optional().default(''),
   notes: z.string().optional().default('')
 })
 

@@ -22,6 +22,7 @@ interface FormState {
   city: string
   zipCode: string
   phone: string
+  email: string
   notes: string
 }
 
@@ -32,6 +33,7 @@ const INITIAL_STATE: FormState = {
   city: '',
   zipCode: '',
   phone: '',
+  email: '',
   notes: ''
 }
 
@@ -76,6 +78,7 @@ export function CreateClientModal({ isOpen, onClose, onCreated }: CreateClientMo
         city: form.city.trim(),
         zipCode: form.zipCode.trim(),
         phone: form.phone.trim(),
+        email: form.email.trim(),
         notes: form.notes.trim()
       })
 
@@ -146,14 +149,26 @@ export function CreateClientModal({ isOpen, onClose, onCreated }: CreateClientMo
           </div>
         </div>
 
-        <div className="space-y-1.5">
-          <label htmlFor="client-phone" className="text-sm font-medium text-slate-300">Phone Number</label>
-          <Input
-            id="client-phone"
-            placeholder="e.g. (555) 123-4567"
-            value={form.phone}
-            onChange={(e) => updateField('phone', e.target.value)}
-          />
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <label htmlFor="client-phone" className="text-sm font-medium text-slate-300">Phone Number</label>
+            <Input
+              id="client-phone"
+              placeholder="e.g. (555) 123-4567"
+              value={form.phone}
+              onChange={(e) => updateField('phone', e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="client-email" className="text-sm font-medium text-slate-300">Email Address</label>
+            <Input
+              id="client-email"
+              type="email"
+              placeholder="e.g. john@example.com"
+              value={form.email}
+              onChange={(e) => updateField('email', e.target.value)}
+            />
+          </div>
         </div>
 
         <div className="space-y-1.5">
